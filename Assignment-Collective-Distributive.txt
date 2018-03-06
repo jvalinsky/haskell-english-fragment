@@ -1,0 +1,15 @@
+Last class we went over and expanded the Direct Semantic version of our semantics for English.  Now we will expand it further to account for some more interesting phenomena.  I have attached a seminal article (Link 1983) which discusses plurals, collectivity and distributivity.  This should be used to help with discussion of core examples, and ideas for implementing these things, but I will not limit you to representing the semantics of these phenomena in exactly the way that Link does.  The article also discusses mass terms, which you can completely ignore, *unless* you take me up on the Super-Bonus Challenge.
+
+Task 1: Expand the semantics, syntax and model files to account for plurality. In particular, this means nouns must now make a singular plural distinction, and this adjustment will carry over to verbs, determiners and so forth.
+
+Task 2: Add a collective/distributive distinction to verbs, adding canonical verbs 
+
+There are many many ways to accomplish this, but try to do it cleanly, with proper documentation.
+
+Super-Bonus Challenge: Add mass terms to your syntax/semantics/model and make sure it plays nicely with all other components.
+
+I am making the due date for Monday, but this will take a bit of time/thinking, so plan accordingly.  It should, I hope, be interesting and enjoyable, so have fun!
+
+Best,
+
+Scott Grimm
