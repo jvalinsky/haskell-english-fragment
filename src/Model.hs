@@ -7,8 +7,6 @@ data Entity = Alice | Bob | Cyrus | Dorothy | Ellie | Fred | Goldilocks | Hillar
 entities :: [Entity]
 entities = [minBound..maxBound]
 
-data PluralEntity = Group [Entity]
-
 type OnePlacePred = Entity -> Bool
 list2OnePlacePred :: [Entity] -> OnePlacePred
 list2OnePlacePred xs = \ x -> elem x xs
