@@ -1,32 +1,26 @@
 module Semilattice 
-    (Join) where
+    (Join(..), AtomicJoin(..), difference) where
 
 import Model
-import Plural
 import Data.List 
 
 class Join s where
     (\/) :: s -> s  -> s
+    cmp :: s -> s -> Maybe Ordering
+    (<=-) :: s -> s -> Maybe Bool
+    (==-) :: s -> s -> Bool
+    cmp x y | (x <=- y) == Nothing = Nothing 
+            | (x <=- y) == Just True = Just LT
+            | (x <=- y) == Just False = Just GT
+            | (x ==- y) == True = Just EQ
 
-class (Atomic s, Join s) => AtomicJoin s
+class (Join s) => AtomicJoin s where
+    atom :: s -> Bool
 
-class (Atomic s, Join s) => PluralT s where
-    ipart :: s -> s -> Bool
+difference :: (Eq s) => [s] -> [s] -> [s]
+difference [] y@(k:ks) = []
+difference x@(j:js) [] = x
+difference x@(j:js) y = if not (j `elem` y) then j:(difference js y) else difference js y
 
 
-sum :: PluralEntity -> PluralEntity -> PluralEntity
-sum (Atom x) (Atom y) = if x /= y then Plural [x,y] else Atom x
-sum (Atom x) (Plural y) = Plural (union [x] y)
-sum (Plural x) (Atom y) = Plural (union x [y])
-sum (Plural x) (Plural y) = Plural (union x y)
-
-instance Join PluralEntity where
-    (\/) = Semilattice.sum
-
-instance PluralT PluralEntity where
-    ipart (Atom x) (Atom y) = False
-    ipart (Atom x) (Plural y) = if x `elem` y then True else False
-    ipart (Plural x) (Atom y) = False
-    ipart (Plural x) (Plural y) | length x >= length y = False
-                                | length [ k | k <- x, k `elem` y ] == length x = True
 
