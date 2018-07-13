@@ -1,4 +1,4 @@
-module Plural (Atomic, PluralEntity(Atom, Plural)) where
+module Plural (PluralEntity(Atom, Plural), PluralJoin(..)) where
 
 import Data.List
 import Model
@@ -12,22 +12,12 @@ isum (Atom x) (Plural y) = Plural (union [x] y)
 isum (Plural x) (Atom y) = Plural (union x [y])
 isum (Plural x) (Plural y) = Plural (union x y)
 
-
--- A semilattice imposes a partial order
--- can't compare objects that are on different levels of the
--- hierarchy and one is not an i-part of the other
--- If the semilattice is atomic then,
--- for every b /= 0, then there exists an an atom a s.t. a <= b
-comparable :: PluralEntity -> PluralEntity -> Bool
-comparable (Atom x) (Atom y) = True
-comparable (Plural x) (Atom y) = if y `elem` x then True else False
-comparable (Atom x) (Plural y) = if x `elem` y then True else False
-comparable (Plural x) (Plural y) =  
-
 instance Join PluralEntity where
     (\/) = isum
-    (==-) = (==) 
-    (<=-) x y = if x \/ y ==- y then True else False
+    (==-) (Atom x) (Atom y) = (x == y) 
+    (==-) (Plural x) (Plural y) = if ((x `difference` y) == []) && (length x >= length y) then True else False
+    (==-) _ _ = False
+    (<=-) x y = if (x \/ y) ==- y then True else False
 
 instance AtomicJoin PluralEntity where
     atom (Atom x) = True
