@@ -1,17 +1,19 @@
-module Mass where
+module Mass (MassEntity(..), materalize, MassJoin(..)) where
 
 import Model
+import Semilattice
 import Plural
 
-data Mass s = MatterOf s | Nothing | Everything
+data MassEntity = MatterOf String | Nothing | Everything
 
-data MassEntity = Water | Gold | Metal | Wood
-
--- Homomorphism between indivudals and mass terms
+-- Homomorphism between individuals and mass terms
+-- i.e. turn an individual into the mass associated with it
 materalize :: PluralEntity -> Mass PluralEntity 
 materalize (Atom x) = MatterOf (Atom x)
 materalize (Plural x) = MatterOf (Plural x)
 
-class MassT s where
+class (Join s) => MassJoin s where
     fusion :: s -> s -> s
 
+instance MassJoin MassEntity where
+    fusion = undefined

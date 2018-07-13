@@ -12,6 +12,7 @@ class Join s where
 class (Join s) => AtomicJoin s where
     atom :: s -> Bool
 
+-- Set difference for Lists
 difference :: (Eq s) => [s] -> [s] -> [s]
 difference [] y@(k:ks) = []
 difference x@(j:js) [] = x
