@@ -7,8 +7,6 @@ data Entity = Alice | Bob | Cyrus | Dorothy | Ellie | Fred | Goldilocks | Hillar
 entities :: [Entity]
 entities = [minBound..maxBound]
 
-data PluralEntity = Group [Entity]
-
 type OnePlacePred = Entity -> Bool
 list2OnePlacePred :: [Entity] -> OnePlacePred
 list2OnePlacePred xs = \ x -> elem x xs
@@ -47,6 +45,7 @@ love   = curry2 (`elem` [(Atreyu,Ellie),(Bob,SnowWhite),(Remmy,SnowWhite),(SnowW
 admire = curry2 (`elem` [(x,Goldilocks) | x <- entities, person x])
 help   = curry2 (`elem` [(Willie,Willie),(Victor,Victor),(SnowWhite,Bob),(Dorothy,LittleMook)])
 defeat = curry2 (`elem` [(x,y) | x <- entities, y <- entities, dwarf x && giant y] ++ [(Alice,Willie),(Alice,Victor)])
+
 
 curry3 :: ((a,b,c) -> d) -> c -> b -> a -> d
 curry3 f z y x = f (x,y,z)
