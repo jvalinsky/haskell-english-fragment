@@ -1,4 +1,4 @@
-module Plural (PluralEntity(Atom, Plural), PluralJoin(..)) where
+module Plural (PluralEntity(Atom, Plural), PluralJoin(..), isum) where
 
 import Data.List
 import Model

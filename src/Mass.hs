@@ -1,19 +1,21 @@
-module Mass (MassEntity(..), materalize, MassJoin(..)) where
+module Mass (MassEntity(..), materalize) where
 
 import Model
 import Semilattice
-import Plural
+import Plural (PluralEntity(..), PluralJoin(..), isum)
 
-data MassEntity = MatterOf String | Nothing | Everything
+data MassEntity = MatterOf PluralEntity | Nothing | Everything
 
 -- Homomorphism between individuals and mass terms
 -- i.e. turn an individual into the mass associated with it
-materalize :: PluralEntity -> Mass PluralEntity 
+materalize :: PluralEntity -> MassEntity 
 materalize (Atom x) = MatterOf (Atom x)
 materalize (Plural x) = MatterOf (Plural x)
 
-class (Join s) => MassJoin s where
-    fusion :: s -> s -> s
+fusion :: MassEntity -> MassEntity -> MassEntity
+fusion (MatterOf x) (MatterOf y) = MatterOf (x \/ y)
 
-instance MassJoin MassEntity where
-    fusion = undefined
+instance Join MassEntity where
+    (\/) = fusion
+    (<=-) = undefined
+    (==-) = undefined
