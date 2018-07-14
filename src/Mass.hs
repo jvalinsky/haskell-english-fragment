@@ -38,9 +38,10 @@ massTList =  [ ( Carbon,Alice ), (Carbon, Bob ), (Carbon, Cyrus ), (Carbon, Doro
 
 -- Grid of 100x100 with bottom front left corner as (0,0,0)
 massLocList = [ ((0,25,25,0) ,Alice ), ((0,35,45,0), Bob ), ((0,75,55,0), Cyrus ), ((0,100,100,0), Dorothy ), ((0,80,85,0), Ellie ), ((0,20,75,0), Fred ), 
-              ((0,60,75,0), Goldilocks ), (, Hillary ), (,Irene ), (,Jim ), (, Kim ), (, Linda ), 
-              (, LittleMook ), (,Noah ), (,Ollie ), (,Penny ), (,Quine ), (,Remmy ), 
-              (,SnowWhite ), (,Tom ), (,Uli ), (,Victor ), (,Willie ), (,Xena ), (,Atreyu ), (,Zorba)]
+              ((0,60,75,0), Goldilocks ), ((0,46,50,0), Hillary ), ((0,30,65,0),Irene ), ((0,60,75,0), Jim ), ((0,10,15,0), Kim ), ((0,0,100,0), Linda ), 
+              ((0,60,55,50), LittleMook ), ((0,60,35,30),Noah ), ((0,30,25,81),Ollie ), ((0,40,85,80),Penny ), ((0,10,45,90),Quine ), ((0,57,17,0),Remmy ), 
+              ((0,33,55,20),SnowWhite ), ((0,23,45,31),Tom ), ((0,80,35,0),Uli ), ((0,44,75,8),Victor ), 
+              ((0,63,45,0),Willie ), ((0,40,85,80),Xena ), ((0,72,35,39),Atreyu ), ((0,32,65,30),Zorba)]
 
 entityMasses :: Map Entity Float
 entityMasses = Map.fromList massList
