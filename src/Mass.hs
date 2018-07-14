@@ -37,8 +37,8 @@ massTList =  [ ( Carbon,Alice ), (Carbon, Bob ), (Carbon, Cyrus ), (Carbon, Doro
 
 
 -- Grid of 100x100 with bottom front left corner as (0,0,0)
-massLocList = [ ( ,Alice ), (, Bob ), (, Cyrus ), (, Dorothy ), (, Ellie ), (, Fred ), 
-              (, Goldilocks ), (, Hillary ), (,Irene ), (,Jim ), (, Kim ), (, Linda ), 
+massLocList = [ ((0,25,25,0) ,Alice ), ((0,35,45,0), Bob ), ((0,75,55,0), Cyrus ), ((0,100,100,0), Dorothy ), ((0,80,85,0), Ellie ), ((0,20,75,0), Fred ), 
+              ((0,60,75,0), Goldilocks ), (, Hillary ), (,Irene ), (,Jim ), (, Kim ), (, Linda ), 
               (, LittleMook ), (,Noah ), (,Ollie ), (,Penny ), (,Quine ), (,Remmy ), 
               (,SnowWhite ), (,Tom ), (,Uli ), (,Victor ), (,Willie ), (,Xena ), (,Atreyu ), (,Zorba)]
 
