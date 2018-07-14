@@ -26,15 +26,17 @@ materalize (Plural x) = Mass (map massT x) (map (tup3) (zip [0..] x)) (foldr (+)
 
 
 massList =  [ ( 73.5 ,Alice ), ( 92.6, Bob ), ( 81.3, Cyrus ), (65.7, Dorothy ), ( 68.2, Ellie ), ( 76.5, Fred ), 
-              (, Goldilocks ), (, Hillary ), (,Irene ), (,Jim ), (, Kim ), (, Linda ), 
-              (, LittleMook ), (,Noah ), (,Ollie ), (,Penny ), (,Quine ), (,Remmy ), 
-              (,SnowWhite ), (,Tom ), (,Uli ), (,Victor ), (,Willie ), (,Xena ), (,Atreyu ), (,Zorba)]
+              (43.2, Goldilocks ), (67.1, Hillary ), (73.5,Irene ), (77.78,Jim ), (68.34, Kim ), (64.78, Linda ), 
+              (40.12, LittleMook ), (73.4,Noah ), (83.7,Ollie ), (,Penny ), (72.45,Quine ), (54.67,Remmy ), 
+              (62.8,SnowWhite ), (74.0,Tom ), (71.4,Uli ), (75.22,Victor ), (76.51,Willie ), (66.43,Xena ), (80.13,Atreyu ), (65.41,Zorba)]
 
-massTList =  [ ( ,Alice ), (, Bob ), (, Cyrus ), (, Dorothy ), (, Ellie ), (, Fred ), 
-              (, Goldilocks ), (, Hillary ), (,Irene ), (,Jim ), (, Kim ), (, Linda ), 
-              (, LittleMook ), (,Noah ), (,Ollie ), (,Penny ), (,Quine ), (,Remmy ), 
-              (,SnowWhite ), (,Tom ), (,Uli ), (,Victor ), (,Willie ), (,Xena ), (,Atreyu ), (,Zorba)]
+massTList =  [ ( Carbon,Alice ), (Carbon, Bob ), (Carbon, Cyrus ), (Carbon, Dorothy ), (Carbon, Ellie ), (Carbon, Fred ), 
+              (Carbon, Goldilocks ), (Carbon, Hillary ), (Carbon,Irene ), (Carbon,Jim ), (Carbon, Kim ), (Carbon, Linda ), 
+              (Carbon, LittleMook ), (Carbon,Noah ), (Carbon,Ollie ), (Carbon,Penny ), (Carbon,Quine ), (Carbon,Remmy ), 
+              (Carbon,SnowWhite ), (Carbon,Tom ), (Carbon,Uli ), (Carbon,Victor ), (Carbon,Willie ), (Carbon,Xena ), (Carbon,Atreyu ), (Carbon,Zorba)]
 
+
+-- Grid of 100x100 with bottom front left corner as (0,0,0)
 massLocList = [ ( ,Alice ), (, Bob ), (, Cyrus ), (, Dorothy ), (, Ellie ), (, Fred ), 
               (, Goldilocks ), (, Hillary ), (,Irene ), (,Jim ), (, Kim ), (, Linda ), 
               (, LittleMook ), (,Noah ), (,Ollie ), (,Penny ), (,Quine ), (,Remmy ), 
