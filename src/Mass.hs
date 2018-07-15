@@ -42,14 +42,13 @@ materalize :: PluralEntity -> Maybe MassEntity
 materalize x = list2Mass ((massT x), (massLoc x), (massOf x))
 
 -- turn mass entity into individual (PluralEntity)
--- individualize :: MassEntity -> Maybe PluralEntity
--- If one Location, check 
--- individualize (Mass t l m) =  
+--individualize :: MassEntity -> Maybe PluralEntity
+--individualize (Mass t l m) =  (map entsWithMassType t) (map entsWithExactLoc l)
 
 entMassList :: [(Entity, Float)]
 entMassList = [(Alice,73.5),(Bob,92.6),(Cyrus,81.3),(Dorothy,65.7),(Ellie,68.2),(Fred,76.5),
     (Goldilocks,43.2),(Hillary,67.1),(Irene,73.5),(Jim,77.78),(Kim,68.34),(Linda,64.78),
-    (LittleMook,40.12),(Noah,73.4),(Ollie,83.7),(Penny,45.4),(Quine,72.45),(Remmy,54.67),
+    (LittleMook,40.12),(Noah,73.5),(Ollie,83.7),(Penny,45.4),(Quine,72.45),(Remmy,54.67),
     (SnowWhite,62.8),(Tom,74.0),(Uli,71.4),(Victor,75.22),(Willie,76.51),(Xena,66.43),(Atreyu,80.13),(Zorba,65.41)]
 
 entMTList :: [(Entity, MassT)]
@@ -71,7 +70,6 @@ entLocList = [(Alice,(0,25,25,0)),(Bob,(0,35,45,0)),(Cyrus,(0,75,55,0)),(Dorothy
 massEntsList = map ((\(x,y) -> (x, [y])) . swap)  entMassList
 massTEntsList = map ((\(x,y) -> (x, [y])) . swap) entMTList
 locEntsList =  map ((\(x,y) -> (x, [y])) . swap)  entLocList
-
 
 -- Hashtables to look up properties of an Entity
 entityMasses :: Map Entity Float
@@ -126,6 +124,7 @@ entsWithMassType massType = Map.lookup massType massTypesOfEnts
 entsWithExactLoc :: Location -> Maybe [Entity]
 entsWithExactLoc loc = Map.lookup loc locsOfEnts
 
+-- TODO:
 -- Now the fun part, lookup entities within a range of masses 
 -- or within a radius of a Location
 
