@@ -15,6 +15,15 @@ type Location = (Index, Int, Int, Int)
 data MassT = Water | Metal | Gold | Dirt | Carbon deriving (Eq, Enum, Show)
 data MassEntity = Mass [MassT] [Location] Float | Everything deriving Show
 
+
+-- Basically checks if lists are same length so value is sane.
+-- If we used dependent typing here, there would be a way of
+-- ensuring the lengths of all the arbitrarily long Lists were the same
+makeMass :: ([MassT], [Location], Float) -> Maybe MassEntity
+makeMass (x, y, z) = if (length x) /= (length y) then Nothing else (Mass x y z)
+
+
+-- helper functions
 seqtup3 :: (Maybe a, Maybe b, Maybe c) -> Maybe (a, b, c)
 seqtup3 (Nothing , Nothing , Nothing) = Nothing
 seqtup3 (Nothing, y, z) = Nothing
@@ -22,6 +31,7 @@ seqtup3 (x, Nothing, z) = Nothing
 seqtup3 (x, y, Nothing) = Nothing
 seqtup3 (Just x, Just y, Just z) = Just (x, y, z)
 
+-- dealing with Maybes
 list2Mass :: ([Maybe MassT], [Maybe Location], Maybe Float) -> Maybe MassEntity
 list2Mass (mTypes, locs, mass) = liftM (\(x,y,z) -> (Mass x y z)) (seqtup3 (sequence mTypes, sequence locs, mass))
 
@@ -29,6 +39,11 @@ list2Mass (mTypes, locs, mass) = liftM (\(x,y,z) -> (Mass x y z)) (seqtup3 (sequ
 -- i.e. turn an individual into the mass associated with it
 materalize :: PluralEntity -> Maybe MassEntity 
 materalize x = list2Mass ((massT x), (massLoc x), (massOf x))
+
+-- turn mass entity into individual (PluralEntity)
+individualize :: MassEntity -> Maybe PluralEntity
+-- If one Location, check 
+individualize (Mass t l m) =  
 
 massList :: [(Entity, Float)]
 massList = [(Alice,73.5),(Bob,92.6),(Cyrus,81.3),(Dorothy,65.7),(Ellie,68.2),(Fred,76.5),
@@ -82,14 +97,38 @@ massLoc :: PluralEntity -> [Maybe Location]
 massLoc (Atom x)   =  [massLoc' x]
 massLoc (Plural x) = map massLoc' x 
 
+-- Only thing to watch out for is not fusing the same entity to itself
+-- (i.e. check Location)
 fusion :: MassEntity -> MassEntity -> MassEntity
 fusion (Mass t1 l1 m1) (Mass t2 l2 m2) = Mass (t1 ++ t2) (l1 ++ l2) (m1 + m2)
 
-mpart = undefined
+-- If all the fields are equal then the mass entities are equal,
+-- the only thing to be careful of is that List is an ordered list
+-- even though Set or some kind of unordered list may have rendered
+-- defining mequal unnecessary
 mequal = undefined
 
 instance Join MassEntity where
     (\/) = fusion
-    (<=-) = mpart
     (==-) = mequal
+    (<=-) x y = if (x \/ y) ==- y then True else False
+
+-- If one individal is i-part of another, then that individal is also m-part 
+-- of the other individal.
+-- If two MassEntities have the same location and type but different masses
+-- that means one is m-part of the other 
+-- (ex. 1/2 of the gold matter making up the gold ring)
+class MassJoin MassEntity where
+    mpart :: MassEntity -> MassEntity -> Bool
+
+instance MassJoin MassEntity where
+    -- if they don't share the same types then False.
+    -- if they share the same types, locations, and the first
+    -- has less mass than the second then True.
+    -- Check if the corresponding individual i-parts the other,
+    -- then True.
+    -- Otherwise False.
+    mpart (Mass t1 l1 m1) (Mass t2 l2 m2) =
+    mpart x y = (individualize x) `ipart` (individualize y)
+    mpart _ _ = False
 
