@@ -1,7 +1,8 @@
-module Mass (MassT, MassEntity, makeMass, materalize, individualize) where
+module Mass (MassT, MassEntity, makeMass, materalize) where
 
 import qualified Data.Map.Strict as Map
 import Data.Map.Strict (Map)
+import Data.Tuple (swap)
 import Control.Monad (liftM, liftM2, liftM3, mapM)
 import Model
 import Semilattice
@@ -20,7 +21,7 @@ data MassEntity = Mass [MassT] [Location] Float | Everything deriving Show
 -- If we used dependent typing here, there would be a way of
 -- ensuring the lengths of all the arbitrarily long Lists were the same
 makeMass :: ([MassT], [Location], Float) -> Maybe MassEntity
-makeMass (x, y, z) = if (length x) /= (length y) then Nothing else (Mass x y z)
+makeMass (x, y, z) = if (length x) /= (length y) then Nothing else Just (Mass x y z)
 
 
 -- helper functions
@@ -41,9 +42,9 @@ materalize :: PluralEntity -> Maybe MassEntity
 materalize x = list2Mass ((massT x), (massLoc x), (massOf x))
 
 -- turn mass entity into individual (PluralEntity)
-individualize :: MassEntity -> Maybe PluralEntity
+-- individualize :: MassEntity -> Maybe PluralEntity
 -- If one Location, check 
-individualize (Mass t l m) =  
+-- individualize (Mass t l m) =  
 
 entMassList :: [(Entity, Float)]
 entMassList = [(Alice,73.5),(Bob,92.6),(Cyrus,81.3),(Dorothy,65.7),(Ellie,68.2),(Fred,76.5),
@@ -67,6 +68,11 @@ entLocList = [(Alice,(0,25,25,0)),(Bob,(0,35,45,0)),(Cyrus,(0,75,55,0)),(Dorothy
     (Tom,(0,23,45,31)),(Uli,(0,80,35,0)),(Victor,(0,44,75,8)),(Willie,(0,63,45,0)),(Xena,(0,40,85,80)),
     (Atreyu,(0,72,35,39)),(Zorba,(0,32,65,30))]
 
+massEntsList = map ((\(x,y) -> (x, [y])) . swap)  entMassList
+massTEntsList = map ((\(x,y) -> (x, [y])) . swap) entMTList
+locEntsList =  map ((\(x,y) -> (x, [y])) . swap)  entLocList
+
+
 -- Hashtables to look up properties of an Entity
 entityMasses :: Map Entity Float
 entityMasses = Map.fromList entMassList
@@ -79,17 +85,17 @@ entityLoc = Map.fromList entLocList
 
 -- Hashtables to look up Entities with a specific property.
 -- Values are a List of Entities.
+
 massesOfEnts :: Map Float [Entity]
-massesOfEnts = Map.fromList massEntsList
+massesOfEnts = Map.fromListWith (++) massEntsList
 
 massTypesOfEnts :: Map MassT [Entity]
-massTypesOfEnts = Map.fromList massTEntsList
+massTypesOfEnts = Map.fromListWith (++) massTEntsList
 
 locsOfEnts :: Map Location [Entity]
-locsOfEnts = Map.fromList locEntsList
+locsOfEnts = Map.fromListWith (++) locEntsList
 
-
-
+-- Functions to look up properties for Entities and vice versa
 massOf' :: Entity -> Maybe Float
 massOf' x = Map.lookup x entityMasses 
 
@@ -111,6 +117,19 @@ massLoc :: PluralEntity -> [Maybe Location]
 massLoc (Atom x)   =  [massLoc' x]
 massLoc (Plural x) = map massLoc' x 
 
+entsWithExactMass :: Float -> Maybe [Entity]
+entsWithExactMass mass = Map.lookup mass massesOfEnts 
+
+entsWithMassType :: MassT -> Maybe [Entity]
+entsWithMassType massType = Map.lookup massType massTypesOfEnts
+
+entsWithExactLoc :: Location -> Maybe [Entity]
+entsWithExactLoc loc = Map.lookup loc locsOfEnts
+
+-- Now the fun part, lookup entities within a range of masses 
+-- or within a radius of a Location
+
+
 -- Only thing to watch out for is not fusing the same entity to itself
 -- (i.e. check Location)
 fusion :: MassEntity -> MassEntity -> MassEntity
@@ -122,6 +141,7 @@ fusion (Mass t1 l1 m1) (Mass t2 l2 m2) = Mass (t1 ++ t2) (l1 ++ l2) (m1 + m2)
 -- defining mequal unnecessary
 mequal = undefined
 
+{-- 
 instance Join MassEntity where
     (\/) = fusion
     (==-) = mequal
@@ -132,7 +152,7 @@ instance Join MassEntity where
 -- If two MassEntities have the same location and type but different masses
 -- that means one is m-part of the other 
 -- (ex. 1/2 of the gold matter making up the gold ring)
-class MassJoin MassEntity where
+class (Join s) => MassJoin s where
     mpart :: MassEntity -> MassEntity -> Bool
 
 instance MassJoin MassEntity where
@@ -145,4 +165,4 @@ instance MassJoin MassEntity where
     mpart (Mass t1 l1 m1) (Mass t2 l2 m2) =
     mpart x y = (individualize x) `ipart` (individualize y)
     mpart _ _ = False
-
+--}
