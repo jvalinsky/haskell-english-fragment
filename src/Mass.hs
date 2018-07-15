@@ -8,9 +8,6 @@ import Semilattice
 import Plural (PluralEntity(..), PluralJoin(..), isum, list2PEnt)
 import Control.Monad
 
-tup4 :: [s] -> (s, s, s, s)
-tup4 [i, x, y, z] = (i, x, y, z)
-
 type Index = Int
 type Location = (Index, Int, Int, Int)
 -- MassEntity can be the mass corresponding to an individual or 
@@ -32,8 +29,6 @@ list2Mass (mTypes, locs, mass) = liftM (\(x,y,z) -> (Mass x y z)) (seqtup3 (sequ
 -- i.e. turn an individual into the mass associated with it
 materalize :: PluralEntity -> Maybe MassEntity 
 materalize x = list2Mass ((massT x), (massLoc x), (massOf x))
---materalize (Atom x) = list2Mass ((massT' x), (massLoc' x), (massOf' x))
---materalize (Plural x) = list2Mass (map massT x) (map tup4 (map massLoc x)) (foldr (+) 0 $ map $ massOf x)
 
 massList :: [(Entity, Float)]
 massList = [(Alice,73.5),(Bob,92.6),(Cyrus,81.3),(Dorothy,65.7),(Ellie,68.2),(Fred,76.5),
@@ -80,7 +75,6 @@ massT :: PluralEntity -> [Maybe MassT]
 massT (Atom x) = [massT' x]
 massT (Plural x) = map massT' x 
 
-
 massLoc' :: Entity -> Maybe Location
 massLoc' x = Map.lookup x entityLoc
 
@@ -88,17 +82,14 @@ massLoc :: PluralEntity -> [Maybe Location]
 massLoc (Atom x)   =  [massLoc' x]
 massLoc (Plural x) = map massLoc' x 
 
-
-{--
-
 fusion :: MassEntity -> MassEntity -> MassEntity
-fusion (MatterOf x) (MatterOf y) = MatterOf (x \/ y)
-fusion (Mass t1 r1 x) (Mass t2 r2 y) | (t1 == t2) && (r1 /= r2) = 
+fusion (Mass t1 l1 m1) (Mass t2 l2 m2) = Mass (t1 ++ t2) (l1 ++ l2) (m1 + m2)
+
+mpart = undefined
+mequal = undefined
 
 instance Join MassEntity where
     (\/) = fusion
-    (<=-) = undefined
-    (==-) = undefined
+    (<=-) = mpart
+    (==-) = mequal
 
-
---}

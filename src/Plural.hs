@@ -20,7 +20,8 @@ list2PEnt y   = Plural y
 instance Join PluralEntity where
     (\/) = isum
     (==-) (Atom x) (Atom y) = (x == y) 
-    (==-) (Plural x) (Plural y) = if ((x `difference` y) == []) && (length x >= length y) then True else False
+    (==-) (Plural x) (Plural y) = if ((x `difference` y) == []) && 
+        (length x >= length y) then True else False
     (==-) _ _ = False
     (<=-) x y = if (x \/ y) ==- y then True else False
 
