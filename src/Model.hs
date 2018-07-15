@@ -3,7 +3,7 @@ module Model where
 import Data.List
 
 data Entity = Alice | Bob | Cyrus | Dorothy | Ellie | Fred | Goldilocks | Hillary | Irene | Jim | Kim | Linda | LittleMook | Noah | Ollie | Penny | Quine | Remmy | SnowWhite | Tom | Uli | Victor | Willie | Xena | Atreyu | Zorba
-     deriving (Eq,Show,Bounded,Enum)
+    deriving (Eq,Ord,Show,Bounded,Enum)
 entities :: [Entity]
 entities = [minBound..maxBound]
 
