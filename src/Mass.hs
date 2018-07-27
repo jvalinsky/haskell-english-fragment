@@ -151,6 +151,7 @@ fusion (Mass t1 l1 m1) (Mass t2 l2 m2) = Mass (t1 ++ t2) (l1 ++ l2) (m1 + m2)
 -- defining mequal unnecessary
 mequal = undefined
 
+
 {-- 
 instance Join MassEntity where
     (\/) = fusion
