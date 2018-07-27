@@ -9,20 +9,18 @@ import Semilattice
 import Plural (PluralEntity(..), PluralJoin(..), isum, list2PEnt)
 import Control.Monad
 
-type Index = Int
-type Location = (Index, Int, Int, Int)
+type Location = (Int, Int, Int)
 -- MassEntity can be the mass corresponding to an individual or 
 -- a lump of matter with an index and an amount in kilograms
 data MassT = Water | Metal | Gold | Dirt | Carbon deriving (Eq, Ord, Enum, Show)
-data MassEntity = Mass [MassT] [Location] Float | Everything deriving Show
+data MassEntity = Mass [MassT] [Location] [Float] | Everything deriving Show
 
 
 -- Basically checks if lists are same length so value is sane.
 -- If we used dependent typing here, there would be a way of
 -- ensuring the lengths of all the arbitrarily long Lists were the same
-makeMass :: ([MassT], [Location], Float) -> Maybe MassEntity
-makeMass (x, y, z) = if (length x) /= (length y) then Nothing else Just (Mass x y z)
-
+makeMass :: ([MassT], [Location], [Float]) -> Maybe MassEntity
+makeMass (x, y, z) = Just (Mass x y z)
 
 -- helper functions
 seqtup3 :: (Maybe a, Maybe b, Maybe c) -> Maybe (a, b, c)
@@ -33,17 +31,26 @@ seqtup3 (x, y, Nothing) = Nothing
 seqtup3 (Just x, Just y, Just z) = Just (x, y, z)
 
 -- dealing with Maybes
-list2Mass :: ([Maybe MassT], [Maybe Location], Maybe Float) -> Maybe MassEntity
-list2Mass (mTypes, locs, mass) = liftM (\(x,y,z) -> (Mass x y z)) (seqtup3 (sequence mTypes, sequence locs, mass))
+tup2Mass :: ([Maybe MassT], [Maybe Location], Maybe Float) -> Maybe MassEntity
+tup2Mass (mTypes, locs, mass) = liftM (\(x,y,z) -> (Mass x y z)) (seqtup3 (sequence mTypes, sequence locs, sequence mass))
+
+simplify :: MassEntity -> MassEntity
+simplify (Mass t l m) = foldr combine [] 
+    where props = zip3 t l m
+          combine (x1, y1, z1) (x1, y1, z2) = [(x1, y1, z1 + z2)]
+          combine (x1, y1, z1) (x1, y2, z2) = [(x1, y1, z1 + z2)]
+          combine x y = [x, y]
 
 -- Homomorphism between individuals and mass terms
 -- i.e. turn an individual into the mass associated with it
 materalize :: PluralEntity -> Maybe MassEntity 
-materalize x = list2Mass ((massT x), (massLoc x), (massOf x))
+materalize x = tup2Mass ((massT x), (massLoc x), (massOf x))
 
 -- turn mass entity into individual (PluralEntity)
---individualize :: MassEntity -> Maybe PluralEntity
---individualize (Mass t l m) =  (map entsWithMassType t) (map entsWithExactLoc l)
+individualize :: MassEntity -> Maybe PluralEntity
+individualize (Mass t l m) =  
+    where types = sequence (map entsWithMassType t) 
+          locs  = sequence (map entsWithExactLoc l)
 
 entMassList :: [(Entity, Float)]
 entMassList = [(Alice,73.5),(Bob,92.6),(Cyrus,81.3),(Dorothy,65.7),(Ellie,68.2),(Fred,76.5),
@@ -58,14 +65,14 @@ entMTList = [(Alice,Carbon),(Bob,Carbon),(Cyrus,Carbon),(Dorothy,Carbon),(Ellie,
     (SnowWhite,Carbon),(Tom,Carbon),(Uli,Carbon),(Victor,Carbon),(Willie,Carbon),(Xena,Carbon),
     (Atreyu,Carbon),(Zorba,Carbon)]
 
--- Grid of 100x100 with bottom front left corner as (0,0,0)
-entLocList :: [(Entity, (Index, Int, Int, Int))]
-entLocList = [(Alice,(0,25,25,0)),(Bob,(0,35,45,0)),(Cyrus,(0,75,55,0)),(Dorothy,(0,100,100,0)),
-    (Ellie,(0,80,85,0)),(Fred,(0,20,75,0)),(Goldilocks,(0,60,75,0)),(Hillary,(0,46,50,0)),(Irene,(0,30,65,0)),
-    (Jim,(0,60,75,0)),(Kim,(0,10,15,0)),(Linda,(0,0,100,0)),(LittleMook,(0,60,55,50)),(Noah,(0,60,35,30)),
-    (Ollie,(0,30,25,81)),(Penny,(0,40,85,80)),(Quine,(0,10,45,90)),(Remmy,(0,57,17,0)),(SnowWhite,(0,33,55,20)),
-    (Tom,(0,23,45,31)),(Uli,(0,80,35,0)),(Victor,(0,44,75,8)),(Willie,(0,63,45,0)),(Xena,(0,40,85,80)),
-    (Atreyu,(0,72,35,39)),(Zorba,(0,32,65,30))]
+-- Cube of 100x100x100 with bottom front left corner as (0,0,0)
+entLocList :: [(Entity, (Int, Int, Int))]
+entLocList = [(Alice,(25,25,0)),(Bob,(35,45,0)),(Cyrus,(75,55,0)),(Dorothy,(100,100,0)),
+    (Ellie,(80,85,0)),(Fred,(20,75,0)),(Goldilocks,(60,75,0)),(Hillary,(46,50,0)),(Irene,(30,65,0)),
+    (Jim,(60,75,0)),(Kim,(10,15,0)),(Linda,(0,100,0)),(LittleMook,(60,55,50)),(Noah,(60,35,30)),
+    (Ollie,(30,25,81)),(Penny,(40,85,80)),(Quine,(10,45,90)),(Remmy,(57,17,0)),(SnowWhite,(33,55,20)),
+    (Tom,(23,45,31)),(Uli,(80,35,0)),(Victor,(44,75,8)),(Willie,(63,45,0)),(Xena,(40,85,80)),
+    (Atreyu,(72,35,39)),(Zorba,(32,65,30))]
 
 massEntsList = map ((\(x,y) -> (x, [y])) . swap)  entMassList
 massTEntsList = map ((\(x,y) -> (x, [y])) . swap) entMTList
@@ -97,9 +104,14 @@ locsOfEnts = Map.fromListWith (++) locEntsList
 massOf' :: Entity -> Maybe Float
 massOf' x = Map.lookup x entityMasses 
 
-massOf :: PluralEntity -> Maybe Float
-massOf (Atom x) = (massOf' x)
-massOf (Plural x) = foldr (liftM2 (+)) (Just 0) (map massOf' x)
+massOf'' :: PluralEntity -> Maybe Float
+massOf'' (Atom x) = (massOf' x)
+massOf'' (Plural x) = foldr (liftM2 (+)) (Just 0) (map massOf' x)
+
+massOf :: PluralEntity -> Maybe [Float]
+massOf (Atom x) = sequence [massOf' x]
+massOf (Plural x) = sequence (liftM (map massOf') x)
+
 
 massT' :: Entity -> Maybe MassT
 massT' x = Map.lookup x entityMT
@@ -127,7 +139,6 @@ entsWithExactLoc loc = Map.lookup loc locsOfEnts
 -- TODO:
 -- Now the fun part, lookup entities within a range of masses 
 -- or within a radius of a Location
-
 
 -- Only thing to watch out for is not fusing the same entity to itself
 -- (i.e. check Location)
@@ -162,6 +173,6 @@ instance MassJoin MassEntity where
     -- then True.
     -- Otherwise False.
     mpart (Mass t1 l1 m1) (Mass t2 l2 m2) =
-    mpart x y = (individualize x) `ipart` (individualize y)
+    mpart x y = ipart . individualize $ x y
     mpart _ _ = False
 --}
