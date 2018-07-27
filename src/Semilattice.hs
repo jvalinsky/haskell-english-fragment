@@ -17,6 +17,3 @@ difference :: (Eq s) => [s] -> [s] -> [s]
 difference [] y@(k:ks) = []
 difference x@(j:js) [] = x
 difference x@(j:js) y = if not (j `elem` y) then j:(difference js y) else difference js y
-
-
-
