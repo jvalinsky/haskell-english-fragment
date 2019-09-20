@@ -3,7 +3,7 @@ module Model where
 import Data.List
 
 data Entity = Alice | Bob | Cyrus | Dorothy | Ellie | Fred | Goldilocks | Hillary | Irene | Jim | Kim | Linda | LittleMook | Noah | Ollie | Penny | Quine | Remmy | SnowWhite | Tom | Uli | Victor | Willie | Xena | Atreyu | Zorba
-    deriving (Eq,Ord,Show,Bounded,Enum)
+     deriving (Eq,Show,Bounded,Enum)
 entities :: [Entity]
 entities = [minBound..maxBound]
 
@@ -45,7 +45,6 @@ love   = curry2 (`elem` [(Atreyu,Ellie),(Bob,SnowWhite),(Remmy,SnowWhite),(SnowW
 admire = curry2 (`elem` [(x,Goldilocks) | x <- entities, person x])
 help   = curry2 (`elem` [(Willie,Willie),(Victor,Victor),(SnowWhite,Bob),(Dorothy,LittleMook)])
 defeat = curry2 (`elem` [(x,y) | x <- entities, y <- entities, dwarf x && giant y] ++ [(Alice,Willie),(Alice,Victor)])
-
 
 curry3 :: ((a,b,c) -> d) -> c -> b -> a -> d
 curry3 f z y x = f (x,y,z)
