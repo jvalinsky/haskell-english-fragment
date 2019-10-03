@@ -1,6 +1,3 @@
-{-# LANGUAGE DataKinds, TypeFamilies, TypeOperator #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 module Semilattice where
 
 class Meet a where
