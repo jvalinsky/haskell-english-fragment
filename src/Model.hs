@@ -2,10 +2,23 @@ module Model where
 
 import Data.List
 
-data Entity = Alice | Bob | Cyrus | Dorothy | Ellie | Fred | Goldilocks | Hillary | Irene | Jim | Kim | Linda | LittleMook | Noah | Ollie | Penny | Quine | Remmy | SnowWhite | Tom | Uli | Victor | Willie | Xena | Atreyu | Zorba
+data Entity = Knife1     | Knife2  | Alice | Bob     | Cyrus  | Ellie | 
+              Goldilocks | Hillary | Irene | Jim     | Kim    | Linda | 
+              LittleMook | Noah    | Ollie | Penny   | Quine  | Remmy | 
+              SnowWhite  | Tom     | Uli   | Victor  | Willie | Xena  | 
+              Spoon1     | Spoon2  | Zorba | Atreyu  | Fork1  | Fork2 |
+              Dress1     | Dress2  | Shoe1 | Shoe2   | Shoe3  | Shoe4 |
+              Dorothy    | Knife1  | Fred  | Knife2  
      deriving (Eq,Show,Bounded,Enum)
+
 entities :: [Entity]
 entities = [minBound..maxBound]
+
+data PluralEntity = Pl [Entity]
+
+data MassEntity =  Water | Blood | Earth | Knowledge | 
+                   Cloth | Metal | Air   | Cultery
+    deriving (Show, Enum, Bounded)
 
 type OnePlacePred = Entity -> Bool
 list2OnePlacePred :: [Entity] -> OnePlacePred
@@ -35,6 +48,7 @@ laugh   = list2OnePlacePred [Alice,Goldilocks,Ellie]
 cheer   = list2OnePlacePred [LittleMook,Dorothy]
 shudder = list2OnePlacePred [SnowWhite]
 smile   = list2OnePlacePred [Alice,Bob,Cyrus,Dorothy,Ellie,Fred,Goldilocks,LittleMook]
+
 
 curry2 :: ((a,b) -> c) -> b -> a -> c
 curry2 f y x = f (x,y)
