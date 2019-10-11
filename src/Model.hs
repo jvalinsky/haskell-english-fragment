@@ -8,8 +8,7 @@ data Entity = Knife1     | Knife2  | Alice | Bob     | Cyrus  | Ellie |
               SnowWhite  | Tom     | Uli   | Victor  | Willie | Xena  | 
               Spoon1     | Spoon2  | Zorba | Atreyu  | Fork1  | Fork2 |
               Dress1     | Dress2  | Shoe1 | Shoe2   | Shoe3  | Shoe4 |
-              Dorothy    | Knife1  | Fred  | Knife2  
-     deriving (Eq,Show,Bounded,Enum)
+              Dorothy    | Fred deriving (Eq,Show, Read, Bounded,Enum)
 
 entities :: [Entity]
 entities = [minBound..maxBound]
@@ -33,15 +32,17 @@ giant    = list2OnePlacePred [Tom]
 wizard   = list2OnePlacePred [Willie,Victor]
 sword    = list2OnePlacePred [Fred]
 dagger   = list2OnePlacePred [Xena]
+thing    = list2OnePlacePred [Spoon1, Spoon2, Fork1, Fork2, Dress1, Dress2, Shoe1, Shoe2, Shoe3, Shoe4]
+rusty    = list2OnePlacePred [Fork1, Spoon1]
 
-child, person, man, woman, male, female, thing :: OnePlacePred
+child, person, man, woman, male, female, thing, neutral :: OnePlacePred
 child  = \ x -> (girl x || boy x)
 person = \ x -> (child x || princess x || dwarf x || giant x || wizard x)
 man    = \ x -> (dwarf x || giant x || wizard x)
 woman  = \ x -> princess x
 male   = \ x -> (man x || boy x)
 female = \ x -> (woman x || girl x)
-thing  = \ x -> not (person x)
+neutral = \ x -> True
 
 laugh, cheer, shudder, smile :: OnePlacePred
 laugh   = list2OnePlacePred [Alice,Goldilocks,Ellie]
