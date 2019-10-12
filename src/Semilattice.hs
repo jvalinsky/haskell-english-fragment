@@ -6,3 +6,5 @@ class Meet a where
 class Join a where
   (\/) :: a -> a -> a
 
+-- instance Join Mass where
+-- (\/) = ??

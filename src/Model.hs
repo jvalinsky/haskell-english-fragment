@@ -3,8 +3,6 @@
 module Model where
 
 import Data.List
-import Data.Kind (Type)
-
 
 curry2 :: ((a,b) -> c) -> b -> a -> c
 curry2 f y x = f (x,y)
@@ -64,7 +62,7 @@ class (Bounded entity, Enum entity, Entity entity) => AtomicEntity entity where
 instance Entity Singular where
     girl     = list2OnePlacePred [SnowWhite,Alice,Dorothy,Goldilocks]
     boy      = list2OnePlacePred [LittleMook,Atreyu]
-    princess = list2OnePlacePred [Ellie]
+    princess = list2OnePlacePred [Ellie, Xena]
     dwarf    = list2OnePlacePred [Bob,Remmy]
     giant    = list2OnePlacePred [Tom]
     wizard   = list2OnePlacePred [Willie,Victor]
@@ -95,8 +93,12 @@ instance Entity Singular where
 
 
 instance AtomicEntity Singular
+
 {-
 instance Entity Plural where
 
 
+
+instance Entity Mass where
+    
 -}

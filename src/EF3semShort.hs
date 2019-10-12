@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleContexts #-}
-
 module EF3semShort where
 
 import Data.Either
@@ -20,7 +18,6 @@ intName x = case e of
                 Left s -> false'
                 Right f -> f
     where e = liftM evalEnt $ resolveName x
-
 
 intPronoun :: (AtomicEntity a) => Pronoun -> (a -> Bool) -> Bool
 intPronoun y = case y of
