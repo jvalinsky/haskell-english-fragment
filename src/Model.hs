@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeFamilies, AllowAmbiguousTypes, TypeOperators, DataKinds #-}
+{-# LANGUAGE TypeFamilies, AllowAmbiguousTypes, TypeOperators, RankNTypes, ConstrainedClassMethods, FlexibleContexts #-}
 
 module Model where
 
@@ -31,9 +31,10 @@ data Mass =  Water | Blood | Earth | Knowledge |
              Cloth | Metal | Air   | Cultery   | 
              MassOfS Singular | MassOfP Plural deriving (Eq,Show, Read)
 
-type OnePlacePred a = a -> Bool
-type TwoPlacePred a = a -> a -> Bool
-type ThreePlacePred a = a -> a -> a -> Bool
+-- This constrains type variable a to be an instance of Entity
+type OnePlacePred   a = Entity a => a -> Bool
+type TwoPlacePred   a = Entity a => a -> a -> Bool
+type ThreePlacePred a = Entity a => a -> a -> a -> Bool
 
 class (Show entity, Read entity, Eq entity) => Entity entity where
     -- Helper
@@ -59,8 +60,6 @@ class (Bounded entity, Enum entity, Entity entity) => AtomicEntity entity where
 
     passivize :: TwoPlacePred entity -> OnePlacePred entity
     passivize r = \ x -> any (r x) entities
-
-instance AtomicEntity Singular
 
 instance Entity Singular where
     girl     = list2OnePlacePred [SnowWhite,Alice,Dorothy,Goldilocks]
@@ -94,6 +93,8 @@ instance Entity Singular where
 
     give = curry3 (`elem` [(Tom,SnowWhite,Xena),(Alice,Ellie,SnowWhite)])
 
+
+instance AtomicEntity Singular
 {-
 instance Entity Plural where
 
