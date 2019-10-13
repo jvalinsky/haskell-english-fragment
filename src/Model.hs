@@ -15,19 +15,29 @@ self ::  (a -> a -> b) -> a -> b
 self p = \ x -> p x x
 
 pluralize1 :: (Singular -> Bool) -> (Plural -> Bool)
-pluralize1 p = \ (Plural xs) -> foldr (&&) True (map p xs)
+pluralize1 p = helper p
+    where helper :: (Singular -> Bool) -> Plural -> Bool
+          helper p (Collective xs)   = foldr (&&) True (map p xs)
+          helper p (Distributive ys) = foldr (&&) True (map p ys)
+
+{- 
+pluralize2 :: (Singular -> Singular -> Bool) -> (Plural -> Plural -> Bool)
+pluralize2 p = helper p
+              where helper :: (Singular -> Bool) -> Plural -> Bool
+                    helper p (Collective xs)   = foldr (&&) True (map p xs)
+                    helper p (Distributive ys) = foldr (&&) True (map p ys)
+-}
 
 -- Entity Types
-data Singular = Knife1     | Knife2  | Alice | Bob     | Cyrus  | Ellie | 
-                Goldilocks | Hillary | Irene | Jim     | Kim    | Linda | 
-                LittleMook | Noah    | Ollie | Penny   | Quine  | Remmy | 
-                SnowWhite  | Tom     | Uli   | Victor  | Willie | Xena  | 
-                Spoon1     | Spoon2  | Zorba | Atreyu  | Fork1  | Fork2 |
-                Dress1     | Dress2  | Shoe1 | Shoe2   | Shoe3  | Shoe4 |
-                Dorothy    | Fred deriving (Eq,Show, Read, Bounded, Enum)
+data Singular = Knife1     | Knife2  | Alice    | Bob     | Cyrus  | Ellie | 
+                Goldilocks | Hillary | Irene    | Jim     | Kim    | Linda | 
+                LittleMook | Noah    | Ollie    | Penny   | Quine  | Remmy | 
+                SnowWhite  | Tom     | Uli      | Victor  | Willie | Xena  | 
+                Spoon1     | Spoon2  | Zorba    | Atreyu  | Fork1  | Fork2 |
+                Dress1     | Dress2  | Shoe1    | Shoe2   | Shoe3  | Shoe4 |
+                Dorothy    | Fred    | Glasses1 | Jeans1 deriving (Eq,Show, Read, Bounded, Enum)
 
-
-data Plural = Plural [Singular] deriving (Eq,Show, Read)
+data Plural = Collective [Singular] | Distributive [Singular] deriving (Eq,Show, Read)
 
 data Mass =  Water | Blood | Earth | Knowledge | 
              Cloth | Metal | Air   | Cultery   | 

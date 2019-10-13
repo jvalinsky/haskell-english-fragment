@@ -7,6 +7,20 @@ import Text.Read
 import EF2synShort
 import Model
 
+allNum, noNum :: Int -> Int -> Bool
+allNum = \ m n -> m == 0
+noNum  = \ m n -> n == 0
+
+atleastNum, atmostNum :: Int -> Int -> Int -> Bool
+atleastNum k = \ m n -> n >= k
+atmostNum  k = \ m n -> n <= k
+
+atleast2butnotall :: Int -> Int -> Bool
+atleast2butnotall = \ m n -> m > 0 && n >= 2
+
+uncurry2 :: (b -> a -> c) -> (a, b) -> c
+uncurry2 f (x,y) =  f y x
+
 resolveName :: (Entity a) => Name -> Either String a
 resolveName x = readEither x
 
