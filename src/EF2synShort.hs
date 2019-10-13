@@ -4,32 +4,39 @@ data Sent = Sent NP VP deriving Show
 data NP   = NP0 Pronoun | NP1 Name | NP2 DET CN | NP3 DET RCN deriving Show
 data CN   = Mass MCN    | Sing SCN   | Plur PCN deriving Show
 
+-- Mass Common Nouns
 data MCN  = Water    | Wood | Air    | Blood | Metal | Earth  | Foilage |
             Darkness | Clay | Envy   | Fun   | Music | Poetry | Rust    |
             Gold     | Mail | Advice | Honor | Ice   | Fabric | Confusion deriving Show
 
+-- Note: Some Plural Entities are represented by Singular Common Nouns, ex: Group
 data SCN = Someone  | Belief | Man    | Woman | Hero  | Heroine  | Sword | 
            Fork     | Spoon  | Knife  | Witch | Boy   | Girl     | Dwarf | Prince |
            Princess | Giant  | Wizard | Dog   | Cat   | Dress    | Shoe  | Bee    | Bird |
            Spy      | Coven  | Court  | Horde | Cabal | Commitee | Pair  | Army   | Pack |
            Hive     | Nest   | Crowd  | Group deriving Show
 
+ -- Plural Common Nouns, most are pluralized version of SCN's
+ -- but some nouns have only plural form or their singular form has
+ -- a different meaning (ex: glass vs. glasses)
 data PCN = Pl SCN | Glasses | Jeans deriving Show
 
 data RCN = RCN1 CN That VP | RCN2 CN That NP TV | RCN3 ADJ CN deriving Show
 
+-- They is Third Person Singular here to denote gender neutral pronoun
 data Pronoun = He | She | They | It deriving Show
 
 data ADJ  = Wise  | Foolish | Bad   | Good  | Rich  | Mellow | Discordant |
-            Poor  | Young   | Old   | Heavy | Light | Dark   | Evil       | Rusty |
-            Clean | Dirty   | Wet   | Dry   | Cold  | Hot    | Magical    | Tall  |
+            Poor  | Young   | Old   | Heavy | Light | Dark   |  Rusty |
+            Clean | Dirty   | Wet   | Dry   | Cold  | Hot    | Magical | Tall  |
             Short | Long    | Sharp | Dull  | Shiney deriving Show
 
 data DET  = Each | Every | Neither | Either | Many | Few | The |
             Some | No    | Most    | A deriving Show
 data That = That deriving Show
 
-data Number = Singular | Plural deriving Show
+--data Number = Singular | Plural deriving Show
+
 -- Simple Tense
 data Tense  = Past | Present | Future deriving Show
 
