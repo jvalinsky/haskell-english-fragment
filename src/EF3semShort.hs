@@ -6,6 +6,7 @@ import Control.Monad
 import Text.Read
 import EF2synShort
 import Model
+import Entity
 
 allNum, noNum :: Int -> Int -> Bool
 allNum = \ m n -> m == 0
