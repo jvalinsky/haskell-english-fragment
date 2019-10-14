@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeFamilies, AllowAmbiguousTypes, TypeOperators, RankNTypes, ConstrainedClassMethods, FlexibleContexts #-}
+
 module EF3semShort where
 
 import Data.Either
@@ -22,19 +24,21 @@ atleast2butnotall = \ m n -> m > 0 && n >= 2
 uncurry2 :: (b -> a -> c) -> (a, b) -> c
 uncurry2 f (x,y) =  f y x
 
-resolveName :: (Entity a) => Name -> Either String a
+resolveName :: (Entity entity) => Name -> Either String entity
 resolveName x = readEither x
 
-evalEnt :: (Entity a) => a -> (a -> Bool) -> Bool
+evalEnt :: (Entity entity) => entity -> OnePlacePred entity -> Bool
 evalEnt x = \ p -> p x
 
-intName :: (AtomicEntity a) => Name -> (a -> Bool) -> Bool
+intName :: (AtomicEntity entity) => Name -> OnePlacePred entity -> Bool
 intName x = case e of
                 Left s -> false'
                 Right f -> f
     where e = liftM evalEnt $ resolveName x
+          false' :: OnePlacePred entity -> Bool
+          false' p = False
 
-intPronoun :: (AtomicEntity a) => Pronoun -> (a -> Bool) -> Bool
+intPronoun :: (AtomicEntity entity) => Pronoun -> OnePlacePred entity -> Bool
 intPronoun y = case y of
                 He   -> compose male
                 She  -> compose female
@@ -53,9 +57,7 @@ intDET Either =
 intDET Some = 
 intDET Few = 
 intDET Most =
--}
 
-{-
     intDET :: DET -> (Entity -> Bool) -> (Entity -> Bool) -> Bool
     intDET Some p q = any q (filter p entities)
     intDET A p q = any q (filter p entities)
@@ -69,9 +71,7 @@ intDET Most =
         where plist  = filter p entities
               qlist  = filter q entities
               pqlist = filter q plist
--}
 
-{-
 intCN :: CN -> (Entity -> Bool) -> Bool
 
 intMCN :: MCN -> (Entity -> Bool) -> Bool
@@ -85,8 +85,7 @@ intRCN :: CN -> (Entity -> Bool) -> Bool
 intADJ :: ADJ -> (Entity -> Bool) -> Bool
 -}
 
-
-intNP :: (AtomicEntity a) => NP -> (a -> Bool) -> Bool
+intNP :: (AtomicEntity entity) => NP -> OnePlacePred entity -> Bool
 intNP (NP1 name) = intName name
 intNP (NP0 pronoun) = intPronoun pronoun
 --intNP (NP2 det cn) = (intDET det) (intCN cn)

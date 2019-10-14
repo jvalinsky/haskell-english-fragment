@@ -2,7 +2,7 @@
 
 module Entity where
 
-import Data.List
+import Data.List (intersect)
 
 -- This constrains type variable a to be an instance of Entity
 type OnePlacePred   a = Entity a => a -> Bool
