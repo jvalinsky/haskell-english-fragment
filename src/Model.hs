@@ -35,7 +35,9 @@ data Singular = Knife1     | Knife2  | Alice    | Bob     | Cyrus  | Ellie |
                 SnowWhite  | Tom     | Uli      | Victor  | Willie | Xena  | 
                 Spoon1     | Spoon2  | Zorba    | Atreyu  | Fork1  | Fork2 |
                 Dress1     | Dress2  | Shoe1    | Shoe2   | Shoe3  | Shoe4 |
-                Dorothy    | Fred    | Glasses1 | Jeans1 deriving (Eq, Show, Read, Bounded, Enum)
+                Dorothy    | Fred    | Glasses1 | Jeans1  | Whiskers | Mittens |
+                Stuart | Gerald | Minnie | Mickey | Sue | Donald | Oscar | 
+                Ryan | Daffy deriving (Eq, Show, Read, Bounded, Enum)
 
 data Plural = Collective [Singular] | Distributive [Singular] deriving (Eq, Show, Read)
 
@@ -55,6 +57,12 @@ instance Entity Singular where
     dagger   = list2OnePlacePred [Xena]
     thing    = list2OnePlacePred [Spoon1, Spoon2, Fork1, Fork2, Dress1, Dress2, Shoe1, Shoe2, Shoe3, Shoe4]
     rusty    = list2OnePlacePred [Fork1, Spoon1]
+    cat      = list2OnePlacePred [Whiskers, Mittens]
+    mouse    = list2OnePlacePred [Mickey, Minnie, Stuart, Gerald, Sue]
+    bird     = list2OnePlacePred[Donald, Daffy, Oscar]
+    duck     = list2OnePlacePred[Donald, Daffy]
+    goose    = list2OnePlacePred[Oscar, Ryan]
+    can_fly  = list2OnePlacePred[Donald, Daffy, Oscar, Oscar]
 
     child  = \ x -> (girl x || boy x)
     person = \ x -> (child x || princess x || dwarf x || giant x || wizard x)

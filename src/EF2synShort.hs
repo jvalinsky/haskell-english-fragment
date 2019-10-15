@@ -1,25 +1,55 @@
 module EF2synShort where
 
+import Data.Map (Map)
+import qualified Data.Map.Strict as Map
+
 data Sent = Sent NP VP deriving Show
-data NP   = NP0 Pronoun | NP1 Name | NP2 DET CN | NP3 DET RCN deriving Show
-data CN   = Mass MCN    | Sing SCN   | Plur PCN deriving Show
+data NP   = NP0 Pronoun | NP1 Name | NP2 DET CN | NP3 DET RCN | NP4 DET CCN Of PCN deriving Show
+data CN   = Mass MCN    | Sing SCN | Col CCN    | Plur PCN deriving Show
 
 -- Mass Common Nouns
 data MCN  = Water    | Wood | Air    | Blood | Metal | Earth  | Foilage |
             Darkness | Clay | Envy   | Fun   | Music | Poetry | Rust    |
             Gold     | Mail | Advice | Honor | Ice   | Fabric | Confusion deriving Show
 
--- Note: Some Plural Entities are represented by Singular Common Nouns, ex: Group
 data SCN = Someone  | Belief | Man    | Woman | Hero  | Heroine  | Sword | 
            Fork     | Spoon  | Knife  | Witch | Boy   | Girl     | Dwarf | Prince |
-           Princess | Giant  | Wizard | Dog   | Cat   | Dress    | Shoe  | Bee    | Bird |
-           Spy      | Coven  | Court  | Horde | Cabal | Commitee | Pair  | Army   | Pack |
-           Hive     | Nest   | Crowd  | Group deriving Show
+           Princess | Giant  | Wizard | Mouse | Cat   | Dress    | Shoe  | Bird |
+           Spy deriving (Show, Bounded, Enum)
+
+-- Note: Some Plural Entities are represented by Singular Common Nouns, ex: Group
+-- Singular Nouns that are collective
+data CCN = Court | Coven | Crowd | Cabal | Horde | Commitee | Pair 
+          | Army | Nest | Flock | Group deriving Show
 
  -- Plural Common Nouns, most are pluralized version of SCN's
  -- but some nouns have only plural form or their singular form has
  -- a different meaning (ex: glass vs. glasses)
-data PCN = Pl SCN | Glasses | Jeans deriving Show
+data PCN = PS SCN | PC CCN | Glasses | Jeans
+
+pluralCCNShow :: CCN -> String
+pluralCCNShow x = case x of
+    Army -> "Armies"
+    _    -> (show x) ++ "s"
+
+pluralSCNShow :: SCN -> String
+pluralSCNShow x = case x of 
+    Man      -> "Men"
+    Woman    -> "Women"
+    Hero     -> "Heroes"
+    Dress    -> "Dresses"
+    Witch    -> "Witches"
+    Knife    -> "Knives"
+    Princess -> "Princesses"
+    Dwarf    -> "Dwarves"
+    Mouse    -> "Mice"
+    _        -> (show x) ++ "s"
+
+instance Show PCN where
+    show Glasses  = "Glasses"
+    show Jeans    = "Jeans"
+    show (PS scn) = pluralSCNShow scn 
+    show (PC ccn) = pluralCCNShow ccn 
 
 data RCN = RCN1 CN That VP | RCN2 CN That NP TV | RCN3 ADJ CN deriving Show
 
@@ -53,3 +83,4 @@ data AV  = Hope | Want deriving Show
 data AuxV = Will | Do | Have | Be deriving Show
 
 data To = To deriving Show
+data Of = Of deriving Show

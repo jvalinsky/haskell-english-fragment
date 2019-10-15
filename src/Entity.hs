@@ -12,10 +12,7 @@ type ThreePlacePred a = Entity a => a -> a -> a -> Bool
 class (Show entity, Read entity, Eq entity) => Entity entity where
     -- Helper
     list2OnePlacePred :: [entity] -> OnePlacePred entity
-    list2OnePlacePred xs = \ x -> elem x xs
-
-    false' :: OnePlacePred entity -> Bool
-    false' p = False 
+    list2OnePlacePred xs = \ x -> elem x xs 
 
     -- Predicates
     false1 :: OnePlacePred entity
@@ -30,7 +27,7 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     girl, boy, princess, dwarf, giant, wizard, sword, dagger, rusty, child, person, man, woman, 
         male, female, thing, neutral, laugh, cheer, shudder, smile, wise, foolish, bad, good, rich, poor,
         mellow, discordant, young, old, heavy, light, dark, clean, dirty, wet, dry, cold, hot,
-        magical, tall, short, long, sharp, dull, shiney :: OnePlacePred entity
+        magical, tall, short, long, sharp, dull, shiney, bird, cat, mouse, can_fly, duck, goose, spy :: OnePlacePred entity
     love, admire, help, defeat ::  TwoPlacePred entity
     give :: ThreePlacePred entity
 
@@ -38,10 +35,17 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     -- (assuming predicate is nonsensical for arbitrary Entity unless otherwise specified)
     girl = false1
     boy  = false1
+    mouse = false1
+    cat   = false1
+    bird  = false1
+    spy   = false1
     princess = false1
     dwarf = false1
     giant = false1
     wizard = false1
+    duck = false1
+    goose = false1
+    can_fly = false1
     sword = false1
     dagger = false1
     rusty = false1
