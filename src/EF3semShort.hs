@@ -149,7 +149,6 @@ intDV :: DV -> ThreePlacePred entity -> Bool
 
 intAux :: Aux -> 
 
-
 intVP :: VP -> OnePlacePred entity -> Bool
 intVP (VP0 inf)       =
 intVP (VP1 tv dp)     =
@@ -159,7 +158,6 @@ intVP (VP5 AuxV TV)   =
 intVP (VP6 auxV dv)   =
 intVP (VP7 auxV av)   = 
 intVP (VP8 auxV)      =
-
 
 intSent :: Sent -> Bool
 intSent (Sent dp vp) = (intDetP dp) (intVP vp)

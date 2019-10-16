@@ -63,6 +63,9 @@ instance Entity Singular where
     duck     = list2OnePlacePred[Donald, Daffy]
     goose    = list2OnePlacePred[Oscar, Ryan]
     can_fly  = list2OnePlacePred[Donald, Daffy, Oscar, Oscar]
+    glasses  = list2OnePlacePred[Glasses1]
+    dress    = list2OnePlacePred[Dress1, Dress2]
+    shoe     = list2OnePlacePred[Shoe1, Shoe2, Shoe3, Shoe4]
 
     child  = \ x -> (girl x || boy x)
     person = \ x -> (child x || princess x || dwarf x || giant x || wizard x)
@@ -136,14 +139,3 @@ instance Entity Plural where
     dull = pluralize1 dull
 
 instance Entity Mass
-{-
-class (Entity entity) => DistributiveEntity entity where
-    ??
-
-
-instance Entity Plural where
-    ??
-
-instance Entity Mass where
-    ??
--}

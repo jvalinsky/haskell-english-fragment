@@ -22,28 +22,17 @@ data MCN  = Water    | Wood | Air    | Blood | Metal | Earth  | Foilage |
             Darkness | Clay | Envy   | Fun   | Music | Poetry | Rust    |
             Gold     | Mail | Advice | Honor | Ice   | Fabric | Confusion deriving Show
 
-data SCN = Someone  | Belief | Man    | Woman | Hero  | Heroine  | Sword | Drop |
-           Fork     | Spoon  | Knife  | Witch | Boy   | Girl     | Dwarf | Prince |
-           Princess | Giant  | Wizard | Mouse | Cat   | Dress    | Shoe  | Bird |
-           Spy deriving (Show, Bounded, Enum)
-
--- Note: Some Plural Entities are represented by Singular Common Nouns, ex: Group
--- Singular Nouns that are collective
-data CCN = Court | Coven | Crowd | Cabal | Horde | Commitee | Pair 
-          | Army | Nest | Flock | Group deriving Show
+data SCN = Someone  | Man    | Woman | Hero   | Heroine   |  Sword   | Drop | Puddle  |
+           Fork     | Spoon  | Knife  | Witch | Boy       | Girl     | Dwarf | Prince |
+           Princess | Giant  | Wizard | Mouse | Cat       | Dress    | Shoe  | Bird   |
+           Spy      | Court  | Couple | Crowd | Coven     | Group deriving (Show, Bounded, Enum)
 
  -- Plural Common Nouns, most are pluralized version of SCN's
  -- but some nouns have only plural form or their singular form has
  -- a different meaning (ex: glass vs. glasses)
-data PCN = PS SCN | PC CCN | Glasses | Jeans
+data PCN = Pl SCN | Glasses | Jeans
 
 data RCN = RCN1 CN That VP | RCN2 CN That DetP TV | RCN3 ADJ CN deriving Show
-
-
-pluralCCNShow :: CCN -> String
-pluralCCNShow x = case x of
-    Army -> "Armies"
-    _    -> (show x) ++ "s"
 
 pluralSCNShow :: SCN -> String
 pluralSCNShow x = case x of 
@@ -56,13 +45,14 @@ pluralSCNShow x = case x of
     Princess -> "Princesses"
     Dwarf    -> "Dwarves"
     Mouse    -> "Mice"
+    Army     -> "Armies"
+    Spy      -> "Spies"
     _        -> (show x) ++ "s"
 
 instance Show PCN where
     show Glasses  = "Glasses"
     show Jeans    = "Jeans"
-    show (PS scn) = pluralSCNShow scn 
-    show (PC ccn) = pluralCCNShow ccn 
+    show (Pl scn) = pluralSCNShow scn 
 
 -- They is Third Person Singular here to denote gender neutral pronoun
 -- data Pronoun = He | She | They | It deriving Show
