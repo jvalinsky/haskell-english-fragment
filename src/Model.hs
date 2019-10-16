@@ -70,7 +70,7 @@ instance Entity Singular where
     woman  = \ x -> princess x
     male   = \ x -> (man x || boy x)
     female = \ x -> (woman x || girl x)
-    neutral = \ x -> True
+    nonbinary = \ x -> not (male x || female x)
 
     laugh   = list2OnePlacePred [Alice,Goldilocks,Ellie]
     cheer   = list2OnePlacePred [LittleMook,Dorothy]
@@ -103,7 +103,7 @@ instance Entity Plural where
     male = pluralize1 male
     female = pluralize1 female
     thing = pluralize1 thing
-    neutral = pluralize1 neutral
+    nonbinary = pluralize1 nonbinary
     laugh = pluralize1 laugh
     cheer = pluralize1 cheer
     shudder = pluralize1 shudder

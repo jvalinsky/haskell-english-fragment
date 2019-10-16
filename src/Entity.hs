@@ -14,6 +14,10 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     list2OnePlacePred :: [entity] -> OnePlacePred entity
     list2OnePlacePred xs = \ x -> elem x xs 
 
+    -- Compose two one-place predicates
+    compose :: OnePlacePred entity -> OnePlacePred entity -> OnePlacePred entity
+    compose p q = \ x -> (p x) && (q x)
+
     -- Predicates
     false1 :: OnePlacePred entity
     false1 e = False
@@ -25,8 +29,8 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     false3 e1 e2 e3 = False
 
     girl, boy, princess, dwarf, giant, wizard, sword, dagger, rusty, child, person, man, woman, 
-        male, female, thing, neutral, laugh, cheer, shudder, smile, wise, foolish, bad, good, rich, poor,
-        mellow, discordant, young, old, heavy, light, dark, clean, dirty, wet, dry, cold, hot,
+        male, female, thing, laugh, cheer, shudder, smile, wise, foolish, bad, good, rich, poor,
+        mellow, discordant, young, old, heavy, light, dark, clean, dirty, wet, dry, cold, hot, nonbinary,
         magical, tall, short, long, sharp, dull, shiney, bird, cat, mouse, can_fly, duck, goose, spy :: OnePlacePred entity
     love, admire, help, defeat ::  TwoPlacePred entity
     give :: ThreePlacePred entity
@@ -56,7 +60,7 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     male = false1
     female = false1
     thing = false1
-    neutral = false1
+    nonbinary = false1
     laugh = false1
     cheer = false1
     shudder = false1
@@ -96,10 +100,6 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     give = false3
 
 class (Bounded entity, Enum entity, Entity entity) => AtomicEntity entity where
-    -- Compose two one-place predicates
-    compose :: OnePlacePred entity -> OnePlacePred entity -> Bool
-    compose x y =  (filter x entities) `intersect` (filter y entities) /= []
-
     entities :: [entity]
     entities = [minBound..maxBound]
 

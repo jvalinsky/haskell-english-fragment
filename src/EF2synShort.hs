@@ -1,18 +1,28 @@
 module EF2synShort where
 
-import Data.Map (Map)
-import qualified Data.Map.Strict as Map
+-- I'm assuming the existence of the determiner phrase 
+data Sent = Sent DetP VP deriving Show
 
-data Sent = Sent NP VP deriving Show
-data NP   = NP0 Pronoun | NP1 Name | NP2 DET CN | NP3 DET RCN | NP4 DET CCN Of PCN deriving Show
-data CN   = Mass MCN    | Sing SCN | Col CCN    | Plur PCN deriving Show
+data To = To deriving Show
+data Of = Of deriving Show
+data And = And deriving Show
+
+data That = That deriving Show
+
+-- Some of these are semantically restricted
+data DET = Some | Many | Most | Each | Every | Neither | Either | The | No | A deriving Show
+
+-- Some of these construction may not be semantically valid
+data DetP = DP1 Name | DP2 DET CN | DP3 DetP Of DetP | DP4 DetP And DetP deriving Show
+
+data CN = Sing SCN | Pl PCN | Mass MCN | Col CCN deriving Show 
 
 -- Mass Common Nouns
 data MCN  = Water    | Wood | Air    | Blood | Metal | Earth  | Foilage |
             Darkness | Clay | Envy   | Fun   | Music | Poetry | Rust    |
             Gold     | Mail | Advice | Honor | Ice   | Fabric | Confusion deriving Show
 
-data SCN = Someone  | Belief | Man    | Woman | Hero  | Heroine  | Sword | 
+data SCN = Someone  | Belief | Man    | Woman | Hero  | Heroine  | Sword | Drop |
            Fork     | Spoon  | Knife  | Witch | Boy   | Girl     | Dwarf | Prince |
            Princess | Giant  | Wizard | Mouse | Cat   | Dress    | Shoe  | Bird |
            Spy deriving (Show, Bounded, Enum)
@@ -26,6 +36,9 @@ data CCN = Court | Coven | Crowd | Cabal | Horde | Commitee | Pair
  -- but some nouns have only plural form or their singular form has
  -- a different meaning (ex: glass vs. glasses)
 data PCN = PS SCN | PC CCN | Glasses | Jeans
+
+data RCN = RCN1 CN That VP | RCN2 CN That DetP TV | RCN3 ADJ CN deriving Show
+
 
 pluralCCNShow :: CCN -> String
 pluralCCNShow x = case x of
@@ -51,28 +64,20 @@ instance Show PCN where
     show (PS scn) = pluralSCNShow scn 
     show (PC ccn) = pluralCCNShow ccn 
 
-data RCN = RCN1 CN That VP | RCN2 CN That NP TV | RCN3 ADJ CN deriving Show
-
 -- They is Third Person Singular here to denote gender neutral pronoun
-data Pronoun = He | She | They | It deriving Show
+-- data Pronoun = He | She | They | It deriving Show
 
 data ADJ  = Wise  | Foolish | Bad   | Good  | Rich  | Mellow | Discordant |
             Poor  | Young   | Old   | Heavy | Light | Dark   |  Rusty |
             Clean | Dirty   | Wet   | Dry   | Cold  | Hot    | Magical | Tall  |
             Short | Long    | Sharp | Dull  | Shiney deriving Show
 
-data DET  = Each | Every | Neither | Either | Many | Few | The |
-            Some | No    | Most    | A deriving Show
-data That = That deriving Show
-
---data Number = Singular | Plural deriving Show
-
 -- Simple Tense
 data Tense  = Past | Present | Future deriving Show
 
 type Name = String
 
-data VP = VP0 INF     | VP1 TV NP   | VP3 AV To INF | VP4 AuxV INF |
+data VP = VP0 INF     | VP1 TV DetP   | VP3 AV To INF | VP4 AuxV INF |
           VP5 AuxV TV | VP6 AuxV DV | VP7 AuxV AV   | VP8 AuxV deriving Show
 
 data INF = Laugh | Cheer | Shudder | Smile deriving Show
@@ -81,6 +86,3 @@ data TV  = Love | Admire | Help | Defeat | Catch deriving (Show, Eq)
 data DV  = Give deriving (Show, Eq)
 data AV  = Hope | Want deriving Show
 data AuxV = Will | Do | Have | Be deriving Show
-
-data To = To deriving Show
-data Of = Of deriving Show
