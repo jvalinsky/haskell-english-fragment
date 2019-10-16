@@ -18,6 +18,9 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     compose :: OnePlacePred entity -> OnePlacePred entity -> OnePlacePred entity
     compose p q = \ x -> (p x) && (q x)
 
+    helper :: OnePlacePred entity -> OnePlacePred entity -> Bool
+    helper xs q = \p -> any (p `compose` q) xs
+
     -- Predicates
     false1 :: OnePlacePred entity
     false1 e = False

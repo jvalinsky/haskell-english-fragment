@@ -78,7 +78,7 @@ data Tense  = Past | Present | Future deriving Show
 type Name = String
 
 data VP = VP0 INF     | VP1 TV DetP   | VP3 AV To INF | VP4 AuxV INF |
-          VP5 AuxV TV | VP6 AuxV DV | VP7 AuxV AV   | VP8 AuxV deriving Show
+          VP5 AuxV TV | VP6 AuxV DV   | VP7 AuxV AV   | VP8 AuxV deriving Show
 
 data INF = Laugh | Cheer | Shudder | Smile deriving Show
 --data INF = Laugh | Sheer | Shudder | INF TINF NP deriving Show

@@ -36,59 +36,42 @@ intName x = case e of
                 Right f -> f
     where e = liftM evalEnt $ resolveName x
 
-{-
-intPronoun :: (AtomicEntity entity) => Pronoun -> OnePlacePred entity -> Bool
+
+intPronoun :: (Entity entity) => Pronoun -> OnePlacePred entity -> Bool
 intPronoun y = case y of
                 He   -> \p -> any (p `compose` male) entities
                 She  -> \p -> any (p `compose` female) entities
                 They -> \p -> True
                 It   -> \p -> any (p `compose` thing) entities
 
-intDET :: DET -> (Entity -> Bool) -> Bool
-intDET Each = 
-intDET Every = 
-intDET The = 
-intDET A = 
-intDET No = 
-intDET Neither = 
-intDET Either = 
-intDET Some = 
-intDET Few = 
-intDET Most =
-
-    intDET :: DET -> (Entity -> Bool) -> (Entity -> Bool) -> Bool
-    intDET Some p q = any q (filter p entities)
-    intDET A p q = any q (filter p entities)
-    intDET Every p q = all q (filter p entities)
-    intDET The p q = singleton plist && q (head plist)
-        where plist = filter p entities
-              singleton [x] = True
-              singleton  _  = False
-    intDET No p q = not (intDET Some p q)
-    intDET Most p q = length pqlist > length (plist \\ qlist)
-        where plist  = filter p entities
-              qlist  = filter q entities
-              pqlist = filter q plist
-
-intCN :: CN -> (Entity -> Bool) -> Bool
-
-intMCN :: MCN -> (Entity -> Bool) -> Bool
-
-intSCN :: SCN -> (Entity -> Bool) -> Bool
-
-intPCN :: CN -> (Entity -> Bool) -> Bool
-
-intRCN :: CN -> (Entity -> Bool) -> Bool
-
-intADJ :: ADJ -> (Entity -> Bool) -> Bool
--}
-
-{-
-data SCN = Someone  | Belief | Man    | Woman | Hero  | Heroine  | Sword | Drop |
-           Fork     | Spoon  | Knife  | Witch | Boy   | Girl     | Dwarf | Prince |
-           Princess | Giant  | Wizard | Mouse | Cat   | Dress    | Shoe  | Bird |
-           Spy deriving (Show, Bounded, Enum)
--}
+intADJ :: ADJ -> OnePlacePred entity -> Bool
+intADJ adj = case adj of
+    Wise        ->
+    Foolish     ->
+    Bad         ->
+    Good        ->
+    Rich        ->
+    Mellow      ->
+    Discordant  ->
+    Poor        ->
+    Young       ->
+    Old         ->
+    Heavy       ->
+    Light       ->
+    Dark        ->
+    Rusty       ->
+    Clean       ->
+    Dirty       ->
+    Wet         ->
+    Dry         ->
+    Cold        ->
+    Hot         ->
+    Magical     ->
+    Short       ->
+    Long        ->
+    Sharp       ->
+    Dull        ->
+    Shiney      ->
 
 intSCN :: SCN -> OnePlacePred entity -> Bool
 intSCN scn = case scn of
@@ -114,11 +97,12 @@ intSCN scn = case scn of
     Spy      -> helper spy
     Belief   -> helper belief
     Someone  -> helper person
-    where helper q = \p -> p any (p `compose` q)
-
 
 intPCN :: PCN -> OnePlacePred entity -> Bool
-intPCN pcn = 
+intPCN Glasses  = helper glasses
+intPCN Jeans    = helper jeans
+intPCN (PS scn) =
+intPCN (PC ccn) =
 
 intMCN :: MCN -> OnePlacePred entity -> Bool
 intMCN mcn = 
@@ -136,25 +120,46 @@ intCN (Mass mcn) = intMCN mcn
 intCN (Col ccn)  = intCCN ccn
 
 intDET :: DET -> OnePlacePred entity -> OnePlacePred entity -> Bool
-intDET det =
+intDET Some p q = any q (filter p entities)
+intDET A p q = any q (filter p entities)
+intDET Every p q = all q (filter p entities)
+intDET The p q = singleton plist && q (head plist)
+    where plist = filter p entities
+            singleton [x] = True
+            singleton  _  = False
+intDET No p q = not (intDET Some p q)
+intDET Most p q = length pqlist > length (plist \\ qlist)
+    where plist  = filter p entities
+        qlist  = filter q entities
+        pqlist = filter q plist
 
 intDetP :: (Entity entity) => DetP -> OnePlacePred entity -> Bool
 --intDetP (DP0 pronoun) = intPronoun pronoun
-intDetP (DP1 name)   = intName name
-intDetP (DP2 det cn) = (intDET det) (intCN cn)
---intNP (NP3 DET rcn) = (intDET det) (intRCN rcn)
+intDetP (DP1 name)    = intName name
+intDetP (DP2 det cn)  = (intDET det) (intCN cn)
+intDetP (DP3 det rcn) = (intDET det) (intRCN rcn)
+
+intINF :: INF -> OnePlacePred entity
+
+intTV :: TV -> TwoPlacePred entity -> Bool
+
+intAV :: AV -> 
+
+intDV :: DV -> ThreePlacePred entity -> Bool
+
+intAux :: Aux -> 
 
 
 intVP :: VP -> OnePlacePred entity -> Bool
-intVP vp =
+intVP (VP0 inf)       =
+intVP (VP1 tv dp)     =
+intVP (VP3 av To inf) = 
+intVP (VP4 auxV inf)  =
+intVP (VP5 AuxV TV)   = 
+intVP (VP6 auxV dv)   =
+intVP (VP7 auxV av)   = 
+intVP (VP8 auxV)      =
 
 
 intSent :: Sent -> Bool
 intSent (Sent dp vp) = (intDetP dp) (intVP vp)
-
-{-
-intVP :: VP -> (Entity -> Bool) -> Bool
-intVP (VP0 INF)   =
-intVP (VP1 TV NP) =   | VP3 AV To INF | VP4 AuxV INF |
-VP5 AuxV TV | VP6 AuxV DV | VP7 AuxV AV   | VP8 AuxV
--}
