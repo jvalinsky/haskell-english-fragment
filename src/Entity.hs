@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeFamilies, AllowAmbiguousTypes, TypeOperators, RankNTypes, ConstrainedClassMethods, FlexibleContexts #-}
 
-module Entity where
+module Entity(OnePlacePred, TwoPlacePred, ThreePlacePred, Entity, AtomicEntity) where
 
 import Data.List (intersect)
 
@@ -33,7 +33,7 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
 
     girl, boy, princess, dwarf, giant, wizard, sword, dagger, rusty, child, person, man, woman, 
         male, female, thing, laugh, cheer, shudder, smile, wise, foolish, bad, good, rich, poor,
-        mellow, discordant, young, old, heavy, light, dark, clean, dirty, wet, dry, cold, hot, nonbinary,
+        mellow, discordant, young, old, heavy, light, dark, clean, dirty, wet, dry, cold, hot,
         magical, tall, short, long, sharp, dull, shiney, bird, cat, mouse, can_fly, duck, goose, spy :: OnePlacePred entity
     love, admire, help, defeat ::  TwoPlacePred entity
     give :: ThreePlacePred entity
@@ -63,7 +63,6 @@ class (Show entity, Read entity, Eq entity) => Entity entity where
     male = false1
     female = false1
     thing = false1
-    nonbinary = false1
     laugh = false1
     cheer = false1
     shudder = false1

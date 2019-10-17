@@ -20,31 +20,29 @@ pluralize1 p = helper p
     where helper :: OnePlacePred Singular -> OnePlacePred Plural
           helper p (Collective xs)   = foldr (&&) True (map p xs)
           helper p (Distributive ys) =  foldr (&&) True (map p ys)
-{- 
-pluralize2 :: (Singular -> Singular -> Bool) -> (Plural -> Plural -> Bool)
-pluralize2 p = helper p
-              where helper :: (Singular -> Bool) -> Plural -> Bool
-                    helper p (Collective xs)   = foldr (&&) True (map p xs)
-                    helper p (Distributive ys) = foldr (&&) True (map p ys)
--}
 
 -- Entity Types
-data Singular = Knife1     | Knife2  | Alice    | Bob     | Cyrus  | Ellie | 
-                Goldilocks | Hillary | Irene    | Jim     | Kim    | Linda | 
-                LittleMook | Noah    | Ollie    | Penny   | Quine  | Remmy | 
-                SnowWhite  | Tom     | Uli      | Victor  | Willie | Xena  | 
-                Spoon1     | Spoon2  | Zorba    | Atreyu  | Fork1  | Fork2 |
-                Dress1     | Dress2  | Shoe1    | Shoe2   | Shoe3  | Shoe4 |
-                Dorothy    | Fred    | Glasses1 | Jeans1  | Whiskers | Mittens |
-                Stuart | Gerald | Minnie | Mickey | Sue | Donald | Oscar | 
-                Ryan | Daffy deriving (Eq, Show, Read, Bounded, Enum)
+data Atom = Knife1      | Knife2   | Alice'   | Bob'    | Cyrus'    | Ellie'   | 
+            Goldilocks' | Hillary' | Irene'   | Jim'    | Kim'      | Linda'   | 
+            LittleMook' | Noah'    | Ollie'   | Penny'  | Quine'    | Remmy'   | 
+            SnowWhite'  | Tom'     | Uli'     | Victor' | Willie'   | Xena'    | Cup2    |
+            Spoon1      | Spoon2   | Zorba'   | Atreyu' | Fork1     | Fork2    | Cup1    |
+            Dress1      | Dress2   | Shoe1    | Shoe2   | Shoe3     | Shoe4    | Bottle2 |
+            Dorothy'    | Fred'    | Glasses1 | Jeans1  | Whiskers' | Mittens' | Bottle1 | 
+            Stuart'     | Gerald'  | Minnie'  | Mickey' | Sue'      | Donald'  | Lake_Huron' |
+            Oscar'      | Ryan'    | Daffy'   | Coven'  | The_Genesee' | Deck1 | Lake_Ontario' |
+            Deck2 | Card_1_1 | Card_1_2 | Card_1_3 | Card_1_4 | Card_1_5 | Card_1_6 |
+            Card_2_1 | Card_2_2 | Card_2_3 | Card_2_4 | Card_2_5 | Card_2_6 deriving (Eq, Show, Read, Bounded, Enum)
 
 data Plural = Collective [Singular] | Distributive [Singular] deriving (Eq, Show, Read)
 
-data Mass =  Water | Blood | Earth | Knowledge | 
-             Cloth | Metal | Air   | Cultery   | 
+{-
+data Mass =  Water | Blood    | Earth | Knowledge | 
+             Cloth | Metal    | Air   | Cultery   | 
              MassOfS Singular | MassOfP Plural deriving (Eq,Show, Read)
+-}
 
+data Entity = At Atom | Pl Plural deriving Show
 
 instance Entity Singular where
     girl     = list2OnePlacePred [SnowWhite,Alice,Dorothy,Goldilocks]

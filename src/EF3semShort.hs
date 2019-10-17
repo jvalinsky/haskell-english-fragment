@@ -24,29 +24,67 @@ atleast2butnotall = \ m n -> m > 0 && n >= 2
 uncurry2 :: (b -> a -> c) -> (a, b) -> c
 uncurry2 f (x,y) =  f y x
 
-resolveName :: (Entity entity) => Name -> Either String entity
-resolveName x = readEither x
+{-
+IV :: Entity -> Bool
+Term :: IV -> Bool
+TV :: Term -> IV
+IAV :: IV -> IV
+CN :: Entity -> Bool
 
-evalEnt :: (Entity entity) => entity -> OnePlacePred entity -> Bool
-evalEnt x = \ p -> p x
+Term is a DetP
+-}
 
-intName :: (Entity entity) => Name -> OnePlacePred entity -> Bool
-intName x = case e of
-                Left  s -> \x -> False
-                Right f -> f
-    where e = liftM evalEnt $ resolveName x
-
+intName :: (Entity entity) => PropN -> OnePlacePred entity -> Bool
+intName x = case x of
+    Alice      -> f Alice'
+    Bob        -> f Bob'
+    Cyrus      -> f Cyrus'
+    Ellie      -> f Ellie'
+    Goldilocks -> f Goldilocks'
+    Hillary    -> f Hillary'
+    Irene      -> f Irene'   
+    Jim        -> f Jim'
+    Kim        -> f Kim'
+    Linda      -> f Linda'
+    LittleMook -> f LittleMook'
+    Noah       -> f Noah'
+    Ollie      -> f Ollie'
+    Penny      -> f Penny'
+    Quine      -> f Quine'
+    Remmy      -> f Remmy'
+    SnowWhite  -> f SnowWhite'
+    Tom        -> f Tom'
+    Uli        -> f Uli'
+    Victor     -> f Victor'
+    Willie     -> f Willie'
+    Xena       -> f Xena'
+    Zorba      -> f Zorba'
+    Atreyu     -> f Atreyu'
+    Dorothy    -> f Dorothy'
+    Fred       -> f Fred'
+    Whiskers   -> f Whiskers'
+    Mittens    -> f Mittens'
+    Stuart     -> f Stuart'
+    Gerald     -> f Gerald'
+    Minnie     -> f Minnie'
+    Mickey     -> Mickey'
+    Sue        -> Sue'
+    Donald     -> Donald'
+    Oscar      -> Oscar'
+    Ryan       -> Ryan'
+    Daffy      -> Daffy'
+    where f x = \p -> p x
 
 intPronoun :: (Entity entity) => Pronoun -> OnePlacePred entity -> Bool
 intPronoun y = case y of
                 He   -> \p -> any (p `compose` male) entities
                 She  -> \p -> any (p `compose` female) entities
-                They -> \p -> True
+                They -> \p -> any (p `compose` \q -> True) entities
                 It   -> \p -> any (p `compose` thing) entities
 
 intADJ :: ADJ -> OnePlacePred entity -> Bool
 intADJ adj = case adj of
-    Wise        ->
+    Wise        -> 
     Foolish     ->
     Bad         ->
     Good        ->
