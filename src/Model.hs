@@ -20,15 +20,14 @@ self ::  (a -> a -> b) -> a -> b
 self p = \ x -> p x x
 
 -- Entity Types
-data Atom = Knife1      | Knife2   | Alice'   | Bob'    | Cyrus'    | Ellie'   | 
+data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'    | Ellie'   | 
             Goldilocks' | Hillary' | Irene'   | Jim'    | Kim'      | Linda'   | 
-            Noah'       | Ollie'   | Penny'   | Quine'  |
-            SnowWhite'  | Tom'     | Uli'     | Victor' | Willie'   | Xena'    | Cup2    |
-            Spoon1      | Spoon2   | Zorba'   | Atreyu' | Fork1     | Fork2    | Cup1    |
-            Dress1      | Dress2   | Shoe1    | Shoe2   | Shoe3     | Shoe4    | Bottle2 |
-            Dorothy'    | Fred'    | Glasses1 | Jeans1  | Whiskers' | Mittens' | Bottle1 | 
-            Stuart'     | Gerald'  | Minnie'  | Mickey' | Sue'      | 
-            Raft1 | Raft2 | Raft3   | Raft4   | The_Genesee' | Lake_Ontario' deriving (Eq, Show, Bounded, Enum)
+            Noah'       | Ollie'   | Penny'   | Quine'  | Dagger    | Stuart'  |
+            SnowWhite'  | Tom'     | Uli'     | Victor' | Willie'   | Xena'    |
+            Zorba'      | Atreyu'  | Cup1     | Cup2    | Bottle1   | Bottle2  | 
+            Dress1      | Dress2   | Raft1    | Raft2   | Raft3     | Raft4    |
+            Dorothy'    | Fred'    | Glasses1 | Jeans1  | Whiskers' | Mittens' | 
+            Gerald'     | Minnie'  | Mickey'  | Sue' deriving (Eq, Show, Bounded, Enum)
 
 data Plural = Pluralize [Atom] deriving Show
 
@@ -88,7 +87,6 @@ instance Join Mass where
 coven_ :: Plural
 coven_ = Pluralize [Alice', Linda', Irene', Ellie']
 
-
 -- All the royalty
 court_ :: Plural
 court_ = Pluralize [Xena', Atreyu', Victor', Linda']
@@ -99,20 +97,126 @@ coven' = Pl' coven_
 court' :: Entity
 court' = Pl' court_
 
-couple :: Atom -> Atom -> Plural
-couple x y = Pluralize [x,y]
- 
-female' :: Atom -> Bool
-female' = list2OnePlacePred' [Minnie', Dorothy', Hillary', Xena', Mittens', SnowWhite']
+couple' :: Atom -> Atom -> Plural
+couple' x y = Pluralize [x,y]
 
-male' :: Atom -> Bool
-male' = list2OnePlacePred' [Zorba', Whiskers', Gerald', Victor', Stuart', Ollie']
+couple :: OnePlacePred
+couple (At' x) = False
+couple (Pl' (Pluralize xs)) = 
+couple _ = False
 
-young' :: Atom -> Bool
-young' = list2OnePlacePred' [Atreyu', Alice', Ollie']
+-- CN
+raft :: OnePlacePred
+raft (At' x) = raft' xs
+raft (Pl' (Pluralize xs)) = all raft' xs
+raft _ = False
+
+person :: OnePlacePred
+person (At' x) = person' xs
+person (Pl' (Pluralize xs)) = all person' xs
+person _ = False
+
+-- Only 1 dagger and 2 swords
+dagger :: OnePlacePred
+dagger (At' x) = dagger' xs
+dagger (Pl' (Pluralize xs)) = False
+dagger _ = False
+
+sword :: OnePlacePred
+sword (At' x) = sword' xs
+sword (Pl' (Pluralize xs)) = all sword' xs
+sword _ = False
+
+queen :: OnePlacePred
+queen (At' x) = queen' xs
+queen (Pl' (Pluralize xs)) = all queen' xs
+queen _ = False
+
+king :: OnePlacePred
+king (At' x) = king' xs
+king (Pl' (Pluralize xs)) = all king' xs
+king _ = False
+
+princess :: OnePlacePred
+princess (At' x) = princess' xs
+princess (Pl' (Pluralize xs)) = all princess' xs
+princess _ = False
+
+prince :: OnePlacePred
+prince (At' x) = prince' xs
+prince (Pl' (Pluralize xs)) = all prince' xs
+prince _ = False
+
+giant :: OnePlacePred
+giant (At' x) = giant' xs
+giant (Pl' (Pluralize xs)) = all giant' xs
+giant _ = False
+
+dwarf :: OnePlacePred
+dwarf (At' x) = dwarf' xs
+dwarf (Pl' (Pluralize xs)) = all dwarf' xs
+dwarf _ = False
+
+witch :: OnePlacePred
+witch (At' x) = witch' xs
+witch (Pl' (Pluralize xs)) = all witch' xs
+witch _ = False
+
+wizard :: OnePlacePred
+wizard (At' x) = wizard' xs
+wizard (Pl' (Pluralize xs)) = all wizard' xs
+wizard _ = False
+
+cup :: OnePlacePred
+cup (At' x) = cup' xs
+cup (Pl' (Pluralize xs)) = all cup' xs
+cup _ = False
+
+bottle :: OnePlacePred
+bottle (At' x) = bottle' xs
+bottle (Pl' (Pluralize xs)) = all bottle' xs
+bottle _ = False
+
+spy :: OnePlacePred
+spy (At' x) = spy' xs
+spy (Pl' (Pluralize xs)) = all spy' xs
+spy _ = False
+
+cat :: OnePlacePred
+cat (At' x) = cat' xs
+cat (Pl' (Pluralize xs)) = all cat' xs
+cat _ = False
+
+mouse :: OnePlacePred
+mouse (At' x) = mouse' xs
+mouse (Pl' (Pluralize xs)) = all mouse' xs
+mouse _ = False
 
 boy' = young' `compose'` male'
 
+boy :: OnePlacePred
+boy (At' x) = boy' x
+boy (Pl' (Pluralize xs)) = all boy' xs
+boy _ = False
+
+girl :: OnePlacePred
+girl (At' x) = girl' xs
+girl (Pl' (Pluralize xs)) = all girl' xs
+girl _ = False
+
+man' = old' `compose'` male'
+
+man :: OnePlacePred
+man (At' x) = man' x
+man (Pl' (Pluralize xs)) = all man' xs
+man _ = False
+
+woman :: OnePlacePred
+woman (At' x) = woman' xs
+woman (Pl' (Pluralize xs)) = all woman' xs
+woman _ = False
+
+-- ADJ
 female :: OnePlacePred
 female (At' x) = female' x
 female (Pl' (Pluralize xs)) = all female' xs
@@ -133,37 +237,25 @@ old (At' x) = old' x
 old (Pl' (Pluralize xs)) = all old' xs
 old _ = False
 
-boy :: OnePlacePred
-boy (At' x) = boy' x
-boy (Pl' (Pluralize xs)) = all boy' xs
-boy _ = False
+being :: OnePlacePred
+being (At' x) = being' xs
+being (Pl' (Pluralize xs)) = all being' xs
+being _ = False
 
-girl :: OnePlacePred
-girl (At' x) = girl' xs
-girl (Pl' (Pluralize xs)) = all girl' xs
-girl _ = False
+thing :: OnePlacePred
+thing (At' x) = thing' xs
+thing (Pl' (Pluralize xs)) = all thing' xs
+thing _ = True
 
-girl :: OnePlacePred
-girl (At' x) = girl' xs
-girl (Pl' (Pluralize xs)) = all girl' xs
-girl _ = False
+rusty :: OnePlacePred
+rusty (At' x) = rusty' xs
+rusty (Pl' (Pluralize xs)) = all rusty' xs
+rusty _ = False
 
-girl :: OnePlacePred
-girl (At' x) = girl' xs
-girl (Pl' (Pluralize xs)) = all girl' xs
-girl _ = False
-
-
-
-
-{-
-girl, boy, princess, dwarf, giant, wizard, sword, dagger, rusty, child, person, man, woman, 
-    male, female, thing, laugh, smile, wise, foolish, 
-    young, old, heavy, light, clean, dirty, wet, dry, magical, tall, short, 
-    long, sharp, dull :: OnePlacePred
-love, admire, help, defeat ::  TwoPlacePred
-give :: ThreePlacePred
--}
+foolish :: OnePlacePred
+foolish (At' x) = foolish' xs
+foolish (Pl' (Pluralize xs)) = all foolish' xs
+foolish _ = False
 
 wise :: OnePlacePred
 wise (At' x) = wise' xs
@@ -200,20 +292,10 @@ shiney (At' x) = shiney' xs
 shiney (Pl' (Pluralize xs)) = all shiney' xs
 shiney _ = False
 
-spy :: OnePlacePred
-spy (At' x) = spy' xs
-spy (Pl' (Pluralize xs)) = all spy' xs
-spy _ = False
-
-cat :: OnePlacePred
-cat (At' x) = cat' xs
-cat (Pl' (Pluralize xs)) = all cat' xs
-cat _ = False
-
-mouse :: OnePlacePred
-mouse (At' x) = mouse' xs
-mouse (Pl' (Pluralize xs)) = all mouse' xs
-mouse _ = False
+numerous :: OnePlacePred
+numerous (At' x) = False
+numerous (Pl' (Pluralize xs)) = 
+numerous _ = False
 
 -- INF Verbs
 scatter :: OnePlacePred
@@ -298,15 +380,11 @@ give (At' x) = give' xs
 give (Pl' (Pluralize xs)) = all give' xs
 give _ = False
 
--- Collective Predicates
 coven :: OnePlacePred
 coven x = x == coven'
 
 court :: OnePlacePred
 court x = x == court'
-
--- Distributive Predicates
-
 
 atoms :: [Atom]
 atoms = [minBound..maxBound]
