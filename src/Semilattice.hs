@@ -1,10 +1,5 @@
 module Semilattice where
 
-class Meet a where
-  (/\) :: a -> a -> a
-
-class Join a where
+class (Eq a, Show a) => Join a where
   (\/) :: a -> a -> a
-
--- instance Join Mass where
--- (\/) = ??
+  --(<=)  :: a -> a -> Bool

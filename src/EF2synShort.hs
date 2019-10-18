@@ -20,23 +20,23 @@ data Name = Alice  | Bob    | Cyrus  | Ellie | Goldilocks  | Irene    | Jim | Ki
             Victor | Willie | Xena   | Zorba | The_Genesee | Whiskers | Tom | Sue  | Dorothy |
             Stuart | Gerald | Minnie | Lake_Ontario deriving Show
 
-data CN = Sng SCN | Plur PCN | Ms MCN deriving Show 
+data CN = Sng SCN | Pl PCN | Ms MCN deriving Show 
 
 -- Mass Common Nouns
-data MCN  = Water  | Wood   | Air  | Wine   | Metal  | Earth  | Rust
+data MCN  = Water  | Wood   | Air  | Wine   | Metal  | Earth  | Rust |
             Gold   | Advice | Ice  | Fabric deriving Show
 
  -- Plural Common Nouns, most are pluralized version of SCN's
  -- but some nouns have only plural form or their singular form has
  -- a different meaning (ex: glass vs. glasses)
- data PCN = Pluralize SCN | Glasses | Jeans
+data PCN = Plur SCN | Glasses | Jeans 
 
- data RCN = RCN1 CN That VP | RCN2 CN That DetP TV | RCN3 ADJ CN deriving Show
+data RCN = RCN1 CN That VP | RCN2 CN That DetP TV | RCN3 ADJ CN deriving Show
 
 data SCN = Lake     | Cup   | Man    | Woman | Hero   | Heroine | Sword  | Drop  | Bottle |
            Puddle   | Fork  | Spoon  | Knife | Witch  | Boy     | Girl   | Dwarf | Nest   |
            Princess | Giant | Wizard | Mouse | Cat    | Dress   | Shoe   | Bird  | Card   |
-           Spy      | Court | Couple | Crowd | Coven  | Prince  | Ring   | Deck deriving (Show, Bounded, Enum)
+           Spy      | Court | Couple | Crowd | Coven  | Prince  | Ring   | Deck | Army deriving (Show, Bounded, Enum)
 
 pluralSCNShow :: SCN -> String
 pluralSCNShow x = case x of 
@@ -56,7 +56,7 @@ pluralSCNShow x = case x of
 instance Show PCN where
     show Glasses  = "Glasses"
     show Jeans    = "Jeans"
-    show (Pluralize scn) = pluralSCNShow scn 
+    show (Plur scn) = pluralSCNShow scn 
 
 data ADJ  = Wise  | Foolish | Bad     | Good   | Rich  | Poor    | Young | Old   | 
             Heavy | Light   | Dark    |  Rusty | Clean | Dirty   | Wet   | Dry   | 
