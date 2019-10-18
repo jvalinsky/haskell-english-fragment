@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeFamilies, AllowAmbiguousTypes, TypeOperators, RankNTypes, ConstrainedClassMethods, FlexibleContexts #-}
-
 module EF3semShort where
 
 import Data.Either
@@ -30,11 +28,9 @@ Term :: IV -> Bool
 TV :: Term -> IV
 IAV :: IV -> IV
 CN :: Entity -> Bool
-
-Term is a DetP
 -}
 
-intName :: (Entity entity) => PropN -> OnePlacePred entity -> Bool
+intName :: Name -> OnePlacePred -> Bool
 intName x = case x of
     Alice      -> f Alice'
     Bob        -> f Bob'
@@ -46,12 +42,10 @@ intName x = case x of
     Jim        -> f Jim'
     Kim        -> f Kim'
     Linda      -> f Linda'
-    LittleMook -> f LittleMook'
     Noah       -> f Noah'
     Ollie      -> f Ollie'
     Penny      -> f Penny'
     Quine      -> f Quine'
-    Remmy      -> f Remmy'
     SnowWhite  -> f SnowWhite'
     Tom        -> f Tom'
     Uli        -> f Uli'
@@ -69,20 +63,9 @@ intName x = case x of
     Minnie     -> f Minnie'
     Mickey     -> Mickey'
     Sue        -> Sue'
-    Donald     -> Donald'
-    Oscar      -> Oscar'
-    Ryan       -> Ryan'
-    Daffy      -> Daffy'
     where f x = \p -> p x
 
-intPronoun :: (Entity entity) => Pronoun -> OnePlacePred entity -> Bool
-intPronoun y = case y of
-                He   -> \p -> any (p `compose` male) entities
-                She  -> \p -> any (p `compose` female) entities
-                They -> \p -> any (p `compose` \q -> True) entities
-                It   -> \p -> any (p `compose` thing) entities
-
-intADJ :: ADJ -> OnePlacePred entity -> Bool
+intADJ :: ADJ -> OnePlacePred -> Bool
 intADJ adj = case adj of
     Wise        -> 
     Foolish     ->
@@ -111,7 +94,7 @@ intADJ adj = case adj of
     Dull        ->
     Shiney      ->
 
-intSCN :: SCN -> OnePlacePred entity -> Bool
+intSCN :: SCN -> OnePlacePred -> Bool
 intSCN scn = case scn of
     Man      -> helper man
     Woman    -> helper woman
@@ -136,28 +119,28 @@ intSCN scn = case scn of
     Belief   -> helper belief
     Someone  -> helper person
 
-intPCN :: PCN -> OnePlacePred entity -> Bool
+intPCN :: PCN -> OnePlacePred -> Bool
 intPCN Glasses  = helper glasses
 intPCN Jeans    = helper jeans
 intPCN (PS scn) =
 intPCN (PC ccn) =
 
-intMCN :: MCN -> OnePlacePred entity -> Bool
+intMCN :: MCN -> OnePlacePred -> Bool
 intMCN mcn = 
 
-intCCN :: CCN -> OnePlacePred entity -> Bool
+intCCN :: CCN -> OnePlacePred -> Bool
 intCCN ccn = 
 
-intRCN :: CN -> OnePlacePred entity -> Bool
+intRCN :: CN -> OnePlacePred -> Bool
 intRCN rcn =
 
-intCN :: CN -> OnePlacePred entity -> Bool
+intCN :: CN -> OnePlacePred -> Bool
 intCN (Sing scn) = intSCN scn
 intCN (Pl pcn)   = intPCN pcn
 intCN (Mass mcn) = intMCN mcn
 intCN (Col ccn)  = intCCN ccn
 
-intDET :: DET -> OnePlacePred entity -> OnePlacePred entity -> Bool
+intDET :: DET -> OnePlacePred -> OnePlacePred -> Bool
 intDET Some p q = any q (filter p entities)
 intDET A p q = any q (filter p entities)
 intDET Every p q = all q (filter p entities)
@@ -171,31 +154,25 @@ intDET Most p q = length pqlist > length (plist \\ qlist)
         qlist  = filter q entities
         pqlist = filter q plist
 
-intDetP :: (Entity entity) => DetP -> OnePlacePred entity -> Bool
---intDetP (DP0 pronoun) = intPronoun pronoun
-intDetP (DP1 name)    = intName name
-intDetP (DP2 det cn)  = (intDET det) (intCN cn)
-intDetP (DP3 det rcn) = (intDET det) (intRCN rcn)
+intDetP :: DetP -> OnePlacePred -> Bool
+intDetP (DP1 name)        = intName name
+intDetP (DP2 det cn)      = (intDET det) (intCN cn)
+intDetP (DP3 adj det cn)  = (intDET det) (intADJ adj) (intCN cn)
 
-intINF :: INF -> OnePlacePred entity
+intINF :: INF -> OnePlacePred 
 
-intTV :: TV -> TwoPlacePred entity -> Bool
+intTV :: TV -> TwoPlacePred -> Bool
 
 intAV :: AV -> 
 
-intDV :: DV -> ThreePlacePred entity -> Bool
+intDV :: DV -> ThreePlacePred -> Bool
 
-intAux :: Aux -> 
 
-intVP :: VP -> OnePlacePred entity -> Bool
+intVP :: VP -> OnePlacePred -> Bool
 intVP (VP0 inf)       =
 intVP (VP1 tv dp)     =
 intVP (VP3 av To inf) = 
-intVP (VP4 auxV inf)  =
-intVP (VP5 AuxV TV)   = 
-intVP (VP6 auxV dv)   =
-intVP (VP7 auxV av)   = 
-intVP (VP8 auxV)      =
+intVP (VP4 dv dp dp)  =
 
 intSent :: Sent -> Bool
 intSent (Sent dp vp) = (intDetP dp) (intVP vp)

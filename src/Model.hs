@@ -1,9 +1,12 @@
-{-# LANGUAGE TypeFamilies, AllowAmbiguousTypes, TypeOperators, RankNTypes, ConstrainedClassMethods, FlexibleContexts #-}
-
 module Model where
 
 import Data.List
-import Entity
+
+-- This constrains type variable a to be an instance of Entity
+type OnePlacePred   = Entity -> Bool
+type OnePlacePred'   = Atom -> Bool
+type TwoPlacePred   = Entity -> Entity -> Bool
+type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 
 -- Helper Functions
 curry2 :: ((a,b) -> c) -> b -> a -> c
@@ -15,125 +18,75 @@ curry3 f z y x = f (x,y,z)
 self ::  (a -> a -> b) -> a -> b
 self p = \ x -> p x x
 
-pluralize1 :: (Singular -> Bool) -> (Plural -> Bool)
-pluralize1 p = helper p
-    where helper :: OnePlacePred Singular -> OnePlacePred Plural
-          helper p (Collective xs)   = foldr (&&) True (map p xs)
-          helper p (Distributive ys) =  foldr (&&) True (map p ys)
-
 -- Entity Types
 data Atom = Knife1      | Knife2   | Alice'   | Bob'    | Cyrus'    | Ellie'   | 
             Goldilocks' | Hillary' | Irene'   | Jim'    | Kim'      | Linda'   | 
-            LittleMook' | Noah'    | Ollie'   | Penny'  | Quine'    | Remmy'   | 
+            Noah'       | Ollie'   | Penny'   | Quine'  |
             SnowWhite'  | Tom'     | Uli'     | Victor' | Willie'   | Xena'    | Cup2    |
             Spoon1      | Spoon2   | Zorba'   | Atreyu' | Fork1     | Fork2    | Cup1    |
             Dress1      | Dress2   | Shoe1    | Shoe2   | Shoe3     | Shoe4    | Bottle2 |
             Dorothy'    | Fred'    | Glasses1 | Jeans1  | Whiskers' | Mittens' | Bottle1 | 
-            Stuart'     | Gerald'  | Minnie'  | Mickey' | Sue'      | Donald'  | Lake_Huron' |
-            Oscar'      | Ryan'    | Daffy'   | Coven'  | The_Genesee' | Deck1 | Lake_Ontario' |
+            Stuart'     | Gerald'  | Minnie'  | Mickey' | Sue'      | Lake_Huron' |
+            Coven'      | The_Genesee' | Deck1 | Lake_Ontario' |
             Deck2 | Card_1_1 | Card_1_2 | Card_1_3 | Card_1_4 | Card_1_5 | Card_1_6 |
-            Card_2_1 | Card_2_2 | Card_2_3 | Card_2_4 | Card_2_5 | Card_2_6 deriving (Eq, Show, Read, Bounded, Enum)
+            Card_2_1 | Card_2_2 | Card_2_3 | Card_2_4 | Card_2_5 | Card_2_6 deriving (Eq, Show, Bounded, Enum)
 
-data Plural = Collective [Singular] | Distributive [Singular] deriving (Eq, Show, Read)
+type Plural = [Atom] 
 
-{-
 data Mass =  Water | Blood    | Earth | Knowledge | 
              Cloth | Metal    | Air   | Cultery   | 
-             MassOfS Singular | MassOfP Plural deriving (Eq,Show, Read)
+             MassOfS Atom | MassOfP Plural deriving (Eq, Show)
+
+data Entity = At' Atom | Pl' Plural | Ms' Mass deriving (Eq, Show)
+
+-- Helper
+list2OnePlacePred' :: [Atom] -> OnePlacePred'
+list2OnePlacePred' xs = \ x -> elem x xs 
+
+-- Compose two one-place predicates
+compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
+compose p q = \ x -> (p x) && (q x)
+
+--helper :: OnePlacePred -> OnePlacePred -> Bool
+--helper xs q = \p -> any (p `compose` q) xs
+
+-- Predicates
+false1 :: OnePlacePred 
+false1 e = False
+
+false2 :: TwoPlacePred 
+false2 e1 e2 = False
+
+false3 :: ThreePlacePred 
+false3 e1 e2 e3 = False
+
+{-
+girl, boy, princess, dwarf, giant, wizard, sword, dagger, rusty, child, person, man, woman, 
+    male, female, thing, laugh, cheer, shudder, smile, wise, foolish, bad, good, rich, poor,
+    young, old, heavy, light, dark, clean, dirty, wet, dry, cold, warm, magical, tall, short, 
+    long, sharp, dull, shiney, bird, cat, mouse, can_fly, duck, goose, spy :: OnePlacePred
+love, admire, help, defeat ::  TwoPlacePred
+give :: ThreePlacePred
 -}
 
-data Entity = At Atom | Pl Plural deriving Show
+female' :: OnePlacePred'
+female' = list2OnePlacePred' [Zorba', Minnie', Dorothy', Hillary', Xena', Mittens', SnowWhite']
 
-instance Entity Singular where
-    girl     = list2OnePlacePred [SnowWhite,Alice,Dorothy,Goldilocks]
-    boy      = list2OnePlacePred [LittleMook,Atreyu]
-    princess = list2OnePlacePred [Ellie, Xena]
-    dwarf    = list2OnePlacePred [Bob,Remmy]
-    giant    = list2OnePlacePred [Tom]
-    wizard   = list2OnePlacePred [Willie,Victor]
-    sword    = list2OnePlacePred [Fred]
-    dagger   = list2OnePlacePred [Xena]
-    thing    = list2OnePlacePred [Spoon1, Spoon2, Fork1, Fork2, Dress1, Dress2, Shoe1, Shoe2, Shoe3, Shoe4]
-    rusty    = list2OnePlacePred [Fork1, Spoon1]
-    cat      = list2OnePlacePred [Whiskers, Mittens]
-    mouse    = list2OnePlacePred [Mickey, Minnie, Stuart, Gerald, Sue]
-    bird     = list2OnePlacePred[Donald, Daffy, Oscar]
-    duck     = list2OnePlacePred[Donald, Daffy]
-    goose    = list2OnePlacePred[Oscar, Ryan]
-    can_fly  = list2OnePlacePred[Donald, Daffy, Oscar, Oscar]
-    glasses  = list2OnePlacePred[Glasses1]
-    dress    = list2OnePlacePred[Dress1, Dress2]
-    shoe     = list2OnePlacePred[Shoe1, Shoe2, Shoe3, Shoe4]
+male' :: OnePlacePred'
+male' = list2OnePlacePred' [Zorba', Minnie', Dorothy', Hillary', Xena', Mittens', SnowWhite']
 
-    child  = \ x -> (girl x || boy x)
-    person = \ x -> (child x || princess x || dwarf x || giant x || wizard x)
-    man    = \ x -> (dwarf x || giant x || wizard x)
-    woman  = \ x -> princess x
-    male   = \ x -> (man x || boy x)
-    female = \ x -> (woman x || girl x)
-    nonbinary = \ x -> not (male x || female x)
+female :: OnePlacePred
+female (At' x) = female' x
+female (Pl' xs) = all female' xs
+female _ = False
 
-    laugh   = list2OnePlacePred [Alice,Goldilocks,Ellie]
-    cheer   = list2OnePlacePred [LittleMook,Dorothy]
-    shudder = list2OnePlacePred [SnowWhite]
-    smile   = list2OnePlacePred [Alice,Bob,Cyrus,Dorothy,Ellie,Fred,Goldilocks,LittleMook]
+male :: OnePlacePred
+male (At' x) = male' x
+male (Pl' xs) = all male' xs
+male _ = False
 
-    love   = curry2 (`elem` [(Atreyu,Ellie),(Bob,SnowWhite),(Remmy,SnowWhite),(SnowWhite,LittleMook)])
-    admire = curry2 (`elem` [(x,Goldilocks) | x <- entities, person x])
-    help   = curry2 (`elem` [(Willie,Willie),(Victor,Victor),(SnowWhite,Bob),(Dorothy,LittleMook)])
-    defeat = curry2 (`elem` [(x,y) | x <- entities, y <- entities, dwarf x && giant y] ++ [(Alice,Willie),(Alice,Victor)])
+atoms :: [Atom]
+atoms = [minBound..maxBound]
 
-    give = curry3 (`elem` [(Tom,SnowWhite,Xena),(Alice,Ellie,SnowWhite)])
-
-instance AtomicEntity Singular
-
-instance Entity Plural where
-    girl = pluralize1 girl
-    boy  = pluralize1 boy
-    princess = pluralize1 princess
-    dwarf = pluralize1 dwarf
-    giant = pluralize1 giant
-    wizard = pluralize1 wizard
-    sword = pluralize1 sword
-    dagger = pluralize1 dagger
-    rusty = pluralize1 rusty
-    child = pluralize1 child
-    person = pluralize1 person
-    man = pluralize1 man 
-    woman = pluralize1 woman
-    male = pluralize1 male
-    female = pluralize1 female
-    thing = pluralize1 thing
-    nonbinary = pluralize1 nonbinary
-    laugh = pluralize1 laugh
-    cheer = pluralize1 cheer
-    shudder = pluralize1 shudder
-    smile = pluralize1 smile
-    wise = pluralize1 wise
-    foolish = pluralize1 foolish
-    bad = pluralize1 bad
-    good = pluralize1 good
-    rich = pluralize1 rich
-    poor = pluralize1 poor
-    heavy = pluralize1 heavy
-    mellow = pluralize1 mellow
-    discordant = pluralize1 discordant
-    young = pluralize1 young
-    old = pluralize1 old
-    light = pluralize1 light
-    dark = pluralize1 dark
-    clean = pluralize1 clean
-    dirty = pluralize1 dirty
-    wet = pluralize1 wet
-    dry = pluralize1 dry
-    hot = pluralize1 hot 
-    cold = pluralize1 cold
-    shiney = pluralize1 shiney
-    magical = pluralize1 magical
-    tall = pluralize1 tall 
-    short = pluralize1 short 
-    long = pluralize1 long 
-    sharp = pluralize1 sharp
-    dull = pluralize1 dull
-
-instance Entity Mass
+passivize :: TwoPlacePred -> OnePlacePred
+passivize r = \ x -> any (r x) (map At' atoms)
