@@ -1,6 +1,5 @@
 module Model where
 
---import Prelude hiding ((<=))
 import Data.List
 import Semilattice
 
@@ -32,10 +31,20 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'    | Ellie'   |
 
 data Plural = Pluralize [Atom] deriving Show
 
-data Mass = Water' | Wood' | Air'  | Wine'   | Fabric' |
-            Metal' | Rust' | Gold' | Advice' | Ice deriving (Eq, Show)
+data MassT = Water' | Wood' | Air'  | Wine'   | Fabric' |
+             Metal' | Rust' | Gold' | Advice' | Ice'     | Everything deriving (Eq, Show)
+
+data Mass = M [[MassT]] [[Atom]] deriving (Eq, Show)
 
 data Entity = At' Atom | Pl' Plural | Ms' Mass deriving (Eq, Show)
+
+materialize :: [MassT] -> Entity -> Entity 
+materialize ts (At' x) = Ms' (M [ts] [[x]])
+materialize ts (Pl' (Pluralize xs)) = Ms' (M [ts] [xs])
+materialize _ (Ms' x) = Ms' x
+
+fusion :: Mass -> Mass -> Mass
+fusion (M ts1 xs) (M ts2 ys) = M (unique (ts1 ++ ts2)) (unique (xs ++ ys)) 
 
 -- Helper
 list2OnePlacePred' :: (Eq a) => [a] -> a -> Bool
@@ -55,6 +64,9 @@ false2 e1 e2 = False
 false3 :: ThreePlacePred 
 false3 e1 e2 e3 = False
 
+iSum :: Atom -> Atom -> Plural
+iSum x y = Pluralize [x,y]
+
 -- Basically check if lists contain identical elements, regardless of order
 equalP :: Plural -> Plural -> Bool
 equalP (Pluralize xs) (Pluralize ys) = (lenXS == lenYS) && (lenXS == lenFiltered)
@@ -63,9 +75,7 @@ equalP (Pluralize xs) (Pluralize ys) = (lenXS == lenYS) && (lenXS == lenFiltered
           lenFiltered = length (filter (\x -> x `elem` ys) xs) 
 
 iPart :: Plural -> Plural -> Bool
-iPart (Pluralize xs) (Pluralize ys) 
-    | (lenXS <= lenYS) && (lenXS == lenFiltered) = True
-    | otherwise = False
+iPart (Pluralize xs) (Pluralize ys) = (lenXS <= lenYS) && (lenXS == lenFiltered)
     where lenXS = length xs
           lenYS = length ys
           lenFiltered = length (filter (\x -> x `elem` ys) xs) 
@@ -89,7 +99,6 @@ instance Join Plural where
 coven_ :: Plural
 coven_ = Pluralize [Alice', Linda', Irene', Ellie']
 
-
 -- All the royalty
 court_ :: Plural
 court_ = Pluralize [Xena', Atreyu', Victor', Linda']
@@ -103,7 +112,7 @@ court' = Pl' court_
 couple' :: Atom -> Atom -> Plural
 couple' x y = Pluralize [x,y]
 
-{-}
+{-
 couple :: OnePlacePred
 couple (At' x) = False
 couple (Pl' (Pluralize xs)) = 
