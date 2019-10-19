@@ -21,7 +21,7 @@ data Name = Alice  | Bob    | Cyrus  | Ellie | Goldilocks  | Irene    | Jim | Ki
 data CN = Sng SCN | Pl PCN | Ms MCN deriving Show 
 
 -- Mass Common Nouns
-data MCN  = Water  | Wood   | Air  | Wine   | Metal  | Earth  | Rust |
+data MCN  = Water  | Wood   | Air  | Wine   | Metal | Rust |
             Gold   | Advice | Ice  | Fabric deriving Show
 
  -- Plural Common Nouns, most are pluralized version of SCN's
@@ -33,8 +33,8 @@ data RCN = RCN1 CN That VP | RCN2 CN That DetP TV | RCN3 ADJ CN deriving Show
 
 data SCN = Lake     | Cup   | Man    | Woman | Hero   | Heroine | Sword  | Drop  | Bottle |
            Puddle   | Fork  | Spoon  | Knife | Witch  | Boy     | Girl   | Dwarf | Nest   |
-           Princess | Raft  | Wizard | Mouse | Cat    | Dress   | Shoe   | Bird  | Card   |
-           Spy      | Court | Couple | Crowd | Coven  | Prince  | Ring   | Army deriving (Show, Bounded, Enum)
+           Princess | Raft  | Wizard | Mouse | Cat    | Dress   | Shoe   | Bird  | Army   |
+           Spy      | Court | Couple | Crowd | Coven  | Prince  | Ring deriving (Show, Bounded, Enum)
 
 pluralSCNShow :: SCN -> String
 pluralSCNShow x = case x of 
@@ -56,13 +56,13 @@ instance Show PCN where
     show Jeans    = "Jeans"
     show (Plur scn) = pluralSCNShow scn 
 
-data ADJ  = Wise  | Foolish | Bad     | Good   | Young | Old   | 
-            Heavy | Rusty | Clean | Dirty   | Wet   | Dry   | 
-            Warm  | Cold    | Magical | Tall   | Short | Long    | Sharp | Dull  |
-            Sweet | Shiney | Numerous | Widespread deriving Show
+data ADJ = Wise  | Foolish | Bad      | Good       | Young | Old   | Present |
+           Heavy | Rusty   | Clean    | Dirty      | Wet   | Dry   | Dull    |
+           Warm  | Cold    | Magical  | Tall       | Short | Long  | Sharp   | 
+           Sweet | Shiney  | Numerous | Widespread  deriving (Show, Eq)
 
 data VP = VP0 INF | VP1 TV DetP | VP3 AuxV INF | VP4 DV DetP DetP deriving Show
 
-data INF = Laugh | Scatter  | Smile | Run | Walk | Swim deriving Show
-data TV  = Surround | Build | Love | Help | Defeat | Chase | Drink | Be | Have deriving (Show, Eq)
+data INF = Laugh    | Scatter  | Smile | Run  | Walk   | Swim deriving (Show, Eq)
+data TV  = Surround | Build    | Love  | Help | Defeat | Chase | Drink | Be | Have deriving (Show, Eq)
 data DV  = Give deriving (Show, Eq)

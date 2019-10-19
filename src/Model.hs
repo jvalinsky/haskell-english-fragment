@@ -1,5 +1,6 @@
 module Model where
 
+--import Prelude hiding ((<=))
 import Data.List
 import Semilattice
 
@@ -31,12 +32,8 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'    | Ellie'   |
 
 data Plural = Pluralize [Atom] deriving Show
 
-instance Eq Plural where
-    (==) = equalP
-
-data Mass =  Water | Blood    | Earth | Knowledge | 
-             Cloth | Metal    | Air   | Cultery   | 
-             MassOfS Atom | MassOfP Plural deriving (Eq, Show)
+data Mass = Water' | Wood' | Air'  | Wine'   | Fabric' |
+            Metal' | Rust' | Gold' | Advice' | Ice deriving (Eq, Show)
 
 data Entity = At' Atom | Pl' Plural | Ms' Mass deriving (Eq, Show)
 
@@ -48,9 +45,6 @@ list2OnePlacePred' xs = \ x -> elem x xs
 compose' :: OnePlacePred' -> OnePlacePred' -> OnePlacePred'
 compose' p q = \ x -> (p x) && (q x)
 
---helper :: OnePlacePred -> OnePlacePred -> Bool
---helper xs q = \p -> any (p `compose` q) xs
-
 -- Predicates
 false1 :: OnePlacePred 
 false1 e = False
@@ -61,31 +55,40 @@ false2 e1 e2 = False
 false3 :: ThreePlacePred 
 false3 e1 e2 e3 = False
 
+-- Basically check if lists contain identical elements, regardless of order
 equalP :: Plural -> Plural -> Bool
 equalP (Pluralize xs) (Pluralize ys) = (lenXS == lenYS) && (lenXS == lenFiltered)
     where lenXS = length xs
           lenYS = length ys
           lenFiltered = length (filter (\x -> x `elem` ys) xs) 
-  
+
+iPart :: Plural -> Plural -> Bool
+iPart (Pluralize xs) (Pluralize ys) 
+    | (lenXS <= lenYS) && (lenXS == lenFiltered) = True
+    | otherwise = False
+    where lenXS = length xs
+          lenYS = length ys
+          lenFiltered = length (filter (\x -> x `elem` ys) xs) 
+
+unique :: (Eq a) => [a] -> [a]
+unique [] = []
+unique (x:xs) = x : (filter (\y -> y /= x) (unique xs))
+
+concatP :: Plural -> Plural -> Plural
+concatP (Pluralize x) (Pluralize y) = Pluralize (unique (x ++ y))
+
+instance Eq Plural where
+    (==) = equalP
+
+instance PartialOrd Plural where
+    (<=*) = iPart
 
 instance Join Plural where
-    (\/)  = \(Pluralize x) (Pluralize y) -> Pluralize (x ++ y)
-{-
-instance Join Mass where
-    (\/) x y = mSum
-    (=~=) x y = equalM
-    (<=) x y = mPart
--}
-
---iPart :: Atom -> Plural -> Bool
---iPart (Pluralize x) (Pluralize y) = x `elem` y
-  
---iSum :: Atom -> Atom -> Plural
---iSum x y = x ++ y
-
+    (\/)  = concatP
 
 coven_ :: Plural
 coven_ = Pluralize [Alice', Linda', Irene', Ellie']
+
 
 -- All the royalty
 court_ :: Plural
@@ -100,6 +103,7 @@ court' = Pl' court_
 couple' :: Atom -> Atom -> Plural
 couple' x y = Pluralize [x,y]
 
+{-}
 couple :: OnePlacePred
 couple (At' x) = False
 couple (Pl' (Pluralize xs)) = 
@@ -379,6 +383,8 @@ give :: ThreePlacePred
 give (At' x) = give' xs
 give (Pl' (Pluralize xs)) = all give' xs
 give _ = False
+
+-}
 
 coven :: OnePlacePred
 coven x = x == coven'

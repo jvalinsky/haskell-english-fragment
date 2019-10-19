@@ -3,7 +3,21 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: partial-order-0.1.2.1@sha256:ea23c7d57189d5af8dd8c3e05486319d4c7a53193ff6be7bf0be95ffad60341d,1927
+    pantry-tree:
+      size: 273
+      sha256: 18079967c857690faf47c24d3b226d4cb3f8e208f2e19c83a1570d1d45b0e988
+  original:
+    hackage: partial-order-0.1.2.1
+- completed:
+    hackage: containers-0.5.11.0@sha256:28ad7337057442f75bc689315ab4ec7bdf5e6b2c39668f306672cecd82c02798,16685
+    pantry-tree:
+      size: 4849
+      sha256: faa4e75922a28f7cfe9920c1d7ab3866b792cefcd29bf79f54cfe3b6b5f57cbf
+  original:
+    hackage: containers-0.5.11.0
 snapshots:
 - completed:
     size: 523884
