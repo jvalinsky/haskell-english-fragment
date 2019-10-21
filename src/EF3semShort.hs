@@ -127,32 +127,13 @@ intPCN (PC ccn) =
 
 intMCN :: MCN -> OnePlacePred -> Bool
 intMCN mcn = 
-
-intCCN :: CCN -> OnePlacePred -> Bool
-intCCN ccn = 
-
+    
 intRCN :: CN -> OnePlacePred -> Bool
 intRCN rcn =
 
 intCN :: CN -> OnePlacePred -> Bool
-intCN (Sing scn) = intSCN scn
-intCN (Pl pcn)   = intPCN pcn
-intCN (Mass mcn) = intMCN mcn
-intCN (Col ccn)  = intCCN ccn
 
 intDET :: DET -> OnePlacePred -> OnePlacePred -> Bool
-intDET Some p q = any q (filter p entities)
-intDET A p q = any q (filter p entities)
-intDET Every p q = all q (filter p entities)
-intDET The p q = singleton plist && q (head plist)
-    where plist = filter p entities
-            singleton [x] = True
-            singleton  _  = False
-intDET No p q = not (intDET Some p q)
-intDET Most p q = length pqlist > length (plist \\ qlist)
-    where plist  = filter p entities
-        qlist  = filter q entities
-        pqlist = filter q plist
 
 intDetP :: DetP -> OnePlacePred -> Bool
 intDetP (DP1 name)        = intName name
