@@ -27,16 +27,12 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'    | Ellie'   |
             Zorba'      | Atreyu'  | Cup1     | Cup2    | Bottle1   | Bottle2  | 
             Dress1      | Dress2   | Raft1    | Raft2   | Raft3     | Raft4    |
             Dorothy'    | Fred'    | Glasses1 | Jeans1  | Whiskers' | Mittens' | 
-            Gerald'     | Minnie'  | Mickey'  | Sue' deriving (Eq, Show, Bounded, Enum)
-
-data Plural = P [[Atom]] deriving Show
+            Gerald'     | Minnie'  | Mickey'  | Sue' | The_Genesee' deriving (Eq, Show, Bounded, Enum)
 
 data MassT = Water' | Wood' | Air'  | Wine'   | Fabric' |
              Metal' | Rust' | Gold' | Advice' | Ice'     | Everything deriving (Eq, Show)
 
-data Mass = M [[MassT]] [[Atom]] deriving Show
-
-data Entity = At' Atom | Pl' Plural | Ms' Mass deriving (Eq, Show)
+data Entity = Pl' [[Atom]] | Ms' [[Atom]] deriving (Eq, Show)
 
 flatten :: (Eq a) => [[a]] -> [a]
 flatten []   = []

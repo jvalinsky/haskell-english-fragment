@@ -17,7 +17,7 @@ data DET = Some | Many | Most | Each | Every | Neither | Either | The | No | A d
 data Name = Alice  | Bob    | Cyrus  | Ellie | Goldilocks  | Irene    | Jim | Kim  | Hillary |
             Noah   | Ollie  | Penny  | Quine | SnowWhite   | Mickey   | Uli | Fred | Linda   |
             Victor | Willie | Xena   | Zorba | The_Genesee | Whiskers | Tom | Sue  | Dorothy |
-            Stuart | Gerald | Minnie | Lake_Ontario deriving Show
+            Stuart | Gerald | Minnie  deriving Show
 
 data CN = Sng SCN | Pl PCN | Ms MCN deriving Show 
 
