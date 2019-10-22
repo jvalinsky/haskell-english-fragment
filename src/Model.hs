@@ -178,56 +178,67 @@ coldList :: [Atom]
 coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice']
 
 -- Lists for TwoPlacePreds
-chaseList :: [[[Atom]]]
-chaseList = [ 
-    [[Whiskers', Mittens'], mouseList],
-    [[Mittens'], [Gerald']],
-    [[Tom', Bob'], [Ollie', Penny', Uli']],
-    [[Ollie'], [Alice', Dorothy', Ellie']],
-    [[SnowWhite'], [Dorothy']]]
+chaseList :: [[Atom]]
+chaseList = [ [Whiskers' ,  Mickey' ],
+              [Whiskers' ,  Minnie' ],
+              [Whiskers' ,  Sue'    ],
+              [Mittens'  ,  Mickey' ],
+              [Mittens'  ,  Minnie' ],
+              [Mittens'  , Sue'     ],
+              [Mittens'  , Gerald'  ],
+              [Tom'      , Ollie'   ],
+              [Bob'      , Ollie'   ], 
+              [Tom'      , Penny'   ],
+              [Bob'      , Penny'   ],
+              [Tom'      , Uli'     ],
+              [Bob'      , Uli'     ],
+              [Ollie'    , Alice'   ], 
+              [Ollie'    , Ellie'   ],
+              [Ollie'    , Dorothy' ],
+              [Dorothy'  , Ellie'   ],
+              [SnowWhite', Dorothy' ] ]
 
-drinkList :: [[[Atom]]]
-drinkList = [
-    [[Uli'], [Cup1]],
-    [[Ollie', Penny', Alice'],[Bottle2]],
-    [(witchList `union` wizardList), [Bottle1]],
-    [[Quine'], [Cup2]],
-    [giantList, [The_Rhine']],
-    [catList, [The_Genesee']]]
+drinkList :: [[Atom]]
+drinkList = [ [Uli'     , Cup1         ],
+              [Ollie'   , Bottle2      ],
+              [Penny'   , Bottle2      ],
+              [Alice'   , Bottle2      ],
+              [Linda'   , Bottle2      ],
+              [Ellie'   , Bottle2      ],
+              [Victor'  , Bottle2      ],
+              [Kim'     , Bottle2      ],
+              [Jim'     , Bottle2      ],
+              [Quine'   , Cup2         ],
+              [Tom'     , The_Rhine'   ],
+              [Bob'     , The_Rhine'   ],
+              [Whiskers', The_Genesee' ], 
+              [Mittens' , The_Genesee' ] ]
 
-buildList :: [[[Atom]]]
-buildList = [
-    []
-]
+buildList :: [[Atom]]
+buildList = [ [Ollie' , Raft1] ]
 
-hasSwordList :: [[[Atom]]]
-hasSwordList = [ 
-    [[Thorin'], [Sword1]], 
-    [[Fred'],[Sword2]] ]
+hasSwordList :: [[Atom]]
+hasSwordList = [ [Thorin', Sword1], 
+                 [Fred'  , Sword2] ]
 
-hasDaggerList :: [[[Atom]]]
-hasDaggerList = [[[Xena'], [Dagger1]]]
+hasDaggerList :: [[Atom]]
+hasDaggerList = [ [Xena', Dagger1] ]
 
-hasBottle :: [[[Atom]]]
-hasBottle = [
-    [[Ollie', Penny', Alice'],[Bottle2]],
-    [[Ollie'], [Bottle2]],
-    [(witchList `union` wizardList), [Bottle1]],
-    [[Linda'], [Bottle1]]]
+hasBottle :: [[Atom]]
+hasBottle = [ [Ollie', Bottle2],
+              [Linda', Bottle1] ]
 
-hasCup :: [[[Atom]]]
-hasBottle = [
-    [[Quine'], [Cup2]],
-    [[Uli'], [Cup1]]]
+hasCup :: [[Atom]]
+hasBottle = [ [Quine', Cup2],
+              [Uli'  , Cup1] ]
 
-hasRing :: [[[Atom]]]
-hasRing = [
-    [[Kim'], [Ring1]],
-    [[Dis'], [Ring2]],
-    [[Zorba'], [Ring3]]]
+hasRing :: [[Atom]]
+hasRing = [ [Kim'   , Ring1],
+            [Dis'   , Ring2],
+            [Zorba' , Ring3] ]
 
-hasGlasses :: [[[Atom]]]
-hasGlasses = [[[Fred'], [Glasses1]]]
+hasGlasses :: [[Atom]]
+hasGlasses = [ [Fred', Glasses1] ]
 
 {-
 data ADJ = Bad      | Good 
