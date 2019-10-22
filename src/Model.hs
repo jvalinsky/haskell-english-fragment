@@ -174,27 +174,26 @@ smileList = [Tom', Ollie', Alice', Kim', Uli']
 swimList :: [Atom]
 swimList = [Gerald', Whiskers', Mickey', Minnie', Thorin', Ollie', Jim']
 
+coldList :: [Atom]
+coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice']
+
+
 
 -- Lists for TwoPlacePreds
-
-
-
 
 {-
 data ADJ = Wise  | Foolish | Bad      | Good       | Young | Old   | Present |
            Heavy | Rusty   | Clean    | Dirty      | Wet   | Dry   | Dull    |
            Warm  | Cold    | Magical  | Tall       | Short | Long  | Sharp   | 
-           Sweet | Shiney  | Numerous | Widespread  deriving (Show, Eq)
+           Sweet | Shiny  | Numerous | Widespread  deriving (Show, Eq)
 
 data VP = VP0 INF | VP1 TV DetP | VP3 DV DetP DetP deriving Show
 
 data INF = Laugh    | Scatter  | Smile | Run  | Walk   | Swim deriving (Show, Eq)
 data TV  = Surround | Build    | Love  | Help | Defeat | Chase | Drink | Be | Have deriving (Show, Eq)
 data DV  = Give deriving (Show, Eq)
--}
 
 
-{-
 extension :: OnePlacePred -> [Entity]
 
 star :: OnePlacePred -> [Entity]
@@ -218,7 +217,6 @@ mpart :: Entity -> Entity -> Bool
 -- Materially Equivalent
 (~) :: Entity -> Entity -> Bool
 x ~ y = (x `mpart` y) && (y `mpart` x)
-
 
 atom :: Entity -> Bool
 atom (Ms' x) = True
