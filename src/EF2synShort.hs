@@ -62,10 +62,8 @@ instance PrettyShow PCN where
     showPretty Jeans    = "Jeans"
     showPretty (Plur scn) = pluralSCNShowPretty scn 
 
-data ADJ = Wise  | Foolish | Bad      | Good       | Young | Old   | Present |
-           Heavy | Rusty   | Clean    | Dirty      | Wet   | Dry   | Dull    |
-           Warm  | Cold    | Magical  | Tall       | Short | Long  | Sharp   | 
-           Sweet | Shiney  | Numerous | Widespread  deriving (Show, Eq)
+data ADJ = Wise  | Foolish  | Bad  | Good  | Young | Old   |  Rusty   | 
+           Cold  | Magical  | Tall | Short | Long  | Shiny | Numerous | Widespread  deriving (Show, Eq)
 
 data VP = VP0 INF | VP1 TV DetP | VP3 DV DetP DetP deriving Show
 

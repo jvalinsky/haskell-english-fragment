@@ -82,7 +82,7 @@ riverList = [The_Genesee', The_Rhine']
 
 magicalList :: [Atom]
 magicalList = [Penny', Alice', Jim', Linda', Ellie', Victor', Kim', Dis', 
-               Thorin', Tom', Cup1, Sword1, Ring1]
+               Thorin', Tom', Cup1, Sword1, Ring1, Bottle1]
 
 wizardList :: [Atom]
 wizardList = personList `intersect` magicalList
@@ -123,6 +123,9 @@ manList = oldList `intersect` maleList
 womanList :: [Atom]
 womanList = oldList `intersect` femaleList
 
+childrenList :: [Atom]
+childrenList = boyList `union` girlList
+
 metalList :: [Atom]
 metalList = [Sword1, Sword2, Dagger1, Ring1, Ring2, Ring3]
 
@@ -137,9 +140,6 @@ silverList = [Ring3]
 
 ringList :: [Atom]
 ringList = [Ring1, Ring2, Ring3]
-
-dressList :: [Atom]
-dressList = [Dress1, Dress2]
 
 shiny :: [Atom]
 shiny = metalList `intersect` newList
@@ -163,7 +163,7 @@ laughList :: [Atom]
 laughList = [Zorba', Alice', Dorothy', Gerald', Tom', Fred', Thorin']
 
 runList :: [Atom]
-runList = [Xena', Thorin', Jim', Alice'] ++ catList ++ mouseList
+runList = [Xena', Thorin', Jim', Alice', Dorothy', Ellie'] `union` catList `union` mouseList `union` giantList `union` birdList
 
 walkList :: [Atom]
 walkList = [Linda', Fred', Jim', Penny', Ollie', Tom', Bob', Kim', SnowWhite']
@@ -177,21 +177,67 @@ swimList = [Gerald', Whiskers', Mickey', Minnie', Thorin', Ollie', Jim']
 coldList :: [Atom]
 coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice']
 
-
-
 -- Lists for TwoPlacePreds
+chaseList :: [[[Atom]]]
+chaseList = [ 
+    [[Whiskers', Mittens'], mouseList],
+    [[Mittens'], [Gerald']],
+    [[Tom', Bob'], [Ollie', Penny', Uli']],
+    [[Ollie'], [Alice', Dorothy', Ellie']],
+    [[SnowWhite'], [Dorothy']]]
+
+drinkList :: [[[Atom]]]
+drinkList = [
+    [[Uli'], [Cup1]],
+    [[Ollie', Penny', Alice'],[Bottle2]],
+    [(witchList `union` wizardList), [Bottle1]],
+    [[Quine'], [Cup2]],
+    [giantList, [The_Rhine']],
+    [catList, [The_Genesee']]]
+
+buildList :: [[[Atom]]]
+buildList = [
+    []
+]
+
+hasSwordList :: [[[Atom]]]
+hasSwordList = [ 
+    [[Thorin'], [Sword1]], 
+    [[Fred'],[Sword2]] ]
+
+hasDaggerList :: [[[Atom]]]
+hasDaggerList = [[[Xena'], [Dagger1]]]
+
+hasBottle :: [[[Atom]]]
+hasBottle = [
+    [[Ollie', Penny', Alice'],[Bottle2]],
+    [[Ollie'], [Bottle2]],
+    [(witchList `union` wizardList), [Bottle1]],
+    [[Linda'], [Bottle1]]]
+
+hasCup :: [[[Atom]]]
+hasBottle = [
+    [[Quine'], [Cup2]],
+    [[Uli'], [Cup1]]]
+
+hasRing :: [[[Atom]]]
+hasRing = [
+    [[Kim'], [Ring1]],
+    [[Dis'], [Ring2]],
+    [[Zorba'], [Ring3]]]
+
+hasGlasses :: [[[Atom]]]
+hasGlasses = [[[Fred'], [Glasses1]]]
 
 {-
-data ADJ = Wise  | Foolish | Bad      | Good       | Young | Old   | Present |
-           Heavy | Rusty   | Clean    | Dirty      | Wet   | Dry   | Dull    |
-           Warm  | Cold    | Magical  | Tall       | Short | Long  | Sharp   | 
-           Sweet | Shiny  | Numerous | Widespread  deriving (Show, Eq)
+data ADJ = Bad      | Good 
+           Clean    | Dirty     
+            | Tall       | Short | Long  | Sharp   |  Numerous | Widespread  deriving (Show, Eq)
 
-data VP = VP0 INF | VP1 TV DetP | VP3 DV DetP DetP deriving Show
+Scatter 
 
-data INF = Laugh    | Scatter  | Smile | Run  | Walk   | Swim deriving (Show, Eq)
-data TV  = Surround | Build    | Love  | Help | Defeat | Chase | Drink | Be | Have deriving (Show, Eq)
-data DV  = Give deriving (Show, Eq)
+Surround | Build    | Love  | Help | Defeat | Chase | Drink
+Give
 
 
 extension :: OnePlacePred -> [Entity]
