@@ -30,7 +30,7 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'   
 atoms :: [Atom]
 atoms = [minBound..maxBound]
 
-data MType = Water' | Wine'   | Fabric' | Metal' | Rust' | Gold' | Advice' | Everything deriving (Eq, Show)
+data MType = Water' | Wine' | Fabric' | Metal' | Rust' | Gold' | Advice' | Everything deriving (Eq, Show)
 
 data Entity = Pl' [[Atom]] | Ms' [[Atom]] deriving (Eq, Show)
 
@@ -318,20 +318,27 @@ waterList = [Water_in_The_Rhine, Water_in_The_Genesee, Water_in_Cup1, Water_in_C
 widespreadList :: [[Atom]]
 widespreadList = [adviceList, waterList]
 
-numerousList :: [[Atom]]
-numerousList = []
-
 dirtyList :: [Atom]
 dirtyList = [Ollie', Dress2, Ring3, Water_in_The_Genesee]
 
 cleanList :: [Atom]
 cleanList = ((atoms \\ adviceList) \\ dirtyList)
-{-
-data ADJ = 
-           Clean    | Dirty     
-            | Tall       | Short |  Numerous deriving (Show, Eq)
 
-Give
+giveList :: [[Atom]]
+giveList = [ [Irene' , Alice' , Dress1  ],
+             [Kim'   , Ellie' , Dress2  ],
+             [Fred'  , Xena'  , Dagger1 ],
+             [Dis'   , Thorin', Sword1  ],
+             [Victor', Fred'  , Sword2  ] ]
+
+tallList :: [Atom]
+tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene']
+
+shortList :: [Atom]
+shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine']
+
+
+{-
 
 extension :: OnePlacePred -> [Entity]
 
