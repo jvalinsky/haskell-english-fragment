@@ -25,7 +25,7 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'   
             Advice_from_Fred | Advice_from_Ollie   | Advice_from_Linda | Advice_from_Irene | 
             Advice_from_Xena | Advice_from_Jim | Advice_from_Victor |
            Advice_from_Zorba | Advice_from_SnowWhite | Advice_from_Alice | 
-           Advice_from_Goldilocks | Advice_from_Tom deriving (Eq, Show, Bounded, Enum)
+           Advice_from_Goldilocks | Advice_from_Tom  | Water_in_Cup1 | Water_in_Cup2 deriving (Eq, Show, Bounded, Enum)
 
 atoms :: [Atom]
 atoms = [minBound..maxBound]
@@ -182,7 +182,7 @@ swimList :: [Atom]
 swimList = [Gerald', Whiskers', Mickey', Minnie', Thorin', Ollie', Jim']
 
 coldList :: [Atom]
-coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice']
+coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice', Water_in_Cup1, Water_in_The_Genesee, Water_in_The_Rhine]
 
 -- Lists for TwoPlacePreds
 chaseList :: [[Atom]]
@@ -305,10 +305,31 @@ goodList = [Advice_from_Linda, Advice_from_Irene, Advice_from_Xena,
 tornList :: [Atom]
 tornList = [Dress2, Fabric_of_Dress2]
 
+adviceList :: [Atom]
+adviceList = [ Advice_from_Linda, Advice_from_Irene, Advice_from_Xena, 
+               Advice_from_Jim, Advice_from_Victor, Advice_from_Fred,
+               Advice_from_Ollie, Advice_from_Zorba, Advice_from_SnowWhite, 
+               Advice_from_Alice, Advice_from_Goldilocks, Advice_from_Tom ]
+
+
+waterList :: [Atom]
+waterList = [Water_in_The_Rhine, Water_in_The_Genesee, Water_in_Cup1, Water_in_Cup2]
+
+widespreadList :: [[Atom]]
+widespreadList = [adviceList, waterList]
+
+numerousList :: [[Atom]]
+numerousList = []
+
+dirtyList :: [Atom]
+dirtyList = [Ollie', Dress2, Ring3, Water_in_The_Genesee]
+
+cleanList :: [Atom]
+cleanList = ((atoms \\ adviceList) \\ dirtyList)
 {-
 data ADJ = 
            Clean    | Dirty     
-            | Tall       | Short |  Numerous | Widespread  deriving (Show, Eq)
+            | Tall       | Short |  Numerous deriving (Show, Eq)
 
 Give
 
