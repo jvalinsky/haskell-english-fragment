@@ -8,6 +8,8 @@ type OnePlacePred   = Entity -> Bool
 type TwoPlacePred   = Entity -> Entity -> Bool
 type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 
+-- i operator means there exists a unique
+-- 
 -- Entity Types
 data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'       | 
             Goldilocks' | Hillary' | Irene'   | Jim'    | Kim'       | Linda'       | 
@@ -252,7 +254,6 @@ hasRing = [ [Kim'   , Ring1],
 hasGlasses :: [[Atom]]
 hasGlasses = [ [Fred', Glasses1] ]
 
-
 fightList :: [[Atom]]
 fightList = [ [Xena'  , Irene'],
               [Thorin', Fred' ],
@@ -383,7 +384,6 @@ list2OnePlacePred xs = \ x -> elem x xs
 compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
 compose p q = \ x -> (p x) && (q x)
 
-
 composedOf :: Atom -> [MType]
 composedOf x = case x of
     Ring1        -> [Metal']
@@ -414,7 +414,6 @@ composedOf x = case x of
     Goldilocks'  -> [Advice']
     Tom'         -> [Advice']
     _            -> [Everything']
-
 
 --extension :: OnePlacePred -> [Entity]
 --extension 
