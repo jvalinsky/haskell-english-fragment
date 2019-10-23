@@ -17,27 +17,22 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'   
             Dress1      | Dress2   | Raft1    | Raft2   | Raft3      | Raft4        |
             Dorothy'    | Fred'    | Glasses1 | Ring1   | Whiskers'  | Mittens'     | 
             Gerald'     | Minnie'  | Mickey'  | Sue'    | The_Rhine' | Dis'         | 
-            Thorin'     | Ring2    | Ring3    | Wine_in_Bottle1 | Wine_in_Bottle2   |
-            Water_in_The_Genesee   | Water_in_The_Rhine | Metal_of_Sword1 | Metal_of_Sword2 |
-            Metal_of_Dagger1  | Metal_of_Glasses1  | Metal_of_Ring1    | Metal_of_Ring2    |
-            Metal_of_Ring3    | Metal_of_Ring4     | Fabric_of_Dress1  | Fabric_of_Dress2  |
-            Glass_of_Bottle1  | Glass_of_Bottle2   | Rust_of_Sword1    | Rust_of_Ring3     |
-            Advice_from_Fred | Advice_from_Ollie   | Advice_from_Linda | Advice_from_Irene | 
-            Advice_from_Xena | Advice_from_Jim | Advice_from_Victor | Glass_of_Glasses1    |
-           Advice_from_Zorba | Advice_from_SnowWhite | Advice_from_Alice | Ceramic_of_Cup1 |
-           Ceramic_of_Cup2   | Advice_from_Goldilocks | Advice_from_Tom  | Water_in_Cup1 | 
-           Water_in_Cup2 deriving (Eq, Show, Bounded, Enum)
+            Thorin'     | Ring2    | Ring3    deriving (Eq, Show, Bounded, Enum)
 
 atoms :: [Atom]
 atoms = [minBound..maxBound]
 
-data MType = Water' | Wine' | Fabric' | Metal' | Rust' | Gold' | Advice' | Everything deriving (Eq, Show)
+data MType = Water' | Wine' | Advice' | Metal' | Everything' deriving (Eq, Show)
 
-data Entity = Pl' [[Atom]] | Ms' [[Atom]] deriving (Eq, Show)
+data Mass = MassOf [MType] [Atom] deriving (Eq, Show)
+
+data Plural = Pl [Atom] deriving (Eq, Show)
+
+data Entity = Pl' Plural | Ms' Mass deriving (Eq, Show)
 
 -- Lists for OnePlacePreds
 thingList :: [Atom]
-thingList = [Sword1, Sword2, Dagger1, Cup1, Cup2, Bottle1, Bottle2, The_Genesee', 
+thingList = [Sword1, Sword2, Dagger1, Cup1, Cup2, Bottle1, Bottle2, The_Genesee', The_Rhine',
               Dress1, Dress2, Raft1, Raft2, Raft3, Raft4, Glasses1, Ring1, Ring2, Ring3]
 
 glassesList :: [Atom]
@@ -114,10 +109,10 @@ youngList = [Ollie', Penny', Stuart', Uli', Willie', Noah', Tom',
              Alice', Ellie', Goldilocks', SnowWhite', Dorothy', Mittens']
 
 oldList :: [Atom]
-oldList = [Sword1, Bottle1, Ring3, Dress2, Glasses1, Glass_of_Bottle1, Rust_of_Sword1] ++ (personList \\ youngList) ++ birdList ++ metalList 
+oldList = [Sword1, Bottle1, Ring3, Dress2, Glasses1] ++ (personList \\ youngList) ++ birdList ++ metalList 
 
 newList :: [Atom]
-newList = (thingList \\ oldList) ++ [Glass_of_Glasses1, Glass_of_Bottle2, Rust_of_Ring3] ++ ceramicsList
+newList = (thingList \\ oldList) 
 
 boyList :: [Atom]
 boyList = youngList `intersect` maleList
@@ -143,12 +138,6 @@ shiny = metalList `intersect` newList
 rustyList :: [Atom]
 rustyList = [Sword1, Ring3]
 
-ceramicList :: [Atom]
-ceramicList = cupList
-
-ceramicsList :: [Atom]
-ceramicsList = [Ceramic_of_Cup1, Ceramic_of_Cup2]
-
 wiseList :: [Atom]
 wiseList = [Linda', Irene', Xena', Jim', Victor', Fred']
 
@@ -159,7 +148,11 @@ laughList :: [Atom]
 laughList = [Zorba', Alice', Dorothy', Gerald', Tom', Fred', Thorin']
 
 runList :: [Atom]
-runList = [Xena', Thorin', Jim', Alice', Dorothy', Ellie'] `union` catList `union` mouseList `union` giantList `union` birdList
+runList = [Xena', Thorin', Jim', Alice', Dorothy', Ellie'] `union` 
+           catList `union` 
+           mouseList `union` 
+           giantList `union` 
+           birdList
 
 walkList :: [Atom]
 walkList = [Linda', Fred', Jim', Penny', Ollie', Tom', Bob', Kim', SnowWhite']
@@ -171,7 +164,10 @@ swimList :: [Atom]
 swimList = [Gerald', Whiskers', Mickey', Minnie', Thorin', Ollie', Jim']
 
 coldList :: [Atom]
-coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice', Water_in_Cup1, Water_in_The_Genesee, Water_in_The_Rhine]
+coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice']
+
+coldMList :: [Mass]
+coldMList = [(MassOf [Water'] [Cup1]), (MassOf [Water'] [The_Genesee']), (MassOf [Water'] [The_Rhine'])]
 
 -- Lists for TwoPlacePreds
 chaseList :: [[Atom]]
@@ -196,8 +192,9 @@ chaseList = [ [Whiskers' ,  Mickey' ],
 
 drinkList :: [[Atom]]
 drinkList = [ [Uli'     , Cup1         ],
-              [Ollie'   , Bottle2      ],
-              [Penny'   , Bottle2      ],
+              [Ollie'   , Bottle1      ],
+              [Penny'   , Bottle1      ],
+              [Dorothy' , Bottle1      ],
               [Alice'   , Bottle2      ],
               [Linda'   , Bottle2      ],
               [Ellie'   , Bottle2      ],
@@ -281,38 +278,52 @@ surroundList :: [[[Atom]]]
 surroundList = [ [warriorList, giantList] ]
 
 badList :: [Atom]
-badList = [Advice_from_Ollie, Advice_from_Zorba, 
-           Advice_from_SnowWhite, Advice_from_Alice, 
-           Advice_from_Goldilocks, Advice_from_Tom,
-           Noah', Kim', Wine_in_Bottle1, Water_in_The_Genesee,
-           Rust_of_Sword1]
+badList =  [Noah', Kim']
+
+badMList :: [Mass]
+badMList = [(MassOf [Advice'] [Ollie']), (MassOf [Advice'] [Zorba']), 
+            (MassOf [Advice'] [SnowWhite']), (MassOf [Advice'] [Alice']), 
+            (MassOf [Advice'] [Goldilocks']), (MassOf [Advice'] [Tom']),
+            (MassOf [Water'] [The_Genesee']), (MassOf [Wine'] [Bottle1])]
 
 goodList :: [Atom]
-goodList = [Advice_from_Linda, Advice_from_Irene, Advice_from_Xena, 
-           Advice_from_Jim, Advice_from_Victor, Advice_from_Fred,
-           Wine_in_Bottle2, Water_in_The_Rhine, Fred', Xena', Thorin']
+goodList = [Fred', Xena', Thorin']
+
+goodMList :: [Mass]
+goodMList = [ (MassOf [Advice'] [Linda']), (MassOf [Advice'] [Irene']), 
+              (MassOf [Advice'] [Xena']), (MassOf [Advice'] [Jim']),
+              (MassOf [Advice'] [Victor']), (MassOf [Advice'] [Fred']), 
+              (MassOf [Wine'] [Bottle2]), (MassOf [Water'] [The_Rhine'])]
 
 tornList :: [Atom]
-tornList = [Dress2, Fabric_of_Dress2]
+tornList = [Dress2]
 
-adviceList :: [Atom]
-adviceList = [ Advice_from_Linda, Advice_from_Irene, Advice_from_Xena, 
-               Advice_from_Jim, Advice_from_Victor, Advice_from_Fred,
-               Advice_from_Ollie, Advice_from_Zorba, Advice_from_SnowWhite, 
-               Advice_from_Alice, Advice_from_Goldilocks, Advice_from_Tom ]
+adviceList :: [Mass]
+adviceList = [ (MassOf [Advice'] [Linda']), (MassOf [Advice'] [Irene']), 
+               (MassOf [Advice'] [Xena']), (MassOf [Advice'] [Jim']),
+               (MassOf [Advice'] [Victor']), (MassOf [Advice'] [Fred']),
+               (MassOf [Advice'] [Ollie']), (MassOf [Advice'] [Zorba']), 
+               (MassOf [Advice'] [SnowWhite']), (MassOf [Advice'] [Alice']), 
+               (MassOf [Advice'] [Goldilocks']), (MassOf [Advice'] [Tom']) ]
+    
+waterMList :: [Mass]
+waterMList = [ (MassOf [Water'] [The_Rhine']), (MassOf [Water'] [The_Genesee']),
+               (MassOf [Water'] [Cup1]), (MassOf [Water'] [Cup2]) ]
 
-
-waterList :: [Atom]
-waterList = [Water_in_The_Rhine, Water_in_The_Genesee, Water_in_Cup1, Water_in_Cup2]
-
-widespreadList :: [[Atom]]
-widespreadList = [adviceList, waterList]
+widespreadMList :: [[Mass]]
+widespreadMList = [adviceList, waterMList]
 
 dirtyList :: [Atom]
-dirtyList = [Ollie', Willie', Dress2, Ring3, Water_in_The_Genesee]
+dirtyList = [Ollie', Willie', Dress2, Ring3]
+
+dirtyMList :: [Mass]
+dirtyMList = [(MassOf [Water'] [The_Genesee'])]
 
 cleanList :: [Atom]
-cleanList = ((atoms \\ adviceList) \\ dirtyList)
+cleanList = atoms \\ dirtyList
+
+cleanMList :: [Mass]
+cleanMList =  [(MassOf [Water'] [The_Rhine'])]
 
 giveList :: [[Atom]]
 giveList = [ [Irene' , Alice' , Dress1  ],
@@ -322,51 +333,41 @@ giveList = [ [Irene' , Alice' , Dress1  ],
              [Victor', Fred'  , Sword2  ] ]
 
 tallList :: [Atom]
-tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene']
+tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene', Bottle2]
 
 shortList :: [Atom]
-shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine', Willie']
-
-rustList :: [Atom]
-rustList = [Rust_of_Ring3, Rust_of_Sword1]
-
-glassList :: [Atom]
-glassList = [Glass_of_Bottle1, Glass_of_Bottle2, Glass_of_Glasses1]
-
-hasMetalList :: [Atom]
-hasMetalList = [Dagger1, Sword1, Sword2, Glasses1] ++ ringList
+shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine', Willie', Bottle1]
 
 metalList :: [Atom]
-metalList = [ Metal_of_Dagger1, Metal_of_Sword1, Metal_of_Sword2,
-              Metal_of_Glasses1, Metal_of_Ring1, Metal_of_Ring2, 
-              Metal_of_Ring3, Metal_of_Ring4  ]
+metalList = [Dagger1, Sword1, Sword2, Glasses1] ++ ringList
 
-isSteelList :: [Atom]
-isSteelList = [Sword1, Sword2, Dagger1]
-
-isGoldList :: [Atom]
-isGoldList = [Ring1, Ring2]
-
-isSilverList :: [Atom]
-isSilverList = [Ring3]
+metalMList :: [Mass]
+metalMList = [ (MassOf [Metal'] [Dagger1]), (MassOf [Metal'] [Sword1]), 
+              (MassOf [Metal'] [Sword2]), (MassOf [Metal'] [Glasses1]), 
+              (MassOf [Metal'] [Ring1]), (MassOf [Metal'] [Ring2]), 
+              (MassOf [Metal'] [Ring3]) ]
 
 steelList :: [Atom]
-steelList = [Metal_of_Sword1, Metal_of_Sword2, Metal_of_Dagger1, Metal_of_Glasses1]
+steelList = [Sword1, Sword2, Dagger1]
 
 goldList :: [Atom]
-goldList = [Metal_of_Ring1, Metal_of_Ring2]
+goldList = [Ring1, Ring2]
 
 silverList :: [Atom]
-silverList = [Metal_of_Ring3]
+silverList = [Ring3]
 
-crackedList :: [Atom]
-crackedList = [Bottle1, Cup1, Ceramic_of_Cup1, Glass_of_Glasses1]
+steelMList :: [Mass]
+steelMList = [(MassOf [Metal'] [Dagger1]), (MassOf [Metal'] [Sword1]), 
+              (MassOf [Metal'] [Sword2]), (MassOf [Metal'] [Glasses1]) ]
 
-wineList :: [Atom]
-wineList = [Wine_in_Bottle1, Wine_in_Bottle2]
+goldMList :: [Mass]
+goldMList = [(MassOf [Metal'] [Ring1]), (MassOf [Metal'] [Ring2])]
 
-portionsOfMatter :: [Atom]
-portionsOfMatter = adviceList ++ waterList ++ wineList ++ glassList ++ rustList ++ metalList
+silverMList :: [Mass]
+silverMList = [(MassOf [Metal'] [Ring3])]
+
+wineMList :: [Mass]
+wineMList = [ (MassOf [Wine'] [Bottle1]),  (MassOf [Wine'] [Bottle2])]
 
 -- Helper functions
 
