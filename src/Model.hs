@@ -362,8 +362,13 @@ silverList = [Metal_of_Ring3]
 crackedList :: [Atom]
 crackedList = [Bottle1, Cup1, Ceramic_of_Cup1, Glass_of_Glasses1]
 
-portions_of_matter :: [Atom]
-portions_of_matter = adviceList ++ waterList ++ wineList ++ glassList ++ rustList ++ metalList
+wineList :: [Atom]
+wineList = [Wine_in_Bottle1, Wine_in_Bottle2]
+
+portionsOfMatter :: [Atom]
+portionsOfMatter = adviceList ++ waterList ++ wineList ++ glassList ++ rustList ++ metalList
+
+-- Helper functions
 
 list2OnePlacePred :: [Entity] -> OnePlacePred
 list2OnePlacePred xs = \ x -> elem x xs 
@@ -374,9 +379,6 @@ compose p q = \ x -> (p x) && (q x)
 --passivize :: TwoPlacePred -> OnePlacePred
 --passivize r = \ x -> any (r x) atoms
 
-
-wineList :: [Atom]
-wineList = [Wine_in_Bottle1, Wine_in_Bottle2]
 {-
 
 extension :: OnePlacePred -> [Entity]
