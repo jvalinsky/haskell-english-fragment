@@ -68,5 +68,5 @@ data ADJ = Wise  | Foolish  | Bad  | Good  | Young | Old   |  Rusty   |
 data VP = VP0 INF | VP1 TV DetP | VP3 DV DetP DetP deriving Show
 
 data INF = Laugh    | Scatter  | Smile | Run  | Walk   | Swim deriving (Show, Eq)
-data TV  = Surround | Build    | Love  | Help | Defeat | Chase | Drink | Be | Have deriving (Show, Eq)
+data TV  = Surround | Build    | Help | Defeat | Chase | Drink | Be | Have deriving (Show, Eq)
 data DV  = Give deriving (Show, Eq)

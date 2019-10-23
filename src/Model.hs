@@ -319,7 +319,7 @@ widespreadList :: [[Atom]]
 widespreadList = [adviceList, waterList]
 
 dirtyList :: [Atom]
-dirtyList = [Ollie', Dress2, Ring3, Water_in_The_Genesee]
+dirtyList = [Ollie', Willie', Dress2, Ring3, Water_in_The_Genesee]
 
 cleanList :: [Atom]
 cleanList = ((atoms \\ adviceList) \\ dirtyList)
@@ -335,8 +335,17 @@ tallList :: [Atom]
 tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene']
 
 shortList :: [Atom]
-shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine']
+shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine', Willie']
 
+
+list2OnePlacePred :: [Entity] -> OnePlacePred
+list2OnePlacePred xs = \ x -> elem x xs 
+
+compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
+compose p q = \ x -> (p x) && (q x)
+
+passivize :: TwoPlacePred -> OnePlacePred
+passivize r = \ x -> any (r x) atoms
 
 {-
 
