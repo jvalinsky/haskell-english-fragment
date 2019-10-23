@@ -215,7 +215,20 @@ drinkList = [ [Uli'     , Cup1         ],
               [Mittens' , The_Genesee' ] ]
 
 buildList :: [[Atom]]
-buildList = [ [Ollie' , Raft1] ]
+buildList = [ [Ollie'  , Raft1],
+              [Penny'  , Raft1],
+              [Uli'    , Raft1],
+              [Alice'  , Raft2],
+              [Dorothy', Raft2],
+              [Ellie'  , Raft2],
+              [Linda'  , Raft3],
+              [Hillary', Raft3],
+              [Zorba'  , Raft3],
+              [Xena'   , Raft4],
+              [Thorin' , Raft4] ]
+
+warriorList :: [Atom]
+warriorList = [Xena', Thorin', Irene', Victor', Fred'] ++ giantList
 
 hasSwordList :: [[Atom]]
 hasSwordList = [ [Thorin', Sword1], 
@@ -229,7 +242,7 @@ hasBottle = [ [Ollie', Bottle2],
               [Linda', Bottle1] ]
 
 hasCup :: [[Atom]]
-hasBottle = [ [Quine', Cup2],
+hasCup = [ [Quine', Cup2],
               [Uli'  , Cup1] ]
 
 hasRing :: [[Atom]]
@@ -240,6 +253,9 @@ hasRing = [ [Kim'   , Ring1],
 hasGlasses :: [[Atom]]
 hasGlasses = [ [Fred', Glasses1] ]
 
+
+fightList :: [[Atom]]
+fightList = []
 {-
 data ADJ = Bad      | Good 
            Clean    | Dirty     
@@ -249,7 +265,6 @@ Scatter
 
 Surround | Build    | Love  | Help | Defeat | Chase | Drink
 Give
-
 
 extension :: OnePlacePred -> [Entity]
 
