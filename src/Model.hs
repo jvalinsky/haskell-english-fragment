@@ -431,9 +431,15 @@ fusion (Ms' x) (Ms' y) = Ms' (x `fusion'` y)
 fusion (Pl' x) (Pl' y) = Ms' (helper x y)
     where helper (Pl xs) (Pl ys) = MassOf [Everything'] (unique (xs ++ ys))
 
---constitutes' :: Plural -> Mass -> Bool
+subList :: (Eq a) => [a] -> [a] -> Bool
+subList xs ys = length (filter (\x -> x `elem` ys) xs) == length xs
 
---constitutes :: Entity -> Entity -> Bool
+constitutes' :: Atom -> Mass -> Bool
+constitutes' x (MassOf ts [y]) = (composedOf x) `subList` ts && (x == y)
+constitutes' x (MassOf ts ys)  = (composedOf x) `subList` ts && (x `elem` ys)
+
+constitutes'' :: Plural -> Mass -> Bool
+constitutes'' (Pl xs) (MassOf ts ys) = 
 
 materialize' :: Plural -> Mass
 materialize' (Pl xs) = MassOf [Everything'] xs
