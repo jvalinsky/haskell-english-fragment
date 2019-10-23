@@ -22,8 +22,7 @@ data Name = Alice  | Bob    | Cyrus  | Ellie | Goldilocks  | Irene    | Jim | Ki
 data CN = Sng SCN | Pl PCN | Ms MCN deriving Show 
 
 -- Mass Common Nouns
-data MCN  = Water  | Wood   | Air  | Wine   | Metal | Rust |
-            Gold   | Advice | Ice  | Fabric deriving Show
+data MCN  = Water  | Wood | Glass | Wine   | Metal |  Advice  deriving Show
 
  -- Plural Common Nouns, most are pluralized version of SCN's
  -- but some nouns have only plural form or their singular form has
