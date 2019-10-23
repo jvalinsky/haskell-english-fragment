@@ -17,13 +17,20 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'   
             Dress1      | Dress2   | Raft1    | Raft2   | Raft3      | Raft4        |
             Dorothy'    | Fred'    | Glasses1 | Ring1   | Whiskers'  | Mittens'     | 
             Gerald'     | Minnie'  | Mickey'  | Sue'    | The_Rhine' | Dis'         | 
-            Thorin'     | Ring2    | Ring3 deriving (Eq, Show, Bounded, Enum)
+            Thorin'     | Ring2    | Ring3    | Wine_in_Bottle1 | Wine_in_Bottle2   |
+            Water_in_The_Genesee   | Water_in_The_Rhine | Metal_of_Sword1 | Metal_of_Sword2 |
+            Metal_of_Dagger1  | Metal_of_Glasses1  | Metal_of_Ring1    | Metal_of_Ring2    |
+            Metal_of_Ring3    | Metal_of_Ring4     | Fabric_of_Dress1  | Fabric_of_Dress2  |
+            Glass_of_Bottle1  | Glass_of_Bottle2   | Rust_of_Sword1    | Rust_of_Ring3     |
+            Advice_from_Fred | Advice_from_Ollie   | Advice_from_Linda | Advice_from_Irene | 
+            Advice_from_Xena | Advice_from_Jim | Advice_from_Victor |
+           Advice_from_Zorba | Advice_from_SnowWhite | Advice_from_Alice | 
+           Advice_from_Goldilocks | Advice_from_Tom deriving (Eq, Show, Bounded, Enum)
 
 atoms :: [Atom]
 atoms = [minBound..maxBound]
 
-data MType = Water' | Wood' | Air'  | Wine'   | Fabric' |
-             Metal' | Rust' | Gold' | Advice' | Ice'    | Everything deriving (Eq, Show)
+data MType = Water' | Wine'   | Fabric' | Metal' | Rust' | Gold' | Advice' | Everything deriving (Eq, Show)
 
 data Entity = Pl' [[Atom]] | Ms' [[Atom]] deriving (Eq, Show)
 
@@ -154,10 +161,10 @@ ceramicList :: [Atom]
 ceramicList = cupList
 
 wiseList :: [Atom]
-wiseList = [Linda', Irene', Minnie', Xena', Jim', Victor', Fred']
+wiseList = [Linda', Irene', Xena', Jim', Victor', Fred']
 
 foolishList :: [Atom]
-foolishList = [Alice', Goldilocks', Ollie', Tom', Zorba', Mickey', SnowWhite']
+foolishList = [Alice', Goldilocks', Ollie', Tom', Zorba', SnowWhite']
 
 laughList :: [Atom]
 laughList = [Zorba', Alice', Dorothy', Gerald', Tom', Fred', Thorin']
@@ -228,7 +235,7 @@ buildList = [ [Ollie'  , Raft1],
               [Thorin' , Raft4] ]
 
 warriorList :: [Atom]
-warriorList = [Xena', Thorin', Irene', Victor', Fred'] ++ giantList
+warriorList = [Xena', Thorin', Irene', Victor', Fred', Cyrus', Quine'] 
 
 hasSwordList :: [[Atom]]
 hasSwordList = [ [Thorin', Sword1], 
@@ -255,15 +262,54 @@ hasGlasses = [ [Fred', Glasses1] ]
 
 
 fightList :: [[Atom]]
-fightList = []
+fightList = [ [Xena'  , Irene'],
+              [Thorin', Fred' ],
+              [Victor', Tom'  ],
+              [Victor', Bob'  ],
+              [Fred'  , Tom'  ],
+              [Fred'  , Bob'  ] ]
+
+defeatList :: [[Atom]]
+defeatList = [ [Xena'  , Irene' ],
+               [Thorin', Fred'  ],
+               [Tom'   , Fred'  ],
+               [Bob'   , Victor'] ]
+
+helpList :: [[Atom]]
+helpList = [ [Victor', Fred'   ],
+             [Ollie' , Penny'  ],
+             [Ollie' , Uli'    ],
+             [Alice' , Dorothy'],
+             [Alice' , Ellie'  ],
+             [Linda' , Hillary'],
+             [Linda' , Zorba'  ],
+             [Xena'  , Thorin' ] ]
+
+scatterList :: [[Atom]]
+scatterList = [mouseList, warriorList]
+
+surroundList :: [[[Atom]]]
+surroundList = [ [warriorList, giantList] ]
+
+badList :: [Atom]
+badList = [Advice_from_Ollie, Advice_from_Zorba, 
+           Advice_from_SnowWhite, Advice_from_Alice, 
+           Advice_from_Goldilocks, Advice_from_Tom,
+           Noah', Kim', Wine_in_Bottle1, Water_in_The_Genesee]
+
+goodList :: [Atom]
+goodList = [Advice_from_Linda, Advice_from_Irene, Advice_from_Xena, 
+           Advice_from_Jim, Advice_from_Victor, Advice_from_Fred,
+           Wine_in_Bottle2, Water_in_The_Rhine, Fred', Xena', Thorin']
+
+tornList :: [Atom]
+tornList = [Dress2, Fabric_of_Dress2]
+
 {-
-data ADJ = Bad      | Good 
+data ADJ = 
            Clean    | Dirty     
-            | Tall       | Short | Long  | Sharp   |  Numerous | Widespread  deriving (Show, Eq)
+            | Tall       | Short |  Numerous | Widespread  deriving (Show, Eq)
 
-Scatter 
-
-Surround | Build    | Love  | Help | Defeat | Chase | Drink
 Give
 
 extension :: OnePlacePred -> [Entity]
