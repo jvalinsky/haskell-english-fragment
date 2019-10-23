@@ -417,7 +417,7 @@ composedOf x = case x of
 
 
 --extension :: OnePlacePred -> [Entity]
---extension
+--extension 
 
 unique :: (Eq a) => [a] -> [a]
 unique [] = []
