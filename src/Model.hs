@@ -23,9 +23,10 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'   
             Metal_of_Ring3    | Metal_of_Ring4     | Fabric_of_Dress1  | Fabric_of_Dress2  |
             Glass_of_Bottle1  | Glass_of_Bottle2   | Rust_of_Sword1    | Rust_of_Ring3     |
             Advice_from_Fred | Advice_from_Ollie   | Advice_from_Linda | Advice_from_Irene | 
-            Advice_from_Xena | Advice_from_Jim | Advice_from_Victor |
-           Advice_from_Zorba | Advice_from_SnowWhite | Advice_from_Alice | 
-           Advice_from_Goldilocks | Advice_from_Tom  | Water_in_Cup1 | Water_in_Cup2 deriving (Eq, Show, Bounded, Enum)
+            Advice_from_Xena | Advice_from_Jim | Advice_from_Victor | Glass_of_Glasses1    |
+           Advice_from_Zorba | Advice_from_SnowWhite | Advice_from_Alice | Ceramic_of_Cup1 |
+           Ceramic_of_Cup2   | Advice_from_Goldilocks | Advice_from_Tom  | Water_in_Cup1 | 
+           Water_in_Cup2 deriving (Eq, Show, Bounded, Enum)
 
 atoms :: [Atom]
 atoms = [minBound..maxBound]
@@ -113,10 +114,10 @@ youngList = [Ollie', Penny', Stuart', Uli', Willie', Noah', Tom',
              Alice', Ellie', Goldilocks', SnowWhite', Dorothy', Mittens']
 
 oldList :: [Atom]
-oldList = [Sword1, Bottle1, Ring3, Dress2] ++ (personList \\ youngList) ++ birdList
+oldList = [Sword1, Bottle1, Ring3, Dress2, Glasses1, Glass_of_Bottle1, Rust_of_Sword1] ++ (personList \\ youngList) ++ birdList ++ metalList 
 
 newList :: [Atom]
-newList = thingList \\ oldList
+newList = (thingList \\ oldList) ++ [Glass_of_Glasses1, Glass_of_Bottle2, Rust_of_Ring3] ++ ceramicsList
 
 boyList :: [Atom]
 boyList = youngList `intersect` maleList
@@ -133,18 +134,6 @@ womanList = oldList `intersect` femaleList
 childrenList :: [Atom]
 childrenList = boyList `union` girlList
 
-metalList :: [Atom]
-metalList = [Sword1, Sword2, Dagger1, Ring1, Ring2, Ring3]
-
-steelList :: [Atom]
-steelList = [Sword1, Sword2, Dagger1]
-
-goldList :: [Atom]
-goldList = [Ring1, Ring2]
-
-silverList :: [Atom]
-silverList = [Ring3]
-
 ringList :: [Atom]
 ringList = [Ring1, Ring2, Ring3]
 
@@ -152,13 +141,13 @@ shiny :: [Atom]
 shiny = metalList `intersect` newList
 
 rustyList :: [Atom]
-rustyList = metalList `intersect` oldList
-
-glassList :: [Atom]
-glassList = bottleList ++ glassesList
+rustyList = [Sword1, Ring3]
 
 ceramicList :: [Atom]
 ceramicList = cupList
+
+ceramicsList :: [Atom]
+ceramicsList = [Ceramic_of_Cup1, Ceramic_of_Cup2]
 
 wiseList :: [Atom]
 wiseList = [Linda', Irene', Xena', Jim', Victor', Fred']
@@ -295,7 +284,8 @@ badList :: [Atom]
 badList = [Advice_from_Ollie, Advice_from_Zorba, 
            Advice_from_SnowWhite, Advice_from_Alice, 
            Advice_from_Goldilocks, Advice_from_Tom,
-           Noah', Kim', Wine_in_Bottle1, Water_in_The_Genesee]
+           Noah', Kim', Wine_in_Bottle1, Water_in_The_Genesee,
+           Rust_of_Sword1]
 
 goodList :: [Atom]
 goodList = [Advice_from_Linda, Advice_from_Irene, Advice_from_Xena, 
@@ -337,6 +327,43 @@ tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene']
 shortList :: [Atom]
 shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine', Willie']
 
+rustList :: [Atom]
+rustList = [Rust_of_Ring3, Rust_of_Sword1]
+
+glassList :: [Atom]
+glassList = [Glass_of_Bottle1, Glass_of_Bottle2, Glass_of_Glasses1]
+
+hasMetalList :: [Atom]
+hasMetalList = [Dagger1, Sword1, Sword2, Glasses1] ++ ringList
+
+metalList :: [Atom]
+metalList = [ Metal_of_Dagger1, Metal_of_Sword1, Metal_of_Sword2,
+              Metal_of_Glasses1, Metal_of_Ring1, Metal_of_Ring2, 
+              Metal_of_Ring3, Metal_of_Ring4  ]
+
+isSteelList :: [Atom]
+isSteelList = [Sword1, Sword2, Dagger1]
+
+isGoldList :: [Atom]
+isGoldList = [Ring1, Ring2]
+
+isSilverList :: [Atom]
+isSilverList = [Ring3]
+
+steelList :: [Atom]
+steelList = [Metal_of_Sword1, Metal_of_Sword2, Metal_of_Dagger1, Metal_of_Glasses1]
+
+goldList :: [Atom]
+goldList = [Metal_of_Ring1, Metal_of_Ring2]
+
+silverList :: [Atom]
+silverList = [Metal_of_Ring3]
+
+crackedList :: [Atom]
+crackedList = [Bottle1, Cup1, Ceramic_of_Cup1, Glass_of_Glasses1]
+
+portions_of_matter :: [Atom]
+portions_of_matter = adviceList ++ waterList ++ wineList ++ glassList ++ rustList ++ metalList
 
 list2OnePlacePred :: [Entity] -> OnePlacePred
 list2OnePlacePred xs = \ x -> elem x xs 
@@ -344,9 +371,12 @@ list2OnePlacePred xs = \ x -> elem x xs
 compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
 compose p q = \ x -> (p x) && (q x)
 
-passivize :: TwoPlacePred -> OnePlacePred
-passivize r = \ x -> any (r x) atoms
+--passivize :: TwoPlacePred -> OnePlacePred
+--passivize r = \ x -> any (r x) atoms
 
+
+wineList :: [Atom]
+wineList = [Wine_in_Bottle1, Wine_in_Bottle2]
 {-
 
 extension :: OnePlacePred -> [Entity]
