@@ -22,7 +22,7 @@ data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'   
 atoms :: [Atom]
 atoms = [minBound..maxBound]
 
-data MType = Water' | Wine' | Advice' | Metal' | Everything' deriving (Eq, Show)
+data MType = Water' | Wine' | Wood' | Advice' | Glass' | Metal' | Everything' | Nothing' deriving (Eq, Show)
 
 data Mass = MassOf [MType] [Atom] deriving (Eq, Show)
 
@@ -109,10 +109,16 @@ youngList = [Ollie', Penny', Stuart', Uli', Willie', Noah', Tom',
              Alice', Ellie', Goldilocks', SnowWhite', Dorothy', Mittens']
 
 oldList :: [Atom]
-oldList = [Sword1, Bottle1, Ring3, Dress2, Glasses1] ++ (personList \\ youngList) ++ birdList ++ metalList 
+oldList = [Sword1, Raft1, Raft4, Bottle1, Ring3, Dress2, Glasses1] ++ (personList \\ youngList) ++ birdList ++ metalList 
+
+oldMList :: [Mass]
+oldMList = [(MassOf [Wood'] [Raft3]), (MassOf [Wood'] [Raft4]), (MassOf [Wood'] [Sword1])]
 
 newList :: [Atom]
 newList = (thingList \\ oldList) 
+
+newMList :: [Mass]
+newMList = [(MassOf [Wood'] [Raft1]), (MassOf [Wood'] [Raft2]), (MassOf [Wood'] [Sword2])]
 
 boyList :: [Atom]
 boyList = youngList `intersect` maleList
@@ -377,10 +383,75 @@ list2OnePlacePred xs = \ x -> elem x xs
 compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
 compose p q = \ x -> (p x) && (q x)
 
---passivize :: TwoPlacePred -> OnePlacePred
---passivize r = \ x -> any (r x) atoms
+
+composedOf :: Atom -> [MType]
+composedOf x = case x of
+    Ring1        -> [Metal']
+    Ring2        -> [Metal']
+    Ring3        -> [Metal']
+    Sword1       -> [Wood', Metal']
+    Sword2       -> [Wood', Metal']
+    The_Rhine'   -> [Water']
+    The_Genesee' -> [Water']
+    Bottle1      -> [Wine', Glass']
+    Bottle2      -> [Wine', Glass']
+    Cup1         -> [Water', Glass']
+    Cup2         -> [Water', Glass']
+    Raft1        -> [Wood', Metal']
+    Raft2        -> [Wood', Metal']
+    Raft3        -> [Wood', Metal']
+    Raft4        -> [Wood', Metal']
+    Linda'       -> [Advice']
+    Irene'       -> [Advice']
+    Xena'        -> [Advice']
+    Jim'         -> [Advice']
+    Victor'      -> [Advice']
+    Fred'        -> [Advice']
+    Ollie'       -> [Advice']
+    Zorba'       -> [Advice']
+    SnowWhite'   -> [Advice']
+    Alice'       -> [Advice']
+    Goldilocks'  -> [Advice']
+    Tom'         -> [Advice']
+    _            -> [Everything']
+
+
+--extension :: OnePlacePred -> [Entity]
+--extension
+
+unique :: (Eq a) => [a] -> [a]
+unique [] = []
+unique (x:xs) = x : (filter (\y -> y /= x) (unique xs))
+
+fusion' :: Mass -> Mass -> Mass
+fusion' (MassOf ts1 es1) (MassOf ts2 es2) = MassOf (ts1 ++ ts2) (es1 ++ es2)
+
+fusion :: Entity -> Entity -> Entity
+fusion (Ms' x) (Ms' y) = Ms' (x `fusion'` y)
+fusion (Pl' x) (Pl' y) = Ms' (helper x y)
+    where helper (Pl xs) (Pl ys) = MassOf [Everything'] (unique (xs ++ ys))
+
+--constitutes' :: Plural -> Mass -> Bool
+
+--constitutes :: Entity -> Entity -> Bool
+
+materialize' :: Plural -> Mass
+materialize' (Pl xs) = MassOf [Everything'] xs
+
+materializeWith' :: [MType] -> Plural -> Mass
+materializeWith' ts (Pl xs) = MassOf ts xs
+
+materialize :: Entity -> Entity
+materialize  m@(Ms' x) = m
+materialize (Pl' (Pl ys)) = Ms' (MassOf [Everything'] ys)
+
+materializeWith :: [MType] -> Entity -> Entity
+materializeWith ts m@(Ms' x) = m
+materializeWith ts (Pl' (Pl ys)) = Ms' (MassOf ts ys)
 
 {-
+passivize :: TwoPlacePred -> OnePlacePred
+passivize r = \ x -> any (r x) atoms
 
 extension :: OnePlacePred -> [Entity]
 
