@@ -1,7 +1,6 @@
 module Model where
 
 import Data.List
-import Semilattice
 
 -- This constrains type variable a to be an instance of Entity
 type OnePlacePred   = Entity -> Bool
@@ -285,19 +284,6 @@ drinkList = [ [Uli'     , Cup1         ],
               [Whiskers', The_Genesee' ], 
               [Mittens' , The_Genesee' ] ]
 
-buildList :: [[Atom]]
-buildList = [ [Ollie'  , Raft1],
-              [Penny'  , Raft1],
-              [Uli'    , Raft1],
-              [Alice'  , Raft2],
-              [Dorothy', Raft2],
-              [Ellie'  , Raft2],
-              [Linda'  , Raft3],
-              [Hillary', Raft3],
-              [Zorba'  , Raft3],
-              [Xena'   , Raft4],
-              [Thorin' , Raft4] ]
-
 fightList :: [[Atom]]
 fightList = [ [Xena'  , Irene'],
               [Thorin', Fred' ],
@@ -552,9 +538,6 @@ drink = list2TwoPlacePred drinkList
 
 chase :: TwoPlacePred
 chase = list2TwoPlacePred chaseList
-
-build :: TwoPlacePred
-build = list2TwoPlacePred buildList
 
 
 -- Three-Place Predicates
