@@ -83,7 +83,7 @@ swordList :: [Atom]
 swordList = [Sword1, Sword2]
 
 animalList :: [Atom]
-animalList = [Stuart', Minnie', Mickey', Whiskers', Mittens', Gerald']
+animalList = [Stuart', Minnie', Mickey', Whiskers', Mittens', Gerald', Sue']
 
 giantList :: [Atom]
 giantList = [Tom', Bob']
@@ -98,7 +98,7 @@ catList :: [Atom]
 catList = [Whiskers', Mittens']
 
 mouseList :: [Atom]
-mouseList = [Mickey', Minnie']
+mouseList = [Mickey', Minnie', Sue']
 
 birdList :: [Atom]
 birdList = [Gerald']
@@ -114,9 +114,6 @@ cupList = [Cup1, Cup2]
 
 bottleList :: [Atom]
 bottleList = [Bottle1, Bottle2]
-
-containerList :: [Atom]
-containerList = bottleList ++ cupList
 
 raftList :: [Atom]
 raftList = [Raft1, Raft2, Raft3, Raft4]
@@ -136,9 +133,6 @@ wizardList = personList `intersect` magicalList
 
 witchList :: [Atom]
 witchList = personList `intersect` magicalList
-
-enchantedList :: [Atom]
-enchantedList = magicalList `intersect` thingList
 
 maleList :: [Atom]
 maleList = [Bob', Cyrus', Jim', Noah', Ollie', Penny', Quine', Stuart', Tom', Uli', Victor',
@@ -452,8 +446,11 @@ bird = list2OnePlacePred' birdList
 animal :: OnePlacePred
 animal = list2OnePlacePred' animalList
 
+people :: OnePlacePred
+people = plural `compose` ((negate' animal) `and'` (negate' thing))
+
 person :: OnePlacePred
-person = list2OnePlacePred' personList
+person = list2OnePlacePred (map (:[]) personList)
 
 being :: OnePlacePred
 being = list2OnePlacePred' beingList
@@ -523,7 +520,6 @@ list2TwoPlacePred xs = \x -> (\y -> findPair x y xs)
           findPair [x] [y] pairs = elem [x, y] pairs
           findPair _ _ _ = False
 
-
 fight :: TwoPlacePred
 fight = list2TwoPlacePred' fightList
 
@@ -539,13 +535,12 @@ drink = list2TwoPlacePred drinkList
 chase :: TwoPlacePred
 chase = list2TwoPlacePred chaseList
 
-
 -- Three-Place Predicates
 list2ThreePlacePred :: [[Atom]] -> ThreePlacePred
 list2ThreePlacePred xs = \x -> (\y -> (\z -> findThree x y z xs))
     where findThree :: [Atom] -> [Atom] -> [Atom] -> [[Atom]] -> Bool
           findThree [x] [y] [z] threes = elem [x, y, z] threes
-          findThree _ _ _ _= False
+          findThree _ _ _ _ = False
 
 give :: ThreePlacePred
 give = list2ThreePlacePred giveList
