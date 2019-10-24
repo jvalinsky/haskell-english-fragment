@@ -36,36 +36,11 @@ data SCN = Lake     | Cup   | Man    | Woman | Hero   | Heroine | Sword  | Drop 
            Princess | Raft  | Wizard | Mouse | Cat    | Dress   | Shoe   | Bird  | Army   |
            Spy      | Court | Couple | Crowd | Coven  | Prince  | Ring   | Person deriving (Show, Bounded, Enum)
 
-pluralSCNShowPretty :: SCN -> String
-pluralSCNShowPretty x = case x of 
-    Man      -> "Men"
-    Woman    -> "Women"
-    Hero     -> "Heroes"
-    Dress    -> "Dresses"
-    Witch    -> "Witches"
-    Knife    -> "Knives"
-    Princess -> "Princesses"
-    Dwarf    -> "Dwarves"
-    Mouse    -> "Mice"
-    Army     -> "Armies"
-    Spy      -> "Spies"
-    Person   -> "People"
-    _        -> (show x) ++ "s"
-
-class (Show a) => PrettyShow a where
-    showPretty :: a -> String
-    showPretty = show
-
-instance PrettyShow PCN where
-    showPretty Glasses  = "Glasses"
-    showPretty Jeans    = "Jeans"
-    showPretty (Plur scn) = pluralSCNShowPretty scn 
-
 data ADJ = Wise  | Foolish  | Bad  | Good  | Young | Old   |  Rusty   | Torn
            Cold  | Magical  | Tall | Short | Long  | Shiny | Numerous | Widespread  deriving (Show, Eq)
 
 data VP = VP0 INF | VP1 TV DetP | VP3 DV DetP DetP deriving Show
 
-data INF = Laugh    | Scatter  | Smile | Run  | Walk   | Swim deriving (Show, Eq)
-data TV  = Surround | Build    | Help | Defeat | Chase | Drink | Be | Have deriving (Show, Eq)
+data INF = Laugh | Scatter | Gather | Run   deriving (Show, Eq)
+data TV  = Help  | Defeat  | Chase  | Drink | Be | Have deriving (Show, Eq)
 data DV  = Give deriving (Show, Eq)

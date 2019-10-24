@@ -9,28 +9,68 @@ type TwoPlacePred   = Entity -> Entity -> Bool
 type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 
 -- i operator means there exists a unique
--- 
+-- lambda is from lambda calculus
 -- Entity Types
 data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'       | 
             Goldilocks' | Hillary' | Irene'   | Jim'    | Kim'       | Linda'       | 
             Noah'       | Ollie'   | Penny'   | Quine'  | Dagger1    | Stuart'      |
-            SnowWhite'  | Tom'     | Uli'     | Victor' | Willie'    | Xena'        |
+            SnowWhite'  | Tom'     | Uli'     | Victor' | Harry'    | Xena'        |
             Zorba'      | Cup1     | Cup2     | Bottle1 | Bottle2    | The_Genesee' |
             Dress1      | Dress2   | Raft1    | Raft2   | Raft3      | Raft4        |
             Dorothy'    | Fred'    | Glasses1 | Ring1   | Whiskers'  | Mittens'     | 
             Gerald'     | Minnie'  | Mickey'  | Sue'    | The_Rhine' | Dis'         | 
             Thorin'     | Ring2    | Ring3    deriving (Eq, Show, Bounded, Enum)
 
+
 atoms :: [Atom]
 atoms = [minBound..maxBound]
 
-data MType = Water' | Wine' | Wood' | Advice' | Glass' | Metal' | Everything' | Nothing' deriving (Eq, Show)
+type Entity = [Atom]
 
-data Mass = MassOf [MType] [Atom] deriving (Eq, Show)
+----------------------
+-- Helper Functions --
+----------------------
 
-data Plural = Pl [Atom] deriving (Eq, Show)
+equal' :: Entity -> Entity -> Bool
+equal' xs ys = (lenXS == lenYS) && (lenXS == lenFiltered)
+    where lenXS = length xs
+          lenYS = length ys
+          lenFiltered = length (filter (\x -> x `elem` ys) xs) 
 
-data Entity = Pl' Plural | Ms' Mass deriving (Eq, Show)
+x /=* y = not (equal' x y)
+x ==* y = equal' x y
+
+elem' :: [Atom] -> [[Atom]] -> Bool
+elem' xs xss = any (equal' xs) xss
+
+list2OnePlacePred :: [Entity] -> OnePlacePred
+list2OnePlacePred xs = \ x -> elem' x xs
+
+list2OnePlacePred' :: [Atom] -> OnePlacePred
+list2OnePlacePred' xs = \ x -> elem' x (rmEmptySet $ powerset xs) 
+    where rmEmptySet xs = filter (\x -> x /= []) xs
+
+list2OnePlacePredProp :: [Atom] -> OnePlacePred
+list2OnePlacePredProp xs = \ x -> elem' x (propPlurals $ powerset xs) 
+
+compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
+compose p q = \ x -> (p x) && (q x)
+
+unique' :: [[Atom]] -> [[Atom]]
+unique' [[]] = [[]]
+unique' (x:xs) = x : (filter (\y -> y /=* x) (unique' xs))
+
+subList :: (Eq a) => [a] -> [a] -> Bool
+subList xs ys = length (filter (\x -> x `elem` ys) xs) == length xs
+
+
+-- From my L0HW.hs 
+powerset :: [a] -> [[a]]
+powerset [] = [[]]
+powerset (x:xs) = (map (x:) (powerset xs)) ++ (powerset xs)
+
+propPlurals :: [Entity] -> [Entity]
+propPlurals xss = filter (\x -> (length) x > 1) xss
 
 -- Lists for OnePlacePreds
 thingList :: [Atom]
@@ -39,6 +79,9 @@ thingList = [Sword1, Sword2, Dagger1, Cup1, Cup2, Bottle1, Bottle2, The_Genesee'
 
 glassesList :: [Atom]
 glassesList = [Glasses1]
+
+swordList :: [Atom]
+swordList = [Sword1, Sword2]
 
 animalList :: [Atom]
 animalList = [Stuart', Minnie', Mickey', Whiskers', Mittens', Gerald']
@@ -87,7 +130,7 @@ riverList = [The_Genesee', The_Rhine']
 
 magicalList :: [Atom]
 magicalList = [Penny', Alice', Jim', Linda', Ellie', Victor', Kim', Dis', 
-               Thorin', Tom', Cup1, Sword1, Ring1, Bottle1]
+               Thorin', Tom', Cup1, Sword1, Ring1, Bottle1, Harry']
 
 wizardList :: [Atom]
 wizardList = personList `intersect` magicalList
@@ -100,27 +143,21 @@ enchantedList = magicalList `intersect` thingList
 
 maleList :: [Atom]
 maleList = [Bob', Cyrus', Jim', Noah', Ollie', Penny', Quine', Stuart', Tom', Uli', Victor',
-            Willie', Zorba', Fred', Whiskers', Gerald', Mickey', Thorin']
+            Harry', Zorba', Fred', Whiskers', Gerald', Mickey', Thorin']
 
 femaleList :: [Atom]
 femaleList = [Alice', Ellie', Goldilocks', Hillary', Irene', Kim', Linda', SnowWhite', Xena',
               Dorothy', Mittens', Minnie', Sue', Dis']
 
 youngList :: [Atom]
-youngList = [Ollie', Penny', Stuart', Uli', Willie', Noah', Tom',
+youngList = [Ollie', Penny', Stuart', Uli', Harry', Noah', Tom',
              Alice', Ellie', Goldilocks', SnowWhite', Dorothy', Mittens']
 
 oldList :: [Atom]
-oldList = [Sword1, Raft1, Raft4, Bottle1, Ring3, Dress2, Glasses1] ++ (personList \\ youngList) ++ birdList ++ metalList 
-
-oldMList :: [Mass]
-oldMList = [(MassOf [Wood'] [Raft3]), (MassOf [Wood'] [Raft4]), (MassOf [Wood'] [Sword1])]
+oldList = [Sword1, Bottle1, Ring3, Dress2, Glasses1] ++ (personList \\ youngList) ++ birdList ++ metalList 
 
 newList :: [Atom]
 newList = (thingList \\ oldList) 
-
-newMList :: [Mass]
-newMList = [(MassOf [Wood'] [Raft1]), (MassOf [Wood'] [Raft2]), (MassOf [Wood'] [Sword2])]
 
 boyList :: [Atom]
 boyList = youngList `intersect` maleList
@@ -140,8 +177,8 @@ childrenList = boyList `union` girlList
 ringList :: [Atom]
 ringList = [Ring1, Ring2, Ring3]
 
-shiny :: [Atom]
-shiny = metalList `intersect` newList
+shinyList :: [Atom]
+shinyList = metalList `intersect` newList
 
 rustyList :: [Atom]
 rustyList = [Sword1, Ring3]
@@ -174,8 +211,41 @@ swimList = [Gerald', Whiskers', Mickey', Minnie', Thorin', Ollie', Jim']
 coldList :: [Atom]
 coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice']
 
-coldMList :: [Mass]
-coldMList = [(MassOf [Water'] [Cup1]), (MassOf [Water'] [The_Genesee']), (MassOf [Water'] [The_Rhine'])]
+warriorList :: [Atom]
+warriorList = [Xena', Thorin', Irene', Victor', Fred', Cyrus', Quine'] 
+
+badList :: [Atom]
+badList =  [Noah', Kim']
+
+goodList :: [Atom]
+goodList = [Fred', Xena', Thorin']
+
+tornList :: [Atom]
+tornList = [Dress2]
+   
+dirtyList :: [Atom]
+dirtyList = [Ollie', Harry', Dress2, Ring3]
+
+cleanList :: [Atom]
+cleanList = atoms \\ dirtyList
+
+tallList :: [Atom]
+tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene', Bottle2]
+
+shortList :: [Atom]
+shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine', Harry', Bottle1]
+
+metalList :: [Atom]
+metalList = [Dagger1, Sword1, Sword2, Glasses1] ++ ringList
+
+steelList :: [Atom]
+steelList = [Sword1, Sword2, Dagger1]
+
+goldList :: [Atom]
+goldList = [Ring1, Ring2]
+
+silverList :: [Atom]
+silverList = [Ring3]
 
 -- Lists for TwoPlacePreds
 chaseList :: [[Atom]]
@@ -228,32 +298,6 @@ buildList = [ [Ollie'  , Raft1],
               [Xena'   , Raft4],
               [Thorin' , Raft4] ]
 
-warriorList :: [Atom]
-warriorList = [Xena', Thorin', Irene', Victor', Fred', Cyrus', Quine'] 
-
-hasSwordList :: [[Atom]]
-hasSwordList = [ [Thorin', Sword1], 
-                 [Fred'  , Sword2] ]
-
-hasDaggerList :: [[Atom]]
-hasDaggerList = [ [Xena', Dagger1] ]
-
-hasBottle :: [[Atom]]
-hasBottle = [ [Ollie', Bottle2],
-              [Linda', Bottle1] ]
-
-hasCup :: [[Atom]]
-hasCup = [ [Quine', Cup2],
-              [Uli'  , Cup1] ]
-
-hasRing :: [[Atom]]
-hasRing = [ [Kim'   , Ring1],
-            [Dis'   , Ring2],
-            [Zorba' , Ring3] ]
-
-hasGlasses :: [[Atom]]
-hasGlasses = [ [Fred', Glasses1] ]
-
 fightList :: [[Atom]]
 fightList = [ [Xena'  , Irene'],
               [Thorin', Fred' ],
@@ -278,60 +322,7 @@ helpList = [ [Victor', Fred'   ],
              [Linda' , Zorba'  ],
              [Xena'  , Thorin' ] ]
 
-scatterList :: [[Atom]]
-scatterList = [mouseList, warriorList]
-
-surroundList :: [[[Atom]]]
-surroundList = [ [warriorList, giantList] ]
-
-badList :: [Atom]
-badList =  [Noah', Kim']
-
-badMList :: [Mass]
-badMList = [(MassOf [Advice'] [Ollie']), (MassOf [Advice'] [Zorba']), 
-            (MassOf [Advice'] [SnowWhite']), (MassOf [Advice'] [Alice']), 
-            (MassOf [Advice'] [Goldilocks']), (MassOf [Advice'] [Tom']),
-            (MassOf [Water'] [The_Genesee']), (MassOf [Wine'] [Bottle1])]
-
-goodList :: [Atom]
-goodList = [Fred', Xena', Thorin']
-
-goodMList :: [Mass]
-goodMList = [ (MassOf [Advice'] [Linda']), (MassOf [Advice'] [Irene']), 
-              (MassOf [Advice'] [Xena']), (MassOf [Advice'] [Jim']),
-              (MassOf [Advice'] [Victor']), (MassOf [Advice'] [Fred']), 
-              (MassOf [Wine'] [Bottle2]), (MassOf [Water'] [The_Rhine'])]
-
-tornList :: [Atom]
-tornList = [Dress2]
-
-adviceList :: [Mass]
-adviceList = [ (MassOf [Advice'] [Linda']), (MassOf [Advice'] [Irene']), 
-               (MassOf [Advice'] [Xena']), (MassOf [Advice'] [Jim']),
-               (MassOf [Advice'] [Victor']), (MassOf [Advice'] [Fred']),
-               (MassOf [Advice'] [Ollie']), (MassOf [Advice'] [Zorba']), 
-               (MassOf [Advice'] [SnowWhite']), (MassOf [Advice'] [Alice']), 
-               (MassOf [Advice'] [Goldilocks']), (MassOf [Advice'] [Tom']) ]
-    
-waterMList :: [Mass]
-waterMList = [ (MassOf [Water'] [The_Rhine']), (MassOf [Water'] [The_Genesee']),
-               (MassOf [Water'] [Cup1]), (MassOf [Water'] [Cup2]) ]
-
-widespreadMList :: [[Mass]]
-widespreadMList = [adviceList, waterMList]
-
-dirtyList :: [Atom]
-dirtyList = [Ollie', Willie', Dress2, Ring3]
-
-dirtyMList :: [Mass]
-dirtyMList = [(MassOf [Water'] [The_Genesee'])]
-
-cleanList :: [Atom]
-cleanList = atoms \\ dirtyList
-
-cleanMList :: [Mass]
-cleanMList =  [(MassOf [Water'] [The_Rhine'])]
-
+-- Three-Place Predicate Lists
 giveList :: [[Atom]]
 giveList = [ [Irene' , Alice' , Dress1  ],
              [Kim'   , Ellie' , Dress2  ],
@@ -339,168 +330,239 @@ giveList = [ [Irene' , Alice' , Dress1  ],
              [Dis'   , Thorin', Sword1  ],
              [Victor', Fred'  , Sword2  ] ]
 
-tallList :: [Atom]
-tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene', Bottle2]
+-- One-Place Predicates
+giant :: OnePlacePred
+giant = list2OnePlacePred' giantList
 
-shortList :: [Atom]
-shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine', Willie', Bottle1]
+dwarf :: OnePlacePred
+dwarf = list2OnePlacePred' dwarfList
 
-metalList :: [Atom]
-metalList = [Dagger1, Sword1, Sword2, Glasses1] ++ ringList
+magical :: OnePlacePred
+magical = list2OnePlacePred' magicalList
 
-metalMList :: [Mass]
-metalMList = [ (MassOf [Metal'] [Dagger1]), (MassOf [Metal'] [Sword1]), 
-              (MassOf [Metal'] [Sword2]), (MassOf [Metal'] [Glasses1]), 
-              (MassOf [Metal'] [Ring1]), (MassOf [Metal'] [Ring2]), 
-              (MassOf [Metal'] [Ring3]) ]
+metal :: OnePlacePred
+metal = list2OnePlacePred' metalList
 
-steelList :: [Atom]
-steelList = [Sword1, Sword2, Dagger1]
+steel :: OnePlacePred
+steel = list2OnePlacePred' steelList
 
-goldList :: [Atom]
-goldList = [Ring1, Ring2]
+gold :: OnePlacePred
+gold = list2OnePlacePred' goldList
 
-silverList :: [Atom]
-silverList = [Ring3]
+silver :: OnePlacePred
+silver = list2OnePlacePred' silverList
 
-steelMList :: [Mass]
-steelMList = [(MassOf [Metal'] [Dagger1]), (MassOf [Metal'] [Sword1]), 
-              (MassOf [Metal'] [Sword2]), (MassOf [Metal'] [Glasses1]) ]
+short :: OnePlacePred
+short = list2OnePlacePred' shortList
 
-goldMList :: [Mass]
-goldMList = [(MassOf [Metal'] [Ring1]), (MassOf [Metal'] [Ring2])]
+tall :: OnePlacePred
+tall = list2OnePlacePred' tallList
 
-silverMList :: [Mass]
-silverMList = [(MassOf [Metal'] [Ring3])]
+clean :: OnePlacePred
+clean = list2OnePlacePred' cleanList
 
-wineMList :: [Mass]
-wineMList = [ (MassOf [Wine'] [Bottle1]),  (MassOf [Wine'] [Bottle2])]
+dirty :: OnePlacePred
+dirty = list2OnePlacePred' dirtyList
 
--- Helper functions
+bad :: OnePlacePred
+bad = list2OnePlacePred' badList
 
-list2OnePlacePred :: [Entity] -> OnePlacePred
-list2OnePlacePred xs = \ x -> elem x xs 
+good :: OnePlacePred
+good = list2OnePlacePred' goodList
 
-compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
-compose p q = \ x -> (p x) && (q x)
+torn :: OnePlacePred
+torn = list2OnePlacePred' tornList
 
-composedOf :: Atom -> [MType]
-composedOf x = case x of
-    Ring1        -> [Metal']
-    Ring2        -> [Metal']
-    Ring3        -> [Metal']
-    Sword1       -> [Wood', Metal']
-    Sword2       -> [Wood', Metal']
-    The_Rhine'   -> [Water']
-    The_Genesee' -> [Water']
-    Bottle1      -> [Wine', Glass']
-    Bottle2      -> [Wine', Glass']
-    Cup1         -> [Water', Glass']
-    Cup2         -> [Water', Glass']
-    Raft1        -> [Wood', Metal']
-    Raft2        -> [Wood', Metal']
-    Raft3        -> [Wood', Metal']
-    Raft4        -> [Wood', Metal']
-    Linda'       -> [Advice']
-    Irene'       -> [Advice']
-    Xena'        -> [Advice']
-    Jim'         -> [Advice']
-    Victor'      -> [Advice']
-    Fred'        -> [Advice']
-    Ollie'       -> [Advice']
-    Zorba'       -> [Advice']
-    SnowWhite'   -> [Advice']
-    Alice'       -> [Advice']
-    Goldilocks'  -> [Advice']
-    Tom'         -> [Advice']
-    _            -> [Everything']
+warrior :: OnePlacePred
+warrior = list2OnePlacePred' warriorList
 
---extension :: OnePlacePred -> [Entity]
---extension 
+cold :: OnePlacePred
+cold = list2OnePlacePred' coldList
 
-unique :: (Eq a) => [a] -> [a]
-unique [] = []
-unique (x:xs) = x : (filter (\y -> y /= x) (unique xs))
+smile :: OnePlacePred
+smile = list2OnePlacePred' smileList
 
-fusion' :: Mass -> Mass -> Mass
-fusion' (MassOf ts1 es1) (MassOf ts2 es2) = MassOf (ts1 ++ ts2) (es1 ++ es2)
+run :: OnePlacePred
+run = list2OnePlacePred' runList
 
-fusion :: Entity -> Entity -> Entity
-fusion (Ms' x) (Ms' y) = Ms' (x `fusion'` y)
-fusion (Pl' x) (Pl' y) = Ms' (helper x y)
-    where helper (Pl xs) (Pl ys) = MassOf [Everything'] (unique (xs ++ ys))
+walk :: OnePlacePred
+walk = list2OnePlacePred' walkList
 
-subList :: (Eq a) => [a] -> [a] -> Bool
-subList xs ys = length (filter (\x -> x `elem` ys) xs) == length xs
+laugh :: OnePlacePred
+laugh = list2OnePlacePred' laughList
 
-constitutes' :: Atom -> Mass -> Bool
-constitutes' x (MassOf ts [y]) = (composedOf x) `subList` ts && (x == y)
-constitutes' x (MassOf ts ys)  = (composedOf x) `subList` ts && (x `elem` ys)
+swim :: OnePlacePred
+swim = list2OnePlacePred' swimList
 
-constitutes'' :: Plural -> Mass -> Bool
-constitutes'' (Pl xs) (MassOf ts ys) = 
+foolish :: OnePlacePred
+foolish = list2OnePlacePred' foolishList
 
-materialize' :: Plural -> Mass
-materialize' (Pl xs) = MassOf [Everything'] xs
+wise :: OnePlacePred
+wise = list2OnePlacePred' wiseList
 
-materializeWith' :: [MType] -> Plural -> Mass
-materializeWith' ts (Pl xs) = MassOf ts xs
+rusty :: OnePlacePred
+rusty = list2OnePlacePred' rustyList
 
-materialize :: Entity -> Entity
-materialize  m@(Ms' x) = m
-materialize (Pl' (Pl ys)) = Ms' (MassOf [Everything'] ys)
+shiny :: OnePlacePred
+shiny = list2OnePlacePred' shinyList
 
-materializeWith :: [MType] -> Entity -> Entity
-materializeWith ts m@(Ms' x) = m
-materializeWith ts (Pl' (Pl ys)) = Ms' (MassOf ts ys)
+ring :: OnePlacePred
+ring = list2OnePlacePred' ringList
 
-{-
-passivize :: TwoPlacePred -> OnePlacePred
-passivize r = \ x -> any (r x) atoms
+sword :: OnePlacePred
+sword = list2OnePlacePred' swordList
 
-extension :: OnePlacePred -> [Entity]
+raft :: OnePlacePred
+raft = list2OnePlacePred' raftList
 
-star :: OnePlacePred -> [Entity]
+cup :: OnePlacePred
+cup = list2OnePlacePred' cupList
 
-mu :: [OnePlacePred] -> Entity
+bottle :: OnePlacePred
+bottle = list2OnePlacePred' bottleList
 
-fusion :: Entity -> Entity -> Entity
+glasses :: OnePlacePred
+glasses = list2OnePlacePred' glassesList
 
-isum :: Entity -> Entity -> Entity 
+river :: OnePlacePred
+river = list2OnePlacePred' riverList
 
-distributive :: OnePlacePred -> OnePlacePred
+female :: OnePlacePred
+female = list2OnePlacePred' femaleList
 
-sigma :: [OnePlacePred] -> OnePlacePred
+male :: OnePlacePred
+male = list2OnePlacePred' maleList
 
-sigmap :: [OnePlacePred] -> OnePlacePred
+thing :: OnePlacePred
+thing = list2OnePlacePred' thingList
 
-ipart :: Entity -> Entity -> Bool
+boy :: OnePlacePred
+boy = list2OnePlacePred' boyList
 
-mpart :: Entity -> Entity -> Bool
+girl :: OnePlacePred
+girl = list2OnePlacePred' girlList
 
--- Materially Equivalent
-(~) :: Entity -> Entity -> Bool
-x ~ y = (x `mpart` y) && (y `mpart` x)
+man :: OnePlacePred
+man = list2OnePlacePred' manList
 
-atom :: Entity -> Bool
-atom (Ms' x) = True
-atom (Pl' (xs:xss)) = xss == [] && length xs == 1
+woman :: OnePlacePred
+woman = list2OnePlacePred' womanList
 
-* individual sums of members of extensions of P
-m mass term correspondent for P
-c proper plural predicate of P
-sigma sum of predicates
-sigma* proper sum of predicates
+wizard :: OnePlacePred
+wizard = list2OnePlacePred' wizardList
 
-Pi individual part (i-part) relation
-m  material   part (m-part) relation
+witch :: OnePlacePred
+witch = list2OnePlacePred' witchList
 
-mu material fusion of P's
-At x := x is an atom
-Distr(P) := P is distributive
+mouse :: OnePlacePred
+mouse = list2OnePlacePred' mouseList
 
-||P|| := extension of P, generated by join-semilattice
+cat :: OnePlacePred
+cat = list2OnePlacePred' catList
 
-i-sum 
-fusion 
--}
+bird :: OnePlacePred
+bird = list2OnePlacePred' birdList
+
+animal :: OnePlacePred
+animal = list2OnePlacePred' animalList
+
+person :: OnePlacePred
+person = list2OnePlacePred' personList
+
+being :: OnePlacePred
+being = list2OnePlacePred' beingList
+
+old :: OnePlacePred
+old = list2OnePlacePred' oldList
+
+young :: OnePlacePred
+young = list2OnePlacePred' youngList
+
+new :: OnePlacePred
+new = list2OnePlacePred' newList
+
+dress :: OnePlacePred
+dress = list2OnePlacePred' dressList
+
+groupPred :: Ordering -> Int -> OnePlacePred
+groupPred ord n = \x -> (length x) `compare` n == ord
+
+-- Collective Predicate
+numerous :: OnePlacePred
+numerous = groupPred GT 3
+
+couple :: OnePlacePred
+couple = groupPred EQ 2
+
+group' :: OnePlacePred
+group' = groupPred GT 2
+
+crowd :: OnePlacePred
+crowd = groupPred GT 4
+
+atom :: OnePlacePred
+atom = groupPred EQ 1
+
+plural :: OnePlacePred
+plural = groupPred GT 1
+
+negate' :: OnePlacePred -> OnePlacePred
+negate' p = \x -> not (p x)
+
+or' :: OnePlacePred -> OnePlacePred -> OnePlacePred
+or' p q = \x -> (p x) || (q x)
+
+and' :: OnePlacePred -> OnePlacePred -> OnePlacePred
+and' p q = \x -> (p x) && (q x)
+
+scatter :: OnePlacePred
+scatter = plural `compose` (negate' thing)
+
+gather :: OnePlacePred
+gather = group' `compose` (negate' thing)
+
+-- Two-Place Predicates
+
+-- Communitative (order doesn't matter)
+list2TwoPlacePred' :: [[Atom]] -> TwoPlacePred
+list2TwoPlacePred' xs = \x -> (\y -> findPair x y xs)
+    where findPair :: [Atom] -> [Atom] -> [[Atom]] -> Bool
+          findPair [x] [y] pairs = elem' [x, y] pairs
+          findPair _ _ _ = False
+
+-- Non-communitive (order does matter)
+list2TwoPlacePred :: [[Atom]] -> TwoPlacePred
+list2TwoPlacePred xs = \x -> (\y -> findPair x y xs)
+    where findPair :: [Atom] -> [Atom] -> [[Atom]] -> Bool
+          findPair [x] [y] pairs = elem [x, y] pairs
+          findPair _ _ _ = False
+
+
+fight :: TwoPlacePred
+fight = list2TwoPlacePred' fightList
+
+defeat :: TwoPlacePred
+defeat = list2TwoPlacePred defeatList
+
+help :: TwoPlacePred
+help = list2TwoPlacePred helpList
+
+drink :: TwoPlacePred
+drink = list2TwoPlacePred drinkList
+
+chase :: TwoPlacePred
+chase = list2TwoPlacePred chaseList
+
+build :: TwoPlacePred
+build = list2TwoPlacePred buildList
+
+
+-- Three-Place Predicates
+list2ThreePlacePred :: [[Atom]] -> ThreePlacePred
+list2ThreePlacePred xs = \x -> (\y -> (\z -> findThree x y z xs))
+    where findThree :: [Atom] -> [Atom] -> [Atom] -> [[Atom]] -> Bool
+          findThree [x] [y] [z] threes = elem [x, y, z] threes
+          findThree _ _ _ _= False
+
+give :: ThreePlacePred
+give = list2ThreePlacePred giveList
