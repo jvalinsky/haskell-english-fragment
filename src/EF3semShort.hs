@@ -99,46 +99,47 @@ intPCN :: PCN -> OnePlacePred -> Bool
 intPCN Glasses  = f glasses
     where f p = compose p
 
-        
-intCCN :: CCN -> OnePlacePred -> Bool
-intCCN ccn = 
-        
 intRCN :: CN -> OnePlacePred -> Bool
-intRCN rcn =
+intRCN (RCN1 That vp) =
+intRCN (RCN2 That detp tv) = 
         
 intCN :: CN -> OnePlacePred -> Bool
 intCN (Sing scn) = intSCN scn
 intCN (Pl pcn)   = intPCN pcn
-intCN (Col ccn)  = intCCN ccn
 
 intDET :: DET -> OnePlacePred -> OnePlacePred -> Bool
 intDET Some p q = 
-intDET A p q = 
+intDET Many p q = 
+intDET Each p q = 
 intDET Every p q = 
+intDET Most p q = 
 intDET The p q = 
+intDET A p q = 
+intDET All p q = 
 
 
 intDetP :: DetP -> OnePlacePred -> Bool
-intDetP (DP1 name)        = intName name
-intDetP (DP2 det cn)      = (intDET det) (intCN cn)
-intDetP (DP3 adj det cn)  = (intDET det) (intADJ adj) (intCN cn)
+intDetP (Empty name) = intName name
+intDetP (Some pcn) = (intDET Some) (intPCN pcn)
+intDetP (Some' adj pcn) = (intDET Some) ((intADJ adj) (intPCN pcn))
+intDetP (Many pcn) = (intDET Many) (intPCN pcn)
+intDetP (Many' adj pcn) = (intDET Many) ((intADJ adj) (intPCN pcn))
+intDetP (Each scn) = (intDET Each) (intSCN scn)
+intDetP (Each' adj scn) = (intDET Each) ((intADJ adj) (intSCN scn))
+intDetP (Every scn) = (intDET Every) (intSCN scn)
+intDetP (Every' adj scn) = (intDET Every) ((intADJ adj) (intSCN scn))
+intDetP (Most pcn) = (intDET Most) (intPCN pcn)
+intDetP (Most' adj pcn) = (intDET Most) ((intADJ adj) (intPCN pcn))
+intDetP (The cn) = (intDET The) (intCN cn)
+intDetP (The' adj cn) = (intDET The) ((intADJ adj) (intCN cn))
+intDetP (A scn) = (intDET A) (intSCN scn)
+intDetP (A' adj scn) = (intDET A) ((intADJ adj) (intSCN scn))
+intDetP (All pcn) = (intDET All) (intPCN pcn)
+intDetP (All' adj pcn) = (intDET All) ((intADJ adj) (intPCN pcn))
 
-{-  
-    intINF :: INF -> OnePlacePred 
-    
-    intTV :: TV -> TwoPlacePred -> Bool
-    
-    intAV :: AV -> 
-    
-    intDV :: DV -> ThreePlacePred -> Bool
-    
-    
-    intVP :: VP -> OnePlacePred -> Bool
-    intVP (VP0 inf)       =
-    intVP (VP1 tv dp)     =
-    intVP (VP3 av To inf) = 
-    intVP (VP4 dv dp dp)  =
-    
-    intSent :: Sent -> Bool
-    intSent (Sent dp vp) = (intDetP dp) (intVP vp)
--}
+intDP :: DP -> OnePlacePred -> Bool
+intDP (DP  dp) = (intDetP dp)
+intDP (DP' dp rcn) = (intDetP dp) (intRCN rcn)
+
+intSent :: Sent -> Bool
+intSent (Sent dp vp) = (intDP dp) (intVP vp)
