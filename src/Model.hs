@@ -14,11 +14,14 @@ data Atom = Alice'   | Bob'    | Cyrus'  | Ellie' | Irene'   | SnowWhite'    | S
              Ollie'  | Quine'  | Ring' | Harry'    | Xena'   deriving (Eq, Show, Bounded, Enum)
 
 
-atoms :: [Atom]
-atoms = [minBound..maxBound]
+atoms' :: [Atom]
+atoms' = [minBound..maxBound]
+
+atoms :: [Entity]
+atoms = map (:[]) atoms'
 
 domain :: [Entity]
-domain = powerset atoms
+domain = powerset atoms'
 
 type Entity = [Atom]
 
@@ -94,7 +97,7 @@ rustyList :: [Atom]
 rustyList = [Sword']
 
 personList :: [Atom]
-personList = atoms \\ thingList
+personList = atoms' \\ thingList
 
 magicalList :: [Atom]
 magicalList = [Alice', Ellie',  Harry', Quine']
@@ -103,7 +106,7 @@ wizardList :: [Atom]
 wizardList = maleList `intersect` magicalList
 
 witchList :: [Atom]
-witchList = femaleList`intersect` magicalList
+witchList = femaleList `intersect` magicalList
 
 maleList :: [Atom]
 maleList = [Bob', Cyrus', Ollie',  Harry', Quine']
@@ -172,13 +175,13 @@ dirtyList :: [Atom]
 dirtyList = [Ollie', Harry', Ring']
 
 cleanList :: [Atom]
-cleanList = atoms \\ dirtyList
+cleanList = atoms' \\ dirtyList
 
 tallList :: [Atom]
 tallList = giantList ++ [Xena', Ollie', Irene']
 
 shortList :: [Atom]
-shortList = (atoms \\ thingList) \\ tallList
+shortList = (atoms' \\ thingList) \\ tallList
 
 -- Lists for TwoPlacePreds
 chaseList :: [[Atom]]
@@ -228,6 +231,9 @@ giveList = [ [Irene' , Alice' , Bottle'  ],
 -- One-Place Predicates
 giant :: OnePlacePred
 giant = list2OnePlacePred' giantList
+
+thing :: OnePlacePred
+thing = list2OnePlacePred' thingList
 
 dwarf :: OnePlacePred
 dwarf = list2OnePlacePred' dwarfList
@@ -339,7 +345,7 @@ groupPred ord n = \x -> (length x) `compare` n == ord
 
 -- Collective Predicate
 numerous :: OnePlacePred
-numerous = groupPred GT 3
+numerous = groupPred GT 2
 
 couple :: OnePlacePred
 couple = groupPred EQ 2

@@ -48,7 +48,30 @@ intADJ adj = case adj of
     Metal       -> f metal
     Male        -> f male
     Female      -> f female
+    Numerous    -> f numerous
     where f p = compose p
+
+intADJ' :: ADJ -> OnePlacePred
+intADJ' adj = case adj of
+    Wise        -> f wise
+    Foolish     -> f foolish
+    Bad         -> f bad
+    Good        -> f good
+    New         -> f new
+    Young       -> f young
+    Old         -> f old
+    Rusty       -> f rusty
+    Clean       -> f clean
+    Dirty       -> f dirty
+    Cold        -> f cold
+    Magical     -> f magical
+    Short       -> f short
+    Tall        -> f tall
+    Metal       -> f metal
+    Male        -> f male
+    Female      -> f female
+    Numerous    -> f numerous
+    where f p = \x -> p x
     
 intSCN :: SCN -> OnePlacePred
 intSCN scn = case scn of
@@ -60,19 +83,28 @@ intSCN scn = case scn of
     Wizard   -> wizard
     Giant    -> giant
     Dwarf    -> dwarf
-    Someone  -> person
+    Warrior  -> warrior
     Sword    -> sword
     Ring     -> ring
     Person   -> person
+    Thing    -> thing
+    Group    -> group'
+    Crowd    -> crowd
+    Couple   -> couple
+    Coven    -> group' `compose` witch
 
-intPCN :: PCN -> OnePlacePred -> Bool
+intPCN :: PCN -> OnePlacePred
 intPCN (Plur scn) = plural `compose` (intSCN scn)
         
-intCN :: CN -> OnePlacePred -> Bool
+intCN :: CN -> OnePlacePred
 intCN (Sng scn) = intSCN scn
 intCN (Pl pcn)   = intPCN pcn
 
+
+-- Based on starter code by Professor Grimm
 intDET :: DET' -> (Entity -> Bool) -> (Entity -> Bool) -> Bool
+intDET All' p q = all q (filter p domain) 
+intDET Each' p q = all q (filter p domain) 
 intDET Some' p q = any q (filter p domain)
 intDET A' p q = any q (filter p domain)
 intDET Every' p q = all q (filter p domain)
@@ -90,8 +122,6 @@ intDP :: DP -> OnePlacePred -> Bool
 intDP (Empty name) = intName name
 intDP (Some1 pcn) = (intDET Some') (intPCN pcn)
 intDP (Some2 adj pcn) = (intDET Some') ((intADJ adj) (intPCN pcn))
-intDP (Many1 pcn) = (intDET Many') (intPCN pcn)
-intDP (Many2 adj pcn) = (intDET Many') ((intADJ adj) (intPCN pcn))
 intDP (Each1 scn) = (intDET Each') (intSCN scn)
 intDP (Each2 adj scn) = (intDET Each') ((intADJ adj) (intSCN scn))
 intDP (Every1 scn) = (intDET Every') (intSCN scn)
@@ -104,8 +134,8 @@ intDP (A1 scn) = (intDET A') (intSCN scn)
 intDP (A2 adj scn) = (intDET A') ((intADJ adj) (intSCN scn))
 intDP (All1 pcn) = (intDET All') (intPCN pcn)
 intDP (All2 adj pcn) = (intDET All') ((intADJ adj) (intPCN pcn))
-intDP (No1 scn) = (intDET No') (intsCN scn)
-intDP (No2 adj scn) = (intDET No') ((intADJ adj) (intSCN scn))
+intDP (No1 cn) = (intDET No') (intCN cn)
+intDP (No2 adj cn) = (intDET No') ((intADJ adj) (intCN cn))
 
 intINF :: INF -> OnePlacePred
 intINF x = case x of
@@ -118,20 +148,20 @@ intINF x = case x of
     Gather  -> gather
 
 intTV :: TV -> TwoPlacePred
-intTV Help   = help
-intTV Defeat = defeat
-intTV Chase  = chase
-intTV Fight  = fight
+intTV Help   = \x y -> help x y
+intTV Defeat = \x y -> defeat x y
+intTV Chase  = \x y -> chase x y
+intTV Fight  = \x y -> fight x y
 
 intDV :: DV -> ThreePlacePred
 intDV Give = give
 
 -- VP0 INF | VP1 TV DP | VP2 DV DP DP | VP3 Be' ADJ 
-intVP :: OnePlacePred
+intVP :: VP -> OnePlacePred
 intVP (VP0 inf)        = (intINF inf)
-intVP (VP1 tv dp)      = \ subj -> intDP dp (\ obj -> intDV tv obj subj)
+intVP (VP1 tv dp)      = \ subj -> intDP dp (\ obj -> intTV tv obj subj)
 intVP (VP2 dv dp1 dp2) = \ subj -> intDP dp1 (\ dobj -> intDP dp2 (\ iobj -> intDV dv iobj dobj subj))
---intVP (VP3 Be adj)     = intADJ adj
+intVP (VP3 Be adj)     = intADJ' adj
 
 intSent :: Sent -> Bool
 intSent (Sent dp vp) = (intDP dp) (intVP vp)
