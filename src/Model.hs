@@ -1,6 +1,6 @@
 module Model where
 
-import Data.List
+import Data.List (intersect, union, (\\))
 
 -- This constrains type variable a to be an instance of Entity
 type OnePlacePred   = Entity -> Bool
@@ -10,19 +10,15 @@ type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 -- i operator means there exists a unique
 -- lambda is from lambda calculus
 -- Entity Types
-data Atom = Sword1      | Sword2   | Alice'   | Bob'    | Cyrus'     | Ellie'       | 
-            Goldilocks' | Hillary' | Irene'   | Jim'    | Kim'       | Linda'       | 
-            Noah'       | Ollie'   | Penny'   | Quine'  | Dagger1    | Stuart'      |
-            SnowWhite'  | Tom'     | Uli'     | Victor' | Harry'    | Xena'        |
-            Zorba'      | Cup1     | Cup2     | Bottle1 | Bottle2    | The_Genesee' |
-            Dress1      | Dress2   | Raft1    | Raft2   | Raft3      | Raft4        |
-            Dorothy'    | Fred'    | Glasses1 | Ring1   | Whiskers'  | Mittens'     | 
-            Gerald'     | Minnie'  | Mickey'  | Sue'    | The_Rhine' | Dis'         | 
-            Thorin'     | Ring2    | Ring3    deriving (Eq, Show, Bounded, Enum)
+data Atom = Alice'   | Bob'    | Cyrus'  | Ellie' | Irene'   | SnowWhite'    | Sword | Bottle |
+             Ollie'  | Quine'  | Ring | Harry'    | Xena'   deriving (Eq, Show, Bounded, Enum)
 
 
 atoms :: [Atom]
 atoms = [minBound..maxBound]
+
+domain :: [Entity]
+domain = powerset atoms
 
 type Entity = [Atom]
 
@@ -72,85 +68,57 @@ propPlurals :: [Entity] -> [Entity]
 propPlurals xss = filter (\x -> (length) x > 1) xss
 
 -- Lists for OnePlacePreds
-thingList :: [Atom]
-thingList = [Sword1, Sword2, Dagger1, Cup1, Cup2, Bottle1, Bottle2, The_Genesee', The_Rhine',
-              Dress1, Dress2, Raft1, Raft2, Raft3, Raft4, Glasses1, Ring1, Ring2, Ring3]
-
-glassesList :: [Atom]
-glassesList = [Glasses1]
-
-swordList :: [Atom]
-swordList = [Sword1, Sword2]
-
-animalList :: [Atom]
-animalList = [Stuart', Minnie', Mickey', Whiskers', Mittens', Gerald', Sue']
 
 giantList :: [Atom]
-giantList = [Tom', Bob']
+giantList = [Cyrus', Bob']
 
 dwarfList :: [Atom]
-dwarfList = [Dis', Thorin']
+dwarfList = [Irene']
 
-beingList :: [Atom]
-beingList = animalList ++ personList
+thingList :: [Atom]
+thingList = [Ring, Bottle, Sword]
 
-catList :: [Atom]
-catList = [Whiskers', Mittens']
-
-mouseList :: [Atom]
-mouseList = [Mickey', Minnie', Sue']
-
-birdList :: [Atom]
-birdList = [Gerald']
-
-personList :: [Atom]
-personList = atoms \\ (thingList ++ animalList)
-
-weaponList :: [Atom]
-weaponList = [Sword1, Sword2, Dagger1]
-
-cupList :: [Atom]
-cupList = [Cup1, Cup2]
+ringList :: [Atom]
+ringList = [Ring]
 
 bottleList :: [Atom]
-bottleList = [Bottle1, Bottle2]
+bottleList = [Bottle]
 
-raftList :: [Atom]
-raftList = [Raft1, Raft2, Raft3, Raft4]
+swordList :: [Atom]
+swordList = [Sword]
 
-dressList :: [Atom]
-dressList = [Dress1, Dress2]
+metalList :: [Atom]
+metalList = [Ring, Sword]
 
-riverList :: [Atom]
-riverList = [The_Genesee', The_Rhine']
+rustyList :: [Atom]
+rustyList = [Sword]
+
+personList :: [Atom]
+personList = atoms \\ thingList
 
 magicalList :: [Atom]
-magicalList = [Penny', Alice', Jim', Linda', Ellie', Victor', Kim', Dis', 
-               Thorin', Tom', Cup1, Sword1, Ring1, Bottle1, Harry']
+magicalList = [Alice', Ellie',  Harry', Quine']
 
 wizardList :: [Atom]
-wizardList = personList `intersect` magicalList
+wizardList = maleList `intersect` magicalList
 
 witchList :: [Atom]
-witchList = personList `intersect` magicalList
+witchList = femaleList`intersect` magicalList
 
 maleList :: [Atom]
-maleList = [Bob', Cyrus', Jim', Noah', Ollie', Penny', Quine', Stuart', Tom', Uli', Victor',
-            Harry', Zorba', Fred', Whiskers', Gerald', Mickey', Thorin']
+maleList = [Bob', Cyrus', Ollie',  Harry', Quine']
 
 femaleList :: [Atom]
-femaleList = [Alice', Ellie', Goldilocks', Hillary', Irene', Kim', Linda', SnowWhite', Xena',
-              Dorothy', Mittens', Minnie', Sue', Dis']
+femaleList = [Alice', Ellie', Irene', SnowWhite', Xena']
 
 youngList :: [Atom]
-youngList = [Ollie', Penny', Stuart', Uli', Harry', Noah', Tom',
-             Alice', Ellie', Goldilocks', SnowWhite', Dorothy', Mittens']
+youngList = [Ollie', Harry', Alice', Ellie', SnowWhite']
 
 oldList :: [Atom]
-oldList = [Sword1, Bottle1, Ring3, Dress2, Glasses1] ++ (personList \\ youngList) ++ birdList ++ metalList 
+oldList = (personList \\ youngList) ++ [Bottle, Sword]
 
 newList :: [Atom]
-newList = (thingList \\ oldList) 
+newList = [Ring]
 
 boyList :: [Atom]
 boyList = youngList `intersect` maleList
@@ -167,148 +135,95 @@ womanList = oldList `intersect` femaleList
 childrenList :: [Atom]
 childrenList = boyList `union` girlList
 
-ringList :: [Atom]
-ringList = [Ring1, Ring2, Ring3]
-
-shinyList :: [Atom]
-shinyList = metalList `intersect` newList
-
-rustyList :: [Atom]
-rustyList = [Sword1, Ring3]
-
 wiseList :: [Atom]
-wiseList = [Linda', Irene', Xena', Jim', Victor', Fred']
+wiseList = [Irene', Xena', Quine']
 
 foolishList :: [Atom]
-foolishList = [Alice', Goldilocks', Ollie', Tom', Zorba', SnowWhite']
+foolishList = [Alice', Ollie', SnowWhite']
 
 laughList :: [Atom]
-laughList = [Zorba', Alice', Dorothy', Gerald', Tom', Fred', Thorin']
+laughList = [Alice', Ollie']
 
 runList :: [Atom]
-runList = [Xena', Thorin', Jim', Alice', Dorothy', Ellie'] `union` 
-           catList `union` 
-           mouseList `union` 
-           giantList `union` 
-           birdList
+runList = warriorList ++  [ Alice',  Ellie']
 
 walkList :: [Atom]
-walkList = [Linda', Fred', Jim', Penny', Ollie', Tom', Bob', Kim', SnowWhite']
+walkList = [Ollie', Bob', SnowWhite']
 
 smileList :: [Atom]
-smileList = [Tom', Ollie', Alice', Kim', Uli']
+smileList = [Irene', Ollie', Alice']
 
 swimList :: [Atom]
-swimList = [Gerald', Whiskers', Mickey', Minnie', Thorin', Ollie', Jim']
+swimList = [Ollie', Irene', Alice']
 
 coldList :: [Atom]
-coldList = [The_Genesee', The_Rhine', Bottle2, Ollie', Alice']
+coldList = [Irene', Alice']
 
 warriorList :: [Atom]
-warriorList = [Xena', Thorin', Irene', Victor', Fred', Cyrus', Quine'] 
+warriorList = [Xena', Irene', Bob', Cyrus', Quine'] 
 
 badList :: [Atom]
-badList =  [Noah', Kim']
+badList =  [Ellie', Ollie']
 
 goodList :: [Atom]
-goodList = [Fred', Xena', Thorin']
+goodList = [Xena', Quine']
 
-tornList :: [Atom]
-tornList = [Dress2]
-   
 dirtyList :: [Atom]
-dirtyList = [Ollie', Harry', Dress2, Ring3]
+dirtyList = [Ollie', Harry', Ring]
 
 cleanList :: [Atom]
 cleanList = atoms \\ dirtyList
 
 tallList :: [Atom]
-tallList = giantList ++ [Xena', Fred', Victor', Ollie', Irene', Bottle2]
+tallList = giantList ++ [Xena', Ollie', Irene']
 
 shortList :: [Atom]
-shortList = dwarfList ++ [Uli', Alice', Goldilocks', Quine', Harry', Bottle1]
-
-metalList :: [Atom]
-metalList = [Dagger1, Sword1, Sword2, Glasses1] ++ ringList
-
-steelList :: [Atom]
-steelList = [Sword1, Sword2, Dagger1]
-
-goldList :: [Atom]
-goldList = [Ring1, Ring2]
-
-silverList :: [Atom]
-silverList = [Ring3]
+shortList = (atoms \\ thingList) \\ tallList
 
 -- Lists for TwoPlacePreds
 chaseList :: [[Atom]]
-chaseList = [ [Whiskers' ,  Mickey' ],
-              [Whiskers' ,  Minnie' ],
-              [Whiskers' ,  Sue'    ],
-              [Mittens'  ,  Mickey' ],
-              [Mittens'  ,  Minnie' ],
-              [Mittens'  , Sue'     ],
-              [Mittens'  , Gerald'  ],
-              [Tom'      , Ollie'   ],
-              [Bob'      , Ollie'   ], 
-              [Tom'      , Penny'   ],
-              [Bob'      , Penny'   ],
-              [Tom'      , Uli'     ],
-              [Bob'      , Uli'     ],
-              [Ollie'    , Alice'   ], 
-              [Ollie'    , Ellie'   ],
-              [Ollie'    , Dorothy' ],
-              [Dorothy'  , Ellie'   ],
-              [SnowWhite', Dorothy' ] ]
-
-drinkList :: [[Atom]]
-drinkList = [ [Uli'     , Cup1         ],
-              [Ollie'   , Bottle1      ],
-              [Penny'   , Bottle1      ],
-              [Dorothy' , Bottle1      ],
-              [Alice'   , Bottle2      ],
-              [Linda'   , Bottle2      ],
-              [Ellie'   , Bottle2      ],
-              [Victor'  , Bottle2      ],
-              [Kim'     , Bottle2      ],
-              [Jim'     , Bottle2      ],
-              [Quine'   , Cup2         ],
-              [Tom'     , The_Rhine'   ],
-              [Bob'     , The_Rhine'   ],
-              [Whiskers', The_Genesee' ], 
-              [Mittens' , The_Genesee' ] ]
+chaseList = [ [SnowWhite'      , Ollie'     ],
+              [Bob'      , Ollie'     ], 
+              [SnowWhite'      , Harry'     ],
+              [Bob'      , Harry'     ],
+              [Bob'      , Xena'     ],
+              [Bob'      , Cyrus'     ],
+              [Ollie'    , Alice'     ], 
+              [Ollie'    , Ellie'     ],
+              [Ollie'    , SnowWhite' ],
+              [Alice'  , Ellie'     ],
+              [SnowWhite', Harry'   ] ]
 
 fightList :: [[Atom]]
 fightList = [ [Xena'  , Irene'],
-              [Thorin', Fred' ],
-              [Victor', Tom'  ],
-              [Victor', Bob'  ],
-              [Fred'  , Tom'  ],
-              [Fred'  , Bob'  ] ]
+              [Ellie', Cyrus'  ],
+              [Ollie'  , SnowWhite'  ],
+              [Harry', Alice'],
+              [Ollie'  , Cyrus'  ] ]
 
 defeatList :: [[Atom]]
 defeatList = [ [Xena'  , Irene' ],
-               [Thorin', Fred'  ],
-               [Tom'   , Fred'  ],
-               [Bob'   , Victor'] ]
+               [Cyrus', Ellie'],
+               [Ollie'   , Cyrus'],
+               [Ollie'   , SnowWhite'],
+               [Harry', Alice'] ]
 
 helpList :: [[Atom]]
-helpList = [ [Victor', Fred'   ],
-             [Ollie' , Penny'  ],
-             [Ollie' , Uli'    ],
-             [Alice' , Dorothy'],
+helpList = [ [Quine', Harry'   ],
+             [Ollie' , Alice'  ],
+             [Ollie' , Bob'    ],
+             [Alice' , Irene'],
              [Alice' , Ellie'  ],
-             [Linda' , Hillary'],
-             [Linda' , Zorba'  ],
-             [Xena'  , Thorin' ] ]
+             [Alice' , SnowWhite'],
+             [Irene' , Xena'  ],
+             [Xena'  , Bob' ] ]
 
 -- Three-Place Predicate Lists
 giveList :: [[Atom]]
-giveList = [ [Irene' , Alice' , Dress1  ],
-             [Kim'   , Ellie' , Dress2  ],
-             [Fred'  , Xena'  , Dagger1 ],
-             [Dis'   , Thorin', Sword1  ],
-             [Victor', Fred'  , Sword2  ] ]
+giveList = [ [Irene' , Alice' , Bottle  ],
+             [Irene'   , Ellie' , Bottle  ],
+             [Quine'  , Xena'  , Sword ],
+             [Ellie', Alice', Ring  ] ]
 
 -- One-Place Predicates
 giant :: OnePlacePred
@@ -319,18 +234,6 @@ dwarf = list2OnePlacePred' dwarfList
 
 magical :: OnePlacePred
 magical = list2OnePlacePred' magicalList
-
-metal :: OnePlacePred
-metal = list2OnePlacePred' metalList
-
-steel :: OnePlacePred
-steel = list2OnePlacePred' steelList
-
-gold :: OnePlacePred
-gold = list2OnePlacePred' goldList
-
-silver :: OnePlacePred
-silver = list2OnePlacePred' silverList
 
 short :: OnePlacePred
 short = list2OnePlacePred' shortList
@@ -349,9 +252,6 @@ bad = list2OnePlacePred' badList
 
 good :: OnePlacePred
 good = list2OnePlacePred' goodList
-
-torn :: OnePlacePred
-torn = list2OnePlacePred' tornList
 
 warrior :: OnePlacePred
 warrior = list2OnePlacePred' warriorList
@@ -383,38 +283,11 @@ wise = list2OnePlacePred' wiseList
 rusty :: OnePlacePred
 rusty = list2OnePlacePred' rustyList
 
-shiny :: OnePlacePred
-shiny = list2OnePlacePred' shinyList
-
-ring :: OnePlacePred
-ring = list2OnePlacePred' ringList
-
-sword :: OnePlacePred
-sword = list2OnePlacePred' swordList
-
-raft :: OnePlacePred
-raft = list2OnePlacePred' raftList
-
-cup :: OnePlacePred
-cup = list2OnePlacePred' cupList
-
-bottle :: OnePlacePred
-bottle = list2OnePlacePred' bottleList
-
-glasses :: OnePlacePred
-glasses = list2OnePlacePred' glassesList
-
-river :: OnePlacePred
-river = list2OnePlacePred' riverList
-
 female :: OnePlacePred
 female = list2OnePlacePred' femaleList
 
 male :: OnePlacePred
 male = list2OnePlacePred' maleList
-
-thing :: OnePlacePred
-thing = list2OnePlacePred' thingList
 
 boy :: OnePlacePred
 boy = list2OnePlacePred' boyList
@@ -434,38 +307,32 @@ wizard = list2OnePlacePred' wizardList
 witch :: OnePlacePred
 witch = list2OnePlacePred' witchList
 
-mouse :: OnePlacePred
-mouse = list2OnePlacePred' mouseList
+ring :: OnePlacePred
+ring = list2OnePlacePred' ringList
 
-cat :: OnePlacePred
-cat = list2OnePlacePred' catList
+bottle :: OnePlacePred
+bottle = list2OnePlacePred' bottleList
 
-bird :: OnePlacePred
-bird = list2OnePlacePred' birdList
+sword :: OnePlacePred
+sword = list2OnePlacePred' swordList
 
-animal :: OnePlacePred
-animal = list2OnePlacePred' animalList
+metal :: OnePlacePred
+metal = list2OnePlacePred' metalList
 
 people :: OnePlacePred
-people = plural `compose` ((negate' animal) `and'` (negate' thing))
+people = plural `compose` person
 
 person :: OnePlacePred
-person = list2OnePlacePred (map (:[]) personList)
-
-being :: OnePlacePred
-being = list2OnePlacePred' beingList
+person = list2OnePlacePred' personList
 
 old :: OnePlacePred
 old = list2OnePlacePred' oldList
 
-young :: OnePlacePred
-young = list2OnePlacePred' youngList
-
 new :: OnePlacePred
 new = list2OnePlacePred' newList
 
-dress :: OnePlacePred
-dress = list2OnePlacePred' dressList
+young :: OnePlacePred
+young = list2OnePlacePred' youngList
 
 groupPred :: Ordering -> Int -> OnePlacePred
 groupPred ord n = \x -> (length x) `compare` n == ord
@@ -499,10 +366,10 @@ and' :: OnePlacePred -> OnePlacePred -> OnePlacePred
 and' p q = \x -> (p x) && (q x)
 
 scatter :: OnePlacePred
-scatter = plural `compose` (negate' thing)
+scatter = plural
 
 gather :: OnePlacePred
-gather = group' `compose` (negate' thing)
+gather = group'
 
 -- Two-Place Predicates
 
@@ -528,9 +395,6 @@ defeat = list2TwoPlacePred defeatList
 
 help :: TwoPlacePred
 help = list2TwoPlacePred helpList
-
-drink :: TwoPlacePred
-drink = list2TwoPlacePred drinkList
 
 chase :: TwoPlacePred
 chase = list2TwoPlacePred chaseList
