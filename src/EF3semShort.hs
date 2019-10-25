@@ -1,8 +1,12 @@
 module EF3semShort where
     
 import Data.List 
+import Data.Function
 import EF2synShort
 import Model
+
+maxElement xss = maximumBy (compare `on` length) xss
+noniParts xss = filter (\x -> not (x `ipart` (maxElement xss) )) xss
     
 allNum, noNum :: Int -> Int -> Bool
 allNum = \ m n -> m == 0
@@ -75,6 +79,34 @@ intADJ' adj = case adj of
     
 intSCN :: SCN -> OnePlacePred
 intSCN scn = case scn of
+    Man      -> f man 
+    Woman    -> f woman
+    Boy      -> f boy
+    Girl     -> f girl
+    Witch    -> f witch
+    Wizard   -> f wizard
+    Giant    -> f giant
+    Dwarf    -> f dwarf
+    Warrior  -> f warrior
+    Sword    -> f sword
+    Ring     -> f ring
+    Person   -> f person
+    Thing    -> f thing
+    Group    -> intCCN Group
+    Crowd    -> intCCN Crowd
+    Couple   -> intCCN Couple
+    Coven    -> intCCN Coven
+    where f p = atom `compose` p
+
+intCCN :: SCN -> OnePlacePred
+intCCN ccn = case ccn of
+    Group    -> group'
+    Crowd    -> crowd
+    Couple   -> couple
+    Coven    -> list2OnePlacePred [witchList]
+
+intPCN :: PCN -> OnePlacePred
+intPCN (Plur scn) = case scn of
     Man      -> man 
     Woman    -> woman
     Boy      -> boy
@@ -91,13 +123,10 @@ intSCN scn = case scn of
     Group    -> group'
     Crowd    -> crowd
     Couple   -> couple
-    Coven    -> group' `compose` witch
-
-intPCN :: PCN -> OnePlacePred
-intPCN (Plur scn) = plural `compose` (intSCN scn)
+    Coven    -> list2OnePlacePred [witchList]
         
 intCN :: CN -> OnePlacePred
-intCN (Sng scn) = intSCN scn
+intCN (Sng scn) = (intSCN scn)
 intCN (Pl pcn)   = intPCN pcn
 
 
@@ -108,10 +137,12 @@ intDET Each' p q = all q (filter p domain)
 intDET Some' p q = any q (filter p domain)
 intDET A' p q = any q (filter p domain)
 intDET Every' p q = all q (filter p domain)
-intDET The' p q = singleton plist && q (head plist)
+intDET The' p q = singleton plist && q (maxElement plist)
     where plist = filter p domain
           singleton [x] = True
+          singleton xs  = length (noniParts xs) == 0
           singleton  _  = False
+
 intDET No' p q = not (intDET Some' p q)
 intDET Most' p q = length pqlist > length (plist \\ qlist)
     where plist  = filter p domain

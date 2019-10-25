@@ -62,6 +62,9 @@ subList :: (Eq a) => [a] -> [a] -> Bool
 subList xs ys = length (filter (\x -> x `elem` ys) xs) == length xs
 
 
+ipart :: [Atom] -> [Atom] -> Bool
+ipart xs ys = xs `subList` ys
+
 -- From my L0HW.hs 
 powerset :: [a] -> [[a]]
 powerset [] = [[]]
@@ -100,7 +103,7 @@ personList :: [Atom]
 personList = atoms' \\ thingList
 
 magicalList :: [Atom]
-magicalList = [Alice', Ellie',  Harry', Quine']
+magicalList = [Alice', Ellie',  Irene',Harry', Quine']
 
 wizardList :: [Atom]
 wizardList = maleList `intersect` magicalList
