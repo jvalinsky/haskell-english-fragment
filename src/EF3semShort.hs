@@ -1,6 +1,6 @@
 module EF3semShort where
     
-import Data.List (intersect)
+import Data.List 
 import EF2synShort
 import Model
     
@@ -66,44 +66,78 @@ intSCN scn = case scn of
     Person   -> person
 
 intPCN :: PCN -> OnePlacePred -> Bool
-intPCN (Plur scn) = 
+intPCN (Plur scn) = plural `compose` (intSCN scn)
         
 intCN :: CN -> OnePlacePred -> Bool
-intCN (Sing scn) = intSCN scn
+intCN (Sng scn) = intSCN scn
 intCN (Pl pcn)   = intPCN pcn
 
-intDET :: DET -> (Entity -> Bool) -> (Entity -> Bool) -> Bool
-intDET Some p q = any q (filter p atoms)
-intDET A p q = any q (filter p atoms)
-intDET Every p q = all q (filter p atoms)
-intDET The p q = singleton plist && q (head plist)
-    where plist = filter p atoms
+intDET :: DET' -> (Entity -> Bool) -> (Entity -> Bool) -> Bool
+intDET Some' p q = any q (filter p domain)
+intDET A' p q = any q (filter p domain)
+intDET Every' p q = all q (filter p domain)
+intDET The' p q = singleton plist && q (head plist)
+    where plist = filter p domain
           singleton [x] = True
           singleton  _  = False
-intDET No p q = not (intDET Some p q)
-intDET Most p q = length pqlist > length (plist \\ qlist)
-    where plist  = filter p atoms
-          qlist  = filter q atoms
+intDET No' p q = not (intDET Some' p q)
+intDET Most' p q = length pqlist > length (plist \\ qlist)
+    where plist  = filter p domain
+          qlist  = filter q domain
           pqlist = filter q plist
 
 intDP :: DP -> OnePlacePred -> Bool
 intDP (Empty name) = intName name
-intDP (Some pcn) = (intDET Some) (intPCN pcn)
-intDP (Some' adj pcn) = (intDET Some) ((intADJ adj) (intPCN pcn))
-intDP (Many pcn) = (intDET Many) (intPCN pcn)
-intDP (Many' adj pcn) = (intDET Many) ((intADJ adj) (intPCN pcn))
-intDP (Each scn) = (intDET Each) (intSCN scn)
-intDP (Each' adj scn) = (intDET Each) ((intADJ adj) (intSCN scn))
-intDP (Every scn) = (intDET Every) (intSCN scn)
-intDP (Every' adj scn) = (intDET Every) ((intADJ adj) (intSCN scn))
-intDP (Most pcn) = (intDET Most) (intPCN pcn)
-intDP (Most' adj pcn) = (intDET Most) ((intADJ adj) (intPCN pcn))
-intDP (The cn) = (intDET The) (intCN cn)
-intDP (The' adj cn) = (intDET The) ((intADJ adj) (intCN cn))
-intDP (A scn) = (intDET A) (intSCN scn)
-intDP (A' adj scn) = (intDET A) ((intADJ adj) (intSCN scn))
-intDP (All pcn) = (intDET All) (intPCN pcn)
-intDP (All' adj pcn) = (intDET All) ((intADJ adj) (intPCN pcn))
+intDP (Some1 pcn) = (intDET Some') (intPCN pcn)
+intDP (Some2 adj pcn) = (intDET Some') ((intADJ adj) (intPCN pcn))
+intDP (Many1 pcn) = (intDET Many') (intPCN pcn)
+intDP (Many2 adj pcn) = (intDET Many') ((intADJ adj) (intPCN pcn))
+intDP (Each1 scn) = (intDET Each') (intSCN scn)
+intDP (Each2 adj scn) = (intDET Each') ((intADJ adj) (intSCN scn))
+intDP (Every1 scn) = (intDET Every') (intSCN scn)
+intDP (Every2 adj scn) = (intDET Every') ((intADJ adj) (intSCN scn))
+intDP (Most1 pcn) = (intDET Most') (intPCN pcn)
+intDP (Most2 adj pcn) = (intDET Most') ((intADJ adj) (intPCN pcn))
+intDP (The1 cn) = (intDET The') (intCN cn)
+intDP (The2 adj cn) = (intDET The') ((intADJ adj) (intCN cn))
+intDP (A1 scn) = (intDET A') (intSCN scn)
+intDP (A2 adj scn) = (intDET A') ((intADJ adj) (intSCN scn))
+intDP (All1 pcn) = (intDET All') (intPCN pcn)
+intDP (All2 adj pcn) = (intDET All') ((intADJ adj) (intPCN pcn))
+intDP (No1 scn) = (intDET No') (intsCN scn)
+intDP (No2 adj scn) = (intDET No') ((intADJ adj) (intSCN scn))
+
+intINF :: INF -> OnePlacePred
+intINF x = case x of
+    Laugh   -> laugh
+    Smile   -> smile
+    Swim    -> swim
+    Run     -> run
+    Walk    -> walk
+    Scatter -> scatter
+    Gather  -> gather
+
+intTV :: TV -> TwoPlacePred
+intTV Help   = help
+intTV Defeat = defeat
+intTV Chase  = chase
+intTV Fight  = fight
+
+intDV :: DV -> ThreePlacePred
+intDV Give = give
+
+-- VP0 INF | VP1 TV DP | VP2 DV DP DP | VP3 Be' ADJ 
+intVP :: OnePlacePred
+intVP (VP0 inf)        = (intINF inf)
+intVP (VP1 tv dp)      = \ subj -> intDP dp (\ obj -> intDV tv obj subj)
+intVP (VP2 dv dp1 dp2) = \ subj -> intDP dp1 (\ dobj -> intDP dp2 (\ iobj -> intDV dv iobj dobj subj))
+--intVP (VP3 Be adj)     = intADJ adj
 
 intSent :: Sent -> Bool
 intSent (Sent dp vp) = (intDP dp) (intVP vp)
+
+{-
+intRCN :: RCN -> OnePlacePred
+intRCN (RCN1 cn _ vp) = \ e -> ((intCN cn e) && (intVP vp e))
+intRCN (RCN2 cn _ dp tv) = \ e -> ((intCN cn e) && (intDP dp (\ subj -> (intTV tv e subj))))
+-}

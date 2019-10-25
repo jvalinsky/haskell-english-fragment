@@ -10,8 +10,8 @@ type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 -- i operator means there exists a unique
 -- lambda is from lambda calculus
 -- Entity Types
-data Atom = Alice'   | Bob'    | Cyrus'  | Ellie' | Irene'   | SnowWhite'    | Sword | Bottle |
-             Ollie'  | Quine'  | Ring | Harry'    | Xena'   deriving (Eq, Show, Bounded, Enum)
+data Atom = Alice'   | Bob'    | Cyrus'  | Ellie' | Irene'   | SnowWhite'    | Sword' | Bottle' |
+             Ollie'  | Quine'  | Ring' | Harry'    | Xena'   deriving (Eq, Show, Bounded, Enum)
 
 
 atoms :: [Atom]
@@ -76,22 +76,22 @@ dwarfList :: [Atom]
 dwarfList = [Irene']
 
 thingList :: [Atom]
-thingList = [Ring, Bottle, Sword]
+thingList = [Ring', Bottle', Sword']
 
 ringList :: [Atom]
-ringList = [Ring]
+ringList = [Ring']
 
 bottleList :: [Atom]
-bottleList = [Bottle]
+bottleList = [Bottle']
 
 swordList :: [Atom]
-swordList = [Sword]
+swordList = [Sword']
 
 metalList :: [Atom]
-metalList = [Ring, Sword]
+metalList = [Ring', Sword']
 
 rustyList :: [Atom]
-rustyList = [Sword]
+rustyList = [Sword']
 
 personList :: [Atom]
 personList = atoms \\ thingList
@@ -115,10 +115,10 @@ youngList :: [Atom]
 youngList = [Ollie', Harry', Alice', Ellie', SnowWhite']
 
 oldList :: [Atom]
-oldList = (personList \\ youngList) ++ [Bottle, Sword]
+oldList = (personList \\ youngList) ++ [Bottle', Sword']
 
 newList :: [Atom]
-newList = [Ring]
+newList = [Ring']
 
 boyList :: [Atom]
 boyList = youngList `intersect` maleList
@@ -169,7 +169,7 @@ goodList :: [Atom]
 goodList = [Xena', Quine']
 
 dirtyList :: [Atom]
-dirtyList = [Ollie', Harry', Ring]
+dirtyList = [Ollie', Harry', Ring']
 
 cleanList :: [Atom]
 cleanList = atoms \\ dirtyList
@@ -220,10 +220,10 @@ helpList = [ [Quine', Harry'   ],
 
 -- Three-Place Predicate Lists
 giveList :: [[Atom]]
-giveList = [ [Irene' , Alice' , Bottle  ],
-             [Irene'   , Ellie' , Bottle  ],
-             [Quine'  , Xena'  , Sword ],
-             [Ellie', Alice', Ring  ] ]
+giveList = [ [Irene' , Alice' , Bottle'  ],
+             [Irene'   , Ellie' , Bottle'  ],
+             [Quine'  , Xena'  , Sword' ],
+             [Ellie', Alice', Ring'  ] ]
 
 -- One-Place Predicates
 giant :: OnePlacePred
