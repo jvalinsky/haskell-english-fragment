@@ -10,10 +10,10 @@ type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 -- i operator means there exists a unique
 -- lambda is from lambda calculus
 -- Entity Types
-data Atom = Alice'   | Bob'    | Cyrus'  | Ellie' | Irene'   | SnowWhite'    | Sword' | Bottle' |
-             Ollie'  | Quine'  | Ring' | Harry'    | Xena'   deriving (Eq, Show, Bounded, Enum)
+data Atom = Alice'   | Bob'    | Cyrus' | Ellie' | Irene' | SnowWhite'  | Sword' | Bottle' |
+             Ollie'  | Quine'  | Ring'  | Harry' | Xena'   deriving (Eq, Show, Bounded, Enum)
 
-
+  
 atoms' :: [Atom]
 atoms' = [minBound..maxBound]
 
@@ -24,6 +24,12 @@ domain :: [Entity]
 domain = powerset atoms'
 
 type Entity = [Atom]
+
+type Tag = Int
+data Mass = Mass Tag
+
+--materialize :: Entity -> Mass
+--materialize x = 
 
 ----------------------
 -- Helper Functions --

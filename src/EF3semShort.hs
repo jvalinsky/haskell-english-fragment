@@ -141,7 +141,6 @@ intDET The' p q = singleton plist && q (maxElement plist)
     where plist = filter p domain
           singleton [x] = True
           singleton xs  = length (noniParts xs) == 0
-          singleton  _  = False
 
 intDET No' p q = not (intDET Some' p q)
 intDET Most' p q = length pqlist > length (plist \\ qlist)
@@ -153,20 +152,35 @@ intDP :: DP -> OnePlacePred -> Bool
 intDP (Empty name) = intName name
 intDP (Some1 pcn) = (intDET Some') (intPCN pcn)
 intDP (Some2 adj pcn) = (intDET Some') ((intADJ adj) (intPCN pcn))
+intDP (Some3 rpcn)    = (intDET Some') (intRPCN rpcn)
+
 intDP (Each1 scn) = (intDET Each') (intSCN scn)
 intDP (Each2 adj scn) = (intDET Each') ((intADJ adj) (intSCN scn))
+intDP (Each3 rscn)    = (intDET Each') (intRSCN rscn)
+
 intDP (Every1 scn) = (intDET Every') (intSCN scn)
 intDP (Every2 adj scn) = (intDET Every') ((intADJ adj) (intSCN scn))
+intDP (Every3 rscn)    = (intDET Every') (intRSCN rscn)
+
 intDP (Most1 pcn) = (intDET Most') (intPCN pcn)
 intDP (Most2 adj pcn) = (intDET Most') ((intADJ adj) (intPCN pcn))
+intDP (Most3 rpcn)    = (intDET Most') (intRPCN rpcn)
+
 intDP (The1 cn) = (intDET The') (intCN cn)
 intDP (The2 adj cn) = (intDET The') ((intADJ adj) (intCN cn))
+intDP (The3 rcn)    = (intDET The') (intRCN rcn)
+
 intDP (A1 scn) = (intDET A') (intSCN scn)
 intDP (A2 adj scn) = (intDET A') ((intADJ adj) (intSCN scn))
+intDP (A3 rscn)    = (intDET A') (intRSCN rscn)
+
 intDP (All1 pcn) = (intDET All') (intPCN pcn)
 intDP (All2 adj pcn) = (intDET All') ((intADJ adj) (intPCN pcn))
+intDP (All3 rpcn)    = (intDET All') (intRPCN rpcn)
+
 intDP (No1 cn) = (intDET No') (intCN cn)
 intDP (No2 adj cn) = (intDET No') ((intADJ adj) (intCN cn))
+intDP (No3 rcn)    = (intDET No') (intRCN rcn)
 
 intINF :: INF -> OnePlacePred
 intINF x = case x of
@@ -187,7 +201,6 @@ intTV Fight  = \x y -> fight x y
 intDV :: DV -> ThreePlacePred
 intDV Give = give
 
--- VP0 INF | VP1 TV DP | VP2 DV DP DP | VP3 Be' ADJ 
 intVP :: VP -> OnePlacePred
 intVP (VP0 inf)        = (intINF inf)
 intVP (VP1 tv dp)      = \ subj -> intDP dp (\ obj -> intTV tv obj subj)
@@ -197,8 +210,20 @@ intVP (VP3 Be adj)     = intADJ' adj
 intSent :: Sent -> Bool
 intSent (Sent dp vp) = (intDP dp) (intVP vp)
 
-{-
 intRCN :: RCN -> OnePlacePred
-intRCN (RCN1 cn _ vp) = \ e -> ((intCN cn e) && (intVP vp e))
-intRCN (RCN2 cn _ dp tv) = \ e -> ((intCN cn e) && (intDP dp (\ subj -> (intTV tv e subj))))
--}
+intRCN (RCN1 cn That vp)        = \ e -> ((intCN cn e) && (intVP vp e))
+intRCN (RCN2 cn That dp tv)     = \ e -> ((intCN cn e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRCN (RCN3 adj cn That vp)    = \ e -> ( ((intADJ adj) (intCN cn) e) && (intVP vp e))
+intRCN (RCN4 adj cn That dp tv) = \ e -> ( ((intADJ adj) (intCN cn) e) && (intDP dp (\ subj -> (intTV tv e subj))))
+
+intRSCN :: RSCN -> OnePlacePred
+intRSCN (RSCN1 scn That vp)        = \ e -> ((intSCN scn e) && (intVP vp e))
+intRSCN (RSCN2 scn That dp tv)     = \ e -> ((intSCN scn e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRSCN (RSCN3 adj scn That vp)    = \ e -> ( ((intADJ adj) (intSCN scn) e) && (intVP vp e))
+intRSCN (RSCN4 adj scn That dp tv) = \ e -> ( ((intADJ adj) (intSCN scn) e) && (intDP dp (\ subj -> (intTV tv e subj))))
+
+intRPCN :: RPCN -> OnePlacePred
+intRPCN (RPCN1 pcn That vp)        = \ e -> ((intPCN pcn e) && (intVP vp e))
+intRPCN (RPCN2 pcn That dp tv)     = \ e -> ((intPCN pcn e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRPCN (RPCN3 adj pcn That vp)    = \ e -> ( ((intADJ adj) (intPCN pcn) e) && (intVP vp e))
+intRPCN (RPCN4 adj pcn That dp tv) = \ e -> ( ((intADJ adj) (intPCN pcn) e) && (intDP dp (\ subj -> (intTV tv e subj))))

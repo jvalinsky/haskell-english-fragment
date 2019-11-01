@@ -34,6 +34,9 @@ sent9 = Sent (The1  (Pl (Plur Witch))) (VP3 Be Magical)
 sent10 :: Sent
 sent10 = Sent (The1  (Sng Coven)) (VP3 Be Magical)
 
+sent11 :: Sent
+sent11 = Sent (A3 (RSCN1 Witch That (VP0 Run))) (VP0 Laugh)
+
 main :: IO ()
 main = do
     putStr "Here are some example sentences and their evaluations: \n"
@@ -67,5 +70,7 @@ main = do
     putStr "Example for distributive: The Coven is magical. \n"
     putStr ("Encoded form: " ++ (show sent10) ++ "\n")
     putStr ("Result: " ++ (show (intSent sent10)) ++ "\n")
-
+    putStr "Example for RCN: A witch that runs laughs. \n"
+    putStr ("Encoded form: " ++ (show sent11) ++ "\n")
+    putStr ("Result: " ++ (show (intSent sent11)) ++ "\n")
 

@@ -7,10 +7,11 @@ data That = That deriving Show
 
 data DET' = Each' | Every' | Some' | Most' | The' | A' | All' | No' deriving Show
 
-data DP = Empty Name | Some1 PCN      | Some2 ADJ PCN | 
-            Each1 SCN   | Each2 ADJ SCN | Every1 SCN     | Every2 ADJ SCN | Most1 PCN   | Most2 ADJ PCN |
-            The1 CN     | The2 ADJ CN   | A1 SCN         | A2 ADJ SCN     | All1 PCN    | All2 ADJ PCN  |
-            No1 CN      | No2 ADJ CN deriving Show
+data DP =   Some1  PCN  | Some2  ADJ PCN | Some3  RPCN | Each1 SCN  | Each2 ADJ SCN | Each3 RSCN |
+            Every1 SCN  | Every2 ADJ SCN | Every3 RSCN | Most1 PCN  | Most2 ADJ PCN | Most3 RPCN |
+            The1   CN   | The2   ADJ CN  | The3   RCN  | A1    SCN  | A2    ADJ SCN | A3    RSCN |
+            All1   PCN  | All2   ADJ PCN | All3   RPCN | No1   CN   | No2   ADJ CN  | No3   RCN  | 
+            Empty Name deriving Show
 
 data Name = Alice   | Bob    | Cyrus  | Ellie | Irene   | SnowWhite |
              Ollie  | Quine  | Harry  | Xena   deriving (Eq, Show, Bounded, Enum)
@@ -19,7 +20,11 @@ data CN = Sng SCN | Pl PCN deriving Show
 
 data PCN = Plur SCN deriving Show
 
-data RCN = RCN1 CN That VP | RCN2 CN That DP TV deriving Show
+data RCN = RCN1 CN That VP | RCN2 CN That DP TV | RCN3 ADJ CN That VP | RCN4 ADJ CN That DP TV deriving Show
+
+data RSCN = RSCN1 SCN That VP | RSCN2 SCN That DP TV | RSCN3 ADJ SCN That VP | RSCN4 ADJ SCN That DP TV deriving Show
+
+data RPCN = RPCN1 PCN That VP | RPCN2 PCN That DP TV | RPCN3 ADJ PCN That VP | RPCN4 ADJ PCN That DP TV deriving Show
 
 data SCN = Bottle | Sword  | Man    | Woman   |
            Witch  | Wizard | Giant  | Dwarf  | Warrior | Boy   | Girl   | 
