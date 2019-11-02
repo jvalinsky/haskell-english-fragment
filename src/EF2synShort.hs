@@ -11,12 +11,14 @@ data DP =   Some1  PCN  | Some2  ADJ PCN | Some3  RPCN | Each1 SCN  | Each2 ADJ 
             Every1 SCN  | Every2 ADJ SCN | Every3 RSCN | Most1 PCN  | Most2 ADJ PCN | Most3 RPCN |
             The1   CN   | The2   ADJ CN  | The3   RCN  | A1    SCN  | A2    ADJ SCN | A3    RSCN |
             All1   PCN  | All2   ADJ PCN | All3   RPCN | No1   CN   | No2   ADJ CN  | No3   RCN  | 
-            Empty Name deriving Show
+            Empty Name  | Some4 MCN | Most4 MCN | The4 MCN | All4 MCN | No4 MCN deriving Show
 
 data Name = Alice   | Bob    | Cyrus  | Ellie | Irene   | SnowWhite |
              Ollie  | Quine  | Harry  | Xena   deriving (Eq, Show, Bounded, Enum)
 
-data CN = Sng SCN | Pl PCN deriving Show 
+data CN = Sng SCN | Pl PCN | Ms MCN deriving Show 
+
+data MCN = Gold_ deriving Show
 
 data PCN = Plur SCN deriving Show
 
@@ -31,9 +33,9 @@ data SCN = Bottle | Sword  | Man    | Woman   |
            Couple | Crowd  | Coven  | Ring  | Person | Group  | 
            Thing deriving (Show, Bounded, Enum)
 
-data ADJ = Wise  | Foolish  | Bad  | Good  | Young | Old   |  Rusty   | New |
-           Cold  | Magical  | Tall | Short | Numerous | Female | Male |
-           Metal | Clean | Dirty deriving (Show, Eq)
+data ADJ = Wise  | Foolish | Bad   | Good  | Young | Old   |  Rusty   | New |
+           Cold  | Magical | Tall  | Short | Numerous | Female | Male |
+           Metal | Gold    | Clean | Dirty deriving (Show, Eq)
 
 data VP = VP0 INF | VP1 TV DP | VP2 DV DP DP | VP3 Be ADJ deriving Show
 

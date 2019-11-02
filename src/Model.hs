@@ -2,40 +2,79 @@ module Model where
 
 import Data.List (intersect, union, (\\))
 
--- This constrains type variable a to be an instance of Entity
 type OnePlacePred   = Entity -> Bool
 type TwoPlacePred   = Entity -> Entity -> Bool
 type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 
 -- i operator means there exists a unique
 -- lambda is from lambda calculus
--- Entity Types
+-- Plural Types
 data Atom = Alice'   | Bob'    | Cyrus' | Ellie' | Irene' | SnowWhite'  | Sword' | Bottle' |
              Ollie'  | Quine'  | Ring'  | Harry' | Xena'   deriving (Eq, Show, Bounded, Enum)
 
-  
-atoms' :: [Atom]
-atoms' = [minBound..maxBound]
+type Tag = Int
+data Mass = Mass' [Tag] deriving Show
+data Plural = Plural' [Atom] deriving Show
 
-atoms :: [Entity]
-atoms = map (:[]) atoms'
+data Entity = Pl' Plural | Ms' Mass deriving Show
+  
+atoms :: [Atom]
+atoms = [minBound..maxBound]
 
 domain :: [Entity]
-domain = powerset atoms'
+domain = (map Pl' (map Plural' (powerset atoms))) ++ masses
 
-type Entity = [Atom]
+masses = [materialize_ [Ring'], materialize_ [Sword']]
 
-type Tag = Int
-data Mass = Mass Tag
+-- The Portion of Matter have unique Tag numbers, 
+-- a material fusion of portions of matter has a list
+-- of the individual Tag numbers for each portion of matter
 
---materialize :: Entity -> Mass
---materialize x = 
+-- The Tag number for the portion of matter that corresponds to
+-- the portion of matter of an individual (i.e. materialize (a :: Atom) ) 
+-- is the result of fromEnum a
+materialize'' :: [Atom] -> Mass
+materialize'' xs =  Mass' (map fromEnum xs)
+
+materialize_ :: [Atom] -> Entity
+materialize_ xs =  Ms' (Mass' (map fromEnum xs))
+
+materialize' :: Plural -> Mass
+materialize' (Plural' xs) =  materialize'' xs
+
+materialize :: Entity -> Entity
+materialize (Ms' m)  = (Ms' m)
+materialize (Pl' xs) = (Ms' (materialize' xs)) 
+
+mPart_ :: Mass -> Mass -> Bool
+mPart_ (Mass' x) (Mass' y) = x `subList` y
+
+mPart' :: Plural -> Plural -> Bool
+mPart' x y = (materialize' x) `mPart_` (materialize' y)
+
+mPart :: Entity -> Entity -> Bool
+mPart x y = (materialize x) `mPart` (materialize y)
+
+mEqual_ :: Mass -> Mass -> Bool
+mEqual_ (Mass' x) (Mass' y) = (x `subList` y) && (y `subList` x)
+
+mEqual :: Entity -> Entity -> Bool
+mEqual x y = ((materialize x) `mPart` (materialize y)) && ((materialize y) `mPart` (materialize x))
+
+instance Eq Mass where
+    (==) = mEqual_
 
 ----------------------
 -- Helper Functions --
 ----------------------
 
-equal' :: Entity -> Entity -> Bool
+instance Eq Plural where
+    (==) = pEqual
+
+pEqual :: Plural -> Plural -> Bool
+pEqual (Plural' xs) (Plural' ys) = xs `equal'` ys
+
+equal' :: [Atom] -> [Atom] -> Bool
 equal' xs ys = (lenXS == lenYS) && (lenXS == lenFiltered)
     where lenXS = length xs
           lenYS = length ys
@@ -44,39 +83,47 @@ equal' xs ys = (lenXS == lenYS) && (lenXS == lenFiltered)
 x /=* y = not (equal' x y)
 x ==* y = equal' x y
 
-elem' :: [Atom] -> [[Atom]] -> Bool
-elem' xs xss = any (equal' xs) xss
+entEqual :: Entity -> Entity -> Bool
+entEqual (Pl' x) (Ms' y) = False
+entEqual (Ms' x) (Pl' y) = False
 
-list2OnePlacePred :: [Entity] -> OnePlacePred
-list2OnePlacePred xs = \ x -> elem' x xs
+entEqual (Pl' (Plural' x)) (Pl' (Plural' y)) = x `equal'` y
+entEqual (Ms' x) (Ms' y) = x `mEqual_` y
+
+instance Eq Entity where
+    (==) = entEqual
+
+list2OnePlacePredM :: [Mass] -> OnePlacePred
+list2OnePlacePredM xs = \m -> elem m (map Ms' xs)
 
 list2OnePlacePred' :: [Atom] -> OnePlacePred
-list2OnePlacePred' xs = \ x -> elem' x (rmEmptySet $ powerset xs) 
+list2OnePlacePred' xs = \ x -> elem x ents
     where rmEmptySet xs = filter (\x -> x /= []) xs
-
-list2OnePlacePredProp :: [Atom] -> OnePlacePred
-list2OnePlacePredProp xs = \ x -> elem' x (propPlurals $ powerset xs) 
+          lst = rmEmptySet $ powerset xs
+          ents = map Pl' (map Plural' lst)
 
 compose :: OnePlacePred -> OnePlacePred -> OnePlacePred
 compose p q = \ x -> (p x) && (q x)
 
-unique' :: [[Atom]] -> [[Atom]]
-unique' [[]] = [[]]
-unique' (x:xs) = x : (filter (\y -> y /=* x) (unique' xs))
-
 subList :: (Eq a) => [a] -> [a] -> Bool
 subList xs ys = length (filter (\x -> x `elem` ys) xs) == length xs
 
+ipart'' :: [Atom] -> [Atom] -> Bool
+ipart'' xs ys = xs `subList` ys
 
-ipart :: [Atom] -> [Atom] -> Bool
-ipart xs ys = xs `subList` ys
+ipart' :: Plural -> Plural -> Bool
+ipart' (Plural' xs) (Plural' ys) = xs `ipart''` ys
+
+ipart :: Entity -> Entity -> Bool
+ipart (Pl' x) (Pl' y) = x `ipart'` y
+ipart _ _ = False 
 
 -- From my L0HW.hs 
 powerset :: [a] -> [[a]]
 powerset [] = [[]]
 powerset (x:xs) = (map (x:) (powerset xs)) ++ (powerset xs)
 
-propPlurals :: [Entity] -> [Entity]
+propPlurals :: [[Atom]] -> [[Atom]]
 propPlurals xss = filter (\x -> (length) x > 1) xss
 
 -- Lists for OnePlacePreds
@@ -106,7 +153,7 @@ rustyList :: [Atom]
 rustyList = [Sword']
 
 personList :: [Atom]
-personList = atoms' \\ thingList
+personList = atoms \\ thingList
 
 magicalList :: [Atom]
 magicalList = [Alice', Ellie',  Irene',Harry', Quine']
@@ -184,13 +231,16 @@ dirtyList :: [Atom]
 dirtyList = [Ollie', Harry', Ring']
 
 cleanList :: [Atom]
-cleanList = atoms' \\ dirtyList
+cleanList = atoms \\ dirtyList
 
 tallList :: [Atom]
 tallList = giantList ++ [Xena', Ollie', Irene']
 
 shortList :: [Atom]
-shortList = (atoms' \\ thingList) \\ tallList
+shortList = (atoms \\ thingList) \\ tallList
+
+goldList :: [Atom]
+goldList = [Ring']
 
 -- Lists for TwoPlacePreds
 chaseList :: [[Atom]]
@@ -334,6 +384,12 @@ sword = list2OnePlacePred' swordList
 metal :: OnePlacePred
 metal = list2OnePlacePred' metalList
 
+gold :: OnePlacePred
+gold = (list2OnePlacePred' goldList) `or'` (list2OnePlacePredM goldMList)
+
+goldMList :: [Mass]
+goldMList = [materialize'' [Ring']]
+
 people :: OnePlacePred
 people = plural `compose` person
 
@@ -341,7 +397,10 @@ person :: OnePlacePred
 person = list2OnePlacePred' personList
 
 old :: OnePlacePred
-old = list2OnePlacePred' oldList
+old = (list2OnePlacePred' oldList) `or'` (list2OnePlacePredM oldMList)
+
+oldMList :: [Mass]
+oldMList = [materialize'' [Ring'], materialize'' [Sword']]
 
 new :: OnePlacePred
 new = list2OnePlacePred' newList
@@ -349,8 +408,11 @@ new = list2OnePlacePred' newList
 young :: OnePlacePred
 young = list2OnePlacePred' youngList
 
-groupPred :: Ordering -> Int -> OnePlacePred
-groupPred ord n = \x -> (length x) `compare` n == ord
+groupPred :: Ordering -> Int -> Entity -> Bool
+groupPred ord n = f
+    where f (Pl' (Plural' xs)) = groupPred' xs  
+          f (Ms' y) = False
+          groupPred' = \x -> (length x) `compare` n == ord
 
 -- Collective Predicate
 numerous :: OnePlacePred
@@ -386,40 +448,71 @@ scatter = plural
 gather :: OnePlacePred
 gather = group'
 
+coven :: OnePlacePred
+coven (Pl' x) = x == (Plural' witchList)
+coven _ = False
+
 -- Two-Place Predicates
 
+elem' :: [Atom] -> [[Atom]] -> Bool
+elem' xs xss = any (equal' xs) xss
+
 -- Communitative (order doesn't matter)
-list2TwoPlacePred' :: [[Atom]] -> TwoPlacePred
+list2TwoPlacePred' :: [[Atom]] -> [Atom] -> [Atom] -> Bool
 list2TwoPlacePred' xs = \x -> (\y -> findPair x y xs)
     where findPair :: [Atom] -> [Atom] -> [[Atom]] -> Bool
           findPair [x] [y] pairs = elem' [x, y] pairs
           findPair _ _ _ = False
 
 -- Non-communitive (order does matter)
-list2TwoPlacePred :: [[Atom]] -> TwoPlacePred
+list2TwoPlacePred :: [[Atom]] -> [Atom] -> [Atom] -> Bool
 list2TwoPlacePred xs = \x -> (\y -> findPair x y xs)
     where findPair :: [Atom] -> [Atom] -> [[Atom]] -> Bool
           findPair [x] [y] pairs = elem [x, y] pairs
           findPair _ _ _ = False
 
 fight :: TwoPlacePred
-fight = list2TwoPlacePred' fightList
+fight (Pl' (Plural' x)) (Pl' (Plural' y)) = fight' x y
+    where fight' = list2TwoPlacePred' fightList
+
+fight  _ (Ms' y) = False
+fight (Ms' x) _ = False
 
 defeat :: TwoPlacePred
-defeat = list2TwoPlacePred defeatList
+defeat (Pl' (Plural' x)) (Pl' (Plural' y)) = defeat' x y
+    where defeat' = list2TwoPlacePred defeatList
+
+defeat  _ (Ms' y) = False
+defeat (Ms' x) _ = False
 
 help :: TwoPlacePred
-help = list2TwoPlacePred helpList
+help (Pl' (Plural' x)) (Pl' (Plural' y)) = help' x y
+    where help' = list2TwoPlacePred helpList
+
+help  _ (Ms' y) = False
+help (Ms' x) _  = False
 
 chase :: TwoPlacePred
-chase = list2TwoPlacePred chaseList
+chase (Pl' (Plural' x)) (Pl' (Plural' y)) =  chase' x y
+    where chase' = list2TwoPlacePred chaseList
+
+chase  _ (Ms' y) = False
+chase (Ms' x) _  = False
 
 -- Three-Place Predicates
-list2ThreePlacePred :: [[Atom]] -> ThreePlacePred
+list2ThreePlacePred :: [[Atom]] -> [Atom] -> [Atom] -> [Atom] -> Bool
 list2ThreePlacePred xs = \x -> (\y -> (\z -> findThree x y z xs))
     where findThree :: [Atom] -> [Atom] -> [Atom] -> [[Atom]] -> Bool
           findThree [x] [y] [z] threes = elem [x, y, z] threes
           findThree _ _ _ _ = False
 
 give :: ThreePlacePred
-give = list2ThreePlacePred giveList
+give (Pl' (Plural' x)) (Pl' (Plural' y)) (Pl' (Plural' z)) =  give' x y z
+    where give' = list2ThreePlacePred giveList
+
+give (Ms' x) _ _ = False
+give _ (Ms' y) _ = False
+give _ _ (Ms' z) = False
+
+gold' :: OnePlacePred
+gold' = list2OnePlacePredM goldMList

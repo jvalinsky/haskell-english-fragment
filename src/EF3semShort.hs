@@ -5,19 +5,12 @@ import Data.Function
 import EF2synShort
 import Model
 
-maxElement xss = maximumBy (compare `on` length) xss
+size' :: Entity -> Int
+size' (Pl' (Plural' xs)) = length xs
+size' (Ms' (Mass' xs))   = length xs
+
+maxElement xss = maximumBy (compare `on` size') xss
 noniParts xss = filter (\x -> not (x `ipart` (maxElement xss) )) xss
-    
-allNum, noNum :: Int -> Int -> Bool
-allNum = \ m n -> m == 0
-noNum  = \ m n -> n == 0
-    
-atleastNum, atmostNum :: Int -> Int -> Int -> Bool
-atleastNum k = \ m n -> n >= k
-atmostNum  k = \ m n -> n <= k
-    
-atleast2butnotall :: Int -> Int -> Bool
-atleast2butnotall = \ m n -> m > 0 && n >= 2
     
 intName :: Name -> OnePlacePred -> Bool
 intName x = case x of
@@ -31,7 +24,7 @@ intName x = case x of
     SnowWhite  -> f SnowWhite'
     Harry      -> f Harry'
     Xena       -> f Xena'
-    where f x = \p -> p [x]
+    where f x = \p -> p (Pl' (Plural' [x]))
     
 intADJ :: ADJ -> OnePlacePred -> OnePlacePred
 intADJ adj = case adj of
@@ -53,6 +46,7 @@ intADJ adj = case adj of
     Male        -> f male
     Female      -> f female
     Numerous    -> f numerous
+    Gold        -> f gold
     where f p = compose p
 
 intADJ' :: ADJ -> OnePlacePred
@@ -75,6 +69,7 @@ intADJ' adj = case adj of
     Male        -> f male
     Female      -> f female
     Numerous    -> f numerous
+    Gold        -> gold
     where f p = \x -> p x
     
 intSCN :: SCN -> OnePlacePred
@@ -103,7 +98,7 @@ intCCN ccn = case ccn of
     Group    -> group'
     Crowd    -> crowd
     Couple   -> couple
-    Coven    -> list2OnePlacePred [witchList]
+    Coven    -> coven
 
 intPCN :: PCN -> OnePlacePred
 intPCN (Plur scn) = case scn of
@@ -123,12 +118,17 @@ intPCN (Plur scn) = case scn of
     Group    -> group'
     Crowd    -> crowd
     Couple   -> couple
-    Coven    -> list2OnePlacePred [witchList]
+    Coven    -> coven
+
+
+intMCN :: MCN -> OnePlacePred
+intMCN mcn = case mcn of 
+    Gold_ -> gold'
         
 intCN :: CN -> OnePlacePred
 intCN (Sng scn) = (intSCN scn)
-intCN (Pl pcn)   = intPCN pcn
-
+intCN (Pl pcn)  = intPCN pcn
+intCN (Ms mcn)  = intMCN mcn
 
 -- Based on starter code by Professor Grimm
 intDET :: DET' -> (Entity -> Bool) -> (Entity -> Bool) -> Bool
@@ -140,7 +140,7 @@ intDET Every' p q = all q (filter p domain)
 intDET The' p q = singleton plist && q (maxElement plist)
     where plist = filter p domain
           singleton [x] = True
-          singleton xs  = length (noniParts xs) == 0
+          singleton xs  = all (\x -> x `ipart` (maxElement xs)) xs
 
 intDET No' p q = not (intDET Some' p q)
 intDET Most' p q = length pqlist > length (plist \\ qlist)
@@ -153,6 +153,7 @@ intDP (Empty name) = intName name
 intDP (Some1 pcn) = (intDET Some') (intPCN pcn)
 intDP (Some2 adj pcn) = (intDET Some') ((intADJ adj) (intPCN pcn))
 intDP (Some3 rpcn)    = (intDET Some') (intRPCN rpcn)
+intDP (Some4 mcn)    = (intDET Some') (intMCN mcn)
 
 intDP (Each1 scn) = (intDET Each') (intSCN scn)
 intDP (Each2 adj scn) = (intDET Each') ((intADJ adj) (intSCN scn))
@@ -165,10 +166,12 @@ intDP (Every3 rscn)    = (intDET Every') (intRSCN rscn)
 intDP (Most1 pcn) = (intDET Most') (intPCN pcn)
 intDP (Most2 adj pcn) = (intDET Most') ((intADJ adj) (intPCN pcn))
 intDP (Most3 rpcn)    = (intDET Most') (intRPCN rpcn)
+intDP (Most4 mcn)    = (intDET Most') (intMCN mcn)
 
 intDP (The1 cn) = (intDET The') (intCN cn)
 intDP (The2 adj cn) = (intDET The') ((intADJ adj) (intCN cn))
 intDP (The3 rcn)    = (intDET The') (intRCN rcn)
+intDP (The4 mcn)    = (intDET The') (intMCN mcn)
 
 intDP (A1 scn) = (intDET A') (intSCN scn)
 intDP (A2 adj scn) = (intDET A') ((intADJ adj) (intSCN scn))
@@ -177,10 +180,12 @@ intDP (A3 rscn)    = (intDET A') (intRSCN rscn)
 intDP (All1 pcn) = (intDET All') (intPCN pcn)
 intDP (All2 adj pcn) = (intDET All') ((intADJ adj) (intPCN pcn))
 intDP (All3 rpcn)    = (intDET All') (intRPCN rpcn)
+intDP (All4 mcn)     = (intDET All') (intMCN mcn)
 
 intDP (No1 cn) = (intDET No') (intCN cn)
 intDP (No2 adj cn) = (intDET No') ((intADJ adj) (intCN cn))
 intDP (No3 rcn)    = (intDET No') (intRCN rcn)
+intDP (No4 mcn)    = (intDET No') (intMCN mcn)
 
 intINF :: INF -> OnePlacePred
 intINF x = case x of
