@@ -56,7 +56,7 @@ mPart :: Entity -> Entity -> Bool
 mPart x y = (materialize x) `mPart` (materialize y)
 
 mEqual_ :: Mass -> Mass -> Bool
-mEqual_ (Mass' x) (Mass' y) = (x `subList` y) && (y `subList` x)
+mEqual_ (Mass' x) (Mass' y) = equal' x y
 
 mEqual :: Entity -> Entity -> Bool
 mEqual x y = ((materialize x) `mPart` (materialize y)) && ((materialize y) `mPart` (materialize x))
@@ -74,7 +74,7 @@ instance Eq Plural where
 pEqual :: Plural -> Plural -> Bool
 pEqual (Plural' xs) (Plural' ys) = xs `equal'` ys
 
-equal' :: [Atom] -> [Atom] -> Bool
+equal' :: (Eq a) => [a] -> [a] -> Bool
 equal' xs ys = (lenXS == lenYS) && (lenXS == lenFiltered)
     where lenXS = length xs
           lenYS = length ys
@@ -286,6 +286,11 @@ giveList = [ [Irene' , Alice' , Bottle'  ],
              [Irene'   , Ellie' , Bottle'  ],
              [Quine'  , Xena'  , Sword' ],
              [Ellie', Alice', Ring'  ] ]
+
+
+-- Three-Place Predicate Lists
+giveListM :: [[Entity]]
+giveListM = [ [Pl' (Plural' [Ellie']), Pl' (Plural' [Alice']), materialize_ [Ring']  ] ]
 
 -- One-Place Predicates
 giant :: OnePlacePred
@@ -503,8 +508,17 @@ chase (Ms' x) _  = False
 list2ThreePlacePred :: [[Atom]] -> [Atom] -> [Atom] -> [Atom] -> Bool
 list2ThreePlacePred xs = \x -> (\y -> (\z -> findThree x y z xs))
     where findThree :: [Atom] -> [Atom] -> [Atom] -> [[Atom]] -> Bool
-          findThree [x] [y] [z] threes = elem [x, y, z] threes
+          findThree [x] [y] [z] threes = elem' [x, y, z] threes
           findThree _ _ _ _ = False
+
+elem3m :: [Entity] -> [[Entity]] -> Bool
+elem3m [(Pl' x), (Pl' y), (Ms' z)] xss = any (\[(Pl' x'), (Pl' y'), (Ms' z')] -> (x == x' && y == y' && z == z')) xss
+elem3m _ xss = False 
+
+list2ThreePlacePredM :: [[Entity]] -> ThreePlacePred
+list2ThreePlacePredM xs = \x y z -> findThree x y z xs
+    where findThree :: Entity -> Entity -> Entity -> [[Entity]] -> Bool
+          findThree x y z threes = elem3m [x, y, z] threes
 
 give :: ThreePlacePred
 give (Pl' (Plural' x)) (Pl' (Plural' y)) (Pl' (Plural' z)) =  give' x y z
@@ -512,7 +526,8 @@ give (Pl' (Plural' x)) (Pl' (Plural' y)) (Pl' (Plural' z)) =  give' x y z
 
 give (Ms' x) _ _ = False
 give _ (Ms' y) _ = False
-give _ _ (Ms' z) = False
+give x y (Ms' z) = giveM x y (Ms' z)
+    where giveM = list2ThreePlacePredM giveListM
 
 gold' :: OnePlacePred
 gold' = list2OnePlacePredM goldMList

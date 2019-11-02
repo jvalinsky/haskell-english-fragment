@@ -43,6 +43,9 @@ sent12 = (Sent (The4 Gold_) (VP3 Be Old))
 sent13 :: Sent
 sent13 = (Sent (The2 Gold (Sng Ring)) (VP3 Be Old))
 
+sent14 :: Sent
+sent14 = (Sent (Empty Ellie) (VP2 Give (Empty Alice) (The4 Gold_)))
+
 main :: IO ()
 main = do
     putStr "Here are some example sentences and their evaluations: \n"
@@ -97,3 +100,7 @@ main = do
     putStr "Example for Mass: The Gold Ring is old. \n"
     putStr ("Encoded form: " ++ (show sent13) ++ "\n")
     putStr ("Result: " ++ (show (intSent sent13)) ++ "\n")
+
+    putStr "Example for Mass: Ellie gave Alice the gold. \n"
+    putStr ("Encoded form: " ++ (show sent14) ++ "\n")
+    putStr ("Result: " ++ (show (intSent sent14)) ++ "\n")
