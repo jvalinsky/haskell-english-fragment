@@ -218,18 +218,18 @@ intSent (Sent dp vp) = (intDP dp) (intVP vp)
 
 intRCN :: RCN -> OnePlacePred
 intRCN (RCN1 cn That vp)        = \ e -> ((intCN cn e) && (intVP vp e))
-intRCN (RCN2 cn That dp tv)     = \ e -> ((intCN cn e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRCN (RCN2 cn That dp tv)     = \ e -> ((intCN cn e) && (intDP dp (\ subj -> (intTV tv subj e))))
 intRCN (RCN3 adj cn That vp)    = \ e -> ( ((intADJ adj) (intCN cn) e) && (intVP vp e))
-intRCN (RCN4 adj cn That dp tv) = \ e -> ( ((intADJ adj) (intCN cn) e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRCN (RCN4 adj cn That dp tv) = \ e -> ( ((intADJ adj) (intCN cn) e) && (intDP dp (\ subj -> (intTV tv subj e))))
 
 intRSCN :: RSCN -> OnePlacePred
 intRSCN (RSCN1 scn That vp)        = \ e -> ((intSCN scn e) && (intVP vp e))
-intRSCN (RSCN2 scn That dp tv)     = \ e -> ((intSCN scn e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRSCN (RSCN2 scn That dp tv)     = \ e -> ((intSCN scn e) && (intDP dp (\ subj -> (intTV tv subj e))))
 intRSCN (RSCN3 adj scn That vp)    = \ e -> ( ((intADJ adj) (intSCN scn) e) && (intVP vp e))
-intRSCN (RSCN4 adj scn That dp tv) = \ e -> ( ((intADJ adj) (intSCN scn) e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRSCN (RSCN4 adj scn That dp tv) = \ e -> ( ((intADJ adj) (intSCN scn) e) && (intDP dp (\ subj -> (intTV tv subj e))))
 
 intRPCN :: RPCN -> OnePlacePred
 intRPCN (RPCN1 pcn That vp)        = \ e -> ((intPCN pcn e) && (intVP vp e))
-intRPCN (RPCN2 pcn That dp tv)     = \ e -> ((intPCN pcn e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRPCN (RPCN2 pcn That dp tv)     = \ e -> ((intPCN pcn e) && (intDP dp (\ subj -> (intTV tv subj e))))
 intRPCN (RPCN3 adj pcn That vp)    = \ e -> ( ((intADJ adj) (intPCN pcn) e) && (intVP vp e))
-intRPCN (RPCN4 adj pcn That dp tv) = \ e -> ( ((intADJ adj) (intPCN pcn) e) && (intDP dp (\ subj -> (intTV tv e subj))))
+intRPCN (RPCN4 adj pcn That dp tv) = \ e -> ( ((intADJ adj) (intPCN pcn) e) && (intDP dp (\ subj -> (intTV tv subj e))))
