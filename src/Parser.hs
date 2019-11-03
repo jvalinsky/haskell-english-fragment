@@ -288,14 +288,14 @@ most_adj' = do
 
 a' :: ReadP DP
 a' = do
-    string "a"
+    (string "a") <|> (string "an")
     skipSpaces
     dp <- (fmap A1 scn) <|> (fmap A3 rscn)
     return dp
 
 a_adj' :: ReadP DP
 a_adj' = do
-    string "a"
+    (string "a") <|> (string "an")
     skipSpaces
     ad <- adj
     skipSpaces
@@ -426,9 +426,8 @@ sent = do
     vp1 <- vp
     return (Sent dp1 vp1)
 
-test = readP_to_S sent "Ellie gives Alice the ring"
-
 eval :: String -> [Bool]
-eval str = map evl (filter fullyParsed (readP_to_S sent str))
-    where evl = \(sentence, leftovers) -> intSent sentence
-          fullyParsed = \(sentence, leftovers) -> leftovers == ""
+eval str = map (\x -> intSent $ fst x) parses'
+    where parses = readP_to_S sent str
+          parses' = filter fullyParsed parses
+          fullyParsed pair = length (snd pair) == 0
