@@ -1,6 +1,7 @@
 module Parser where
 
 import EF2synShort
+import EF3semShort
 import Text.ParserCombinators.ReadP
 import Control.Applicative
 import Data.Char
@@ -52,21 +53,164 @@ cn = do
     noun <- (fmap Sng scn) <|> (fmap Pl pcn) <|> (fmap Ms mcn)
     return noun
 
-{-
-rcn :: ReadP RCN
-rcn = do
+-- RCN 
+-----------------------------------------------------------------------
+rcn' :: ReadP RCN
+rcn' = do
     noun <- cn
     skipSpaces
-    that <- that
+    that
     skipSpaces
-    verbP <- vp
-    return (RCN1 cn that verbP)
--}
+    vp1 <- vp
+    return (RCN1 noun That vp1)
+
+rcn_adj' :: ReadP RCN
+rcn_adj' = do
+    ad <- adj
+    skipSpaces
+    noun <- cn
+    skipSpaces
+    that
+    skipSpaces
+    vp1 <- vp
+    return (RCN3 ad noun That vp1)
+
+rcn_tv' :: ReadP RCN
+rcn_tv' = do
+    noun <- cn
+    skipSpaces
+    that
+    skipSpaces
+    dp1 <- dp
+    skipSpaces
+    vp1 <- tv
+    return (RCN2 noun That dp1 vp1)
+
+rcn_adj_tv' :: ReadP RCN
+rcn_adj_tv' = do
+    ad <- adj
+    skipSpaces
+    noun <- cn
+    skipSpaces
+    that
+    skipSpaces
+    dp1 <- dp
+    skipSpaces
+    vp1 <- tv
+    return (RCN4 ad noun That dp1 vp1)
+
+rcn :: ReadP RCN
+rcn = rcn' <|> rcn_adj' <|> rcn_tv' <|> rcn_adj_tv'
+
+
+-----------------------------------------------------------------------
+-- RSCN 
+-----------------------------------------------------------------------
+rscn' :: ReadP RSCN
+rscn' = do
+    noun <- scn
+    skipSpaces
+    that
+    skipSpaces
+    vp1 <- vp
+    return (RSCN1 noun That vp1)
+
+rscn_adj' :: ReadP RSCN
+rscn_adj' = do
+    ad <- adj
+    skipSpaces
+    noun <- scn
+    skipSpaces
+    that
+    skipSpaces
+    vp1 <- vp
+    return (RSCN3 ad noun That vp1)
+
+rscn_tv' :: ReadP RSCN
+rscn_tv' = do
+    noun <- scn
+    skipSpaces
+    that
+    skipSpaces
+    dp1 <- dp
+    skipSpaces
+    vp1 <- tv
+    return (RSCN2 noun That dp1 vp1)
+
+rscn_adj_tv' :: ReadP RSCN
+rscn_adj_tv' = do
+    ad <- adj
+    skipSpaces
+    noun <- scn
+    skipSpaces
+    that
+    skipSpaces
+    dp1 <- dp
+    skipSpaces
+    vp1 <- tv
+    return (RSCN4 ad noun That dp1 vp1)
+
+rscn :: ReadP RSCN
+rscn = rscn' <|> rscn_adj' <|> rscn_tv' <|> rscn_adj_tv'
+
+
+---------------------------------------------------
+
+-- RPCN 
+-----------------------------------------------------------------------
+rpcn' :: ReadP RPCN
+rpcn' = do
+    noun <- pcn
+    skipSpaces
+    that
+    skipSpaces
+    vp1 <- vp
+    return (RPCN1 noun That vp1)
+
+rpcn_adj' :: ReadP RPCN
+rpcn_adj' = do
+    ad <- adj
+    skipSpaces
+    noun <- pcn
+    skipSpaces
+    that
+    skipSpaces
+    vp1 <- vp
+    return (RPCN3 ad noun That vp1)
+
+rpcn_tv' :: ReadP RPCN
+rpcn_tv' = do
+    noun <- pcn
+    skipSpaces
+    that
+    skipSpaces
+    dp1 <- dp
+    skipSpaces
+    vp1 <- tv
+    return (RPCN2 noun That dp1 vp1)
+
+rpcn_adj_tv' :: ReadP RPCN
+rpcn_adj_tv' = do
+    ad <- adj
+    skipSpaces
+    noun <- pcn
+    skipSpaces
+    that
+    skipSpaces
+    dp1 <- dp
+    skipSpaces
+    vp1 <- tv
+    return (RPCN4 ad noun That dp1 vp1)
+
+rpcn :: ReadP RPCN
+rpcn = rpcn' <|> rpcn_adj' <|> rpcn_tv' <|> rpcn_adj_tv'
+---------------------------------------------------
+
 each' :: ReadP DP
 each' = do
     string "each"
     skipSpaces
-    dp <- (fmap Each1 scn)
+    dp <- (fmap Each1 scn) <|> (fmap Each3 rscn)
     return dp
 
 each_adj' :: ReadP DP
@@ -82,7 +226,7 @@ every' :: ReadP DP
 every' = do
     string "every"
     skipSpaces
-    dp <- (fmap Every1 scn)
+    dp <- (fmap Every1 scn) <|> (fmap Every3 rscn)
     return dp
 
 every_adj' :: ReadP DP
@@ -98,7 +242,7 @@ all' :: ReadP DP
 all' = do
     string "all"
     skipSpaces
-    dp <- (fmap All1 pcn)
+    dp <- (fmap All1 pcn) <|> (fmap All3 rpcn) <|> (fmap All4 mcn)
     return dp
 
 all_adj' :: ReadP DP
@@ -114,7 +258,7 @@ no' :: ReadP DP
 no' = do
     string "no"
     skipSpaces
-    dp <- (fmap No1 cn)
+    dp <- (fmap No1 cn) <|> (fmap No3 rcn) <|> (fmap No4 mcn)
     return dp
 
 no_adj' :: ReadP DP
@@ -130,7 +274,7 @@ most' :: ReadP DP
 most' = do
     string "most"
     skipSpaces
-    dp <- (fmap Most1 pcn)
+    dp <- (fmap Most1 pcn) <|> (fmap Most3 rpcn) <|> (fmap Most4 mcn)
     return dp
 
 most_adj' :: ReadP DP
@@ -146,7 +290,7 @@ a' :: ReadP DP
 a' = do
     string "a"
     skipSpaces
-    dp <- (fmap A1 scn)
+    dp <- (fmap A1 scn) <|> (fmap A3 rscn)
     return dp
 
 a_adj' :: ReadP DP
@@ -162,7 +306,7 @@ some' :: ReadP DP
 some' = do
     string "some"
     skipSpaces
-    dp <- (fmap Some1 pcn) <|> (fmap Some4 mcn)
+    dp <- (fmap Some1 pcn) <|> (fmap Some4 mcn) <|> (fmap Some3 rpcn)
     return dp
 
 some_adj' :: ReadP DP
@@ -174,12 +318,11 @@ some_adj' = do
     dp <- (fmap (Some2 ad) pcn)
     return dp
 
-
 the' :: ReadP DP
 the' = do
     string "the"
     skipSpaces
-    dp <- (fmap The1 cn) <|> (fmap The4 mcn)
+    dp <- (fmap The1 cn) <|> (fmap The4 mcn) <|> (fmap The3 rcn)
     return dp
 
 the_adj' :: ReadP DP
@@ -284,3 +427,8 @@ sent = do
     return (Sent dp1 vp1)
 
 test = readP_to_S sent "Ellie gives Alice the ring"
+
+eval :: String -> [Bool]
+eval str = map evl (filter fullyParsed (readP_to_S sent str))
+    where evl = \(sentence, leftovers) -> intSent sentence
+          fullyParsed = \(sentence, leftovers) -> leftovers == ""
