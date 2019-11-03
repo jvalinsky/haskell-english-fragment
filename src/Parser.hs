@@ -5,7 +5,6 @@ import Text.ParserCombinators.ReadP
 import Control.Applicative
 import Data.Char
 
-
 helperParsers :: (a -> String) -> [a] -> [ReadP a]
 helperParsers f xs = map (\x -> (string $ f x) >> return x) xs
 
@@ -18,6 +17,9 @@ enumParsers' = helperParsers show [minBound..maxBound]
 
 name :: ReadP Name
 name = choice enumParsers'
+
+proper :: ReadP DP
+proper = fmap Empty name
 
 scn :: ReadP SCN
 scn = choice enumParsers
@@ -60,8 +62,6 @@ rcn = do
     verbP <- vp
     return (RCN1 cn that verbP)
 -}
-
-
 each' :: ReadP DP
 each' = do
     string "each"
@@ -93,7 +93,6 @@ every_adj' = do
     skipSpaces
     dp <- (fmap (Every2 ad) scn)
     return dp
-
 
 all' :: ReadP DP
 all' = do
@@ -142,7 +141,6 @@ most_adj' = do
     skipSpaces
     dp <- (fmap (Most2 ad) pcn)
     return dp
-
 
 a' :: ReadP DP
 a' = do
@@ -218,8 +216,7 @@ detNo :: ReadP DP
 detNo = no' <|> no_adj'
 
 dp :: ReadP DP
-dp = choice [detSome, detThe, detA, detEvery, detEach, detAll, detMost, detNo]
-
+dp = choice [detSome, detThe, detA, detEvery, detEach, detAll, detMost, detNo, proper]
 
 adj :: ReadP ADJ
 adj = choice enumParsers
@@ -227,14 +224,63 @@ adj = choice enumParsers
 that :: ReadP That
 that = string "that" >> return That
 
+infs :: [INF]
+infs = [minBound..maxBound]
 
-{-
+singVerb :: (Show a) => a -> String
+singVerb = (map toLower) . (++ "s") . show
+
+singVerbParser xs = helperParsers singVerb xs
+
+inf :: ReadP INF
+inf = choice (enumParsers ++ (singVerbParser infs))
+
+infVP :: ReadP VP
+infVP = fmap VP0 inf
+
+beVP :: ReadP VP
+beVP = do
+    (string "is") <|> (string "are")
+    skipSpaces
+    ad <- adj
+    return (VP3 Be ad)
+
+tvs :: [TV]
+tvs = [minBound..maxBound]
+
+tv :: ReadP TV
+tv = choice (enumParsers ++ (singVerbParser tvs))
+
+tVP :: ReadP VP
+tVP = do
+    verb <- tv
+    skipSpaces
+    dp1 <- dp
+    return (VP1 verb dp1)
+
+dvs :: [DV]
+dvs = [minBound..maxBound]
+
+dv :: ReadP DV
+dv = choice (enumParsers ++ (singVerbParser dvs))
+
+dVP :: ReadP VP
+dVP = do
+    verb <- dv
+    skipSpaces
+    dp1 <- dp
+    skipSpaces
+    dp2 <- dp
+    return (VP2 verb dp1 dp2)
+
+vp :: ReadP VP
+vp = choice [infVP, beVP, tVP, dVP]
+
 sent :: ReadP Sent
 sent = do
-    detP <- dp
+    dp1 <- dp
     skipSpaces
-    verbP <- vp
-    return (Sent dp vp)
--}
+    vp1 <- vp
+    return (Sent dp1 vp1)
 
-test = readP_to_S dp "most cold witches"
+test = readP_to_S sent "Ellie gives Alice the ring"

@@ -39,7 +39,7 @@ data ADJ = Wise  | Foolish | Bad   | Good  | Young | Old   |  Rusty   | New |
 
 data VP = VP0 INF | VP1 TV DP | VP2 DV DP DP | VP3 Be ADJ deriving Show
 
-data INF = Laugh | Scatter | Gather | Run | Smile | Swim | Walk deriving (Show, Eq)
-data TV  = Help  | Defeat  | Chase  | Fight | Drink deriving (Show, Eq)
+data INF = Laugh | Scatter | Gather | Run | Smile | Swim | Walk deriving (Bounded, Enum, Show, Eq)
+data TV  = Help  | Defeat  | Chase  | Fight | Drink deriving (Bounded, Enum, Show, Eq)
 data Be = Be deriving (Show, Eq)
-data DV  = Give deriving (Show, Eq)
+data DV  = Give deriving (Bounded, Enum, Show, Eq)
