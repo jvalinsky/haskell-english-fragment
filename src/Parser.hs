@@ -6,13 +6,23 @@ import Text.ParserCombinators.ReadP
 import Control.Applicative
 import Data.Char
 
+
+-- left <|> right means try the left parser and try the right parser
+-- choice (xs :: [ReadP a]) means try each parser in the list
+
+-- Helper to generate all possible parsers for a type
+-- f  : function for string representation of type
+-- xs : list of values for a type
 helperParsers :: (a -> String) -> [a] -> [ReadP a]
 helperParsers f xs = map (\x -> (string $ f x) >> return x) xs
 
+-- takes advantage of [minBound..maxBound] to enumerate all
+-- values of a Bounded, Enum type
 enumParsers :: (Bounded a, Enum a, Show a) => [ReadP a]
 enumParsers =  helperParsers lowerShow [minBound..maxBound]
     where lowerShow = (\x -> filter (not . (`elem` "_")) (map toLower (show x)))
 
+-- this is for types with represented as capitalized strings, i.e. Names
 enumParsers' :: (Bounded a, Enum a, Show a) => [ReadP a]
 enumParsers' = helperParsers show [minBound..maxBound]
 
@@ -426,6 +436,15 @@ sent = do
     vp1 <- vp
     return (Sent dp1 vp1)
 
+
+parse' :: ReadP a -> String -> [(a, String)]
+parse' p str = readP_to_S p str
+
+parseSent :: String -> [(Sent, String)]
+parseSent str = parse' sent str
+
+-- Find full parses and evaluate them using intSent
+-- Empty list means no full parse (ill-formed sentence)
 eval :: String -> [Bool]
 eval str = map (\x -> intSent $ fst x) parses'
     where parses = readP_to_S sent str
