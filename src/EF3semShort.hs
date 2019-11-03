@@ -74,6 +74,7 @@ intADJ' adj = case adj of
     
 intSCN :: SCN -> OnePlacePred
 intSCN scn = case scn of
+    Bottle   -> f bottle
     Man      -> f man 
     Woman    -> f woman
     Boy      -> f boy
@@ -208,8 +209,8 @@ intDV Give = give
 
 intVP :: VP -> OnePlacePred
 intVP (VP0 inf)        = (intINF inf)
-intVP (VP1 tv dp)      = \ subj -> intDP dp (\ obj -> intTV tv obj subj)
-intVP (VP2 dv dp1 dp2) = \ subj -> intDP dp1 (\ dobj -> intDP dp2 (\ iobj -> intDV dv iobj dobj subj))
+intVP (VP1 tv dp)      = \ subj -> intDP dp (\ obj -> intTV tv subj obj)
+intVP (VP2 dv dp1 dp2) = \ subj -> intDP dp1 (\ dobj -> intDP dp2 (\ iobj -> intDV dv subj dobj iobj))
 intVP (VP3 Be adj)     = intADJ' adj
 
 intSent :: Sent -> Bool

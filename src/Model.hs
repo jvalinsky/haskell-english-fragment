@@ -1,6 +1,6 @@
 module Model where
 
-import Data.List (intersect, union, (\\))
+import Data.List (intersect, union, (\\), sort)
 
 type OnePlacePred   = Entity -> Bool
 type TwoPlacePred   = Entity -> Entity -> Bool
@@ -10,7 +10,7 @@ type ThreePlacePred = Entity -> Entity -> Entity -> Bool
 -- lambda is from lambda calculus
 -- Plural Types
 data Atom = Alice'   | Bob'    | Cyrus' | Ellie' | Irene' | SnowWhite'  | Sword' | Bottle' |
-             Ollie'  | Quine'  | Ring'  | Harry' | Xena'   deriving (Eq, Show, Bounded, Enum)
+             Ollie'  | Quine'  | Ring'  | Harry' | Xena'   deriving (Eq, Show, Bounded, Enum, Ord)
 
 type Tag = Int
 data Mass = Mass' [Tag] deriving Show
@@ -37,7 +37,7 @@ materialize'' :: [Atom] -> Mass
 materialize'' xs =  Mass' (map fromEnum xs)
 
 materialize_ :: [Atom] -> Entity
-materialize_ xs =  Ms' (Mass' (map fromEnum xs))
+materialize_ xs =  Ms' (materialize'' xs)
 
 materialize' :: Plural -> Mass
 materialize' (Plural' xs) =  materialize'' xs
@@ -58,9 +58,6 @@ mPart x y = (materialize x) `mPart` (materialize y)
 mEqual_ :: Mass -> Mass -> Bool
 mEqual_ (Mass' x) (Mass' y) = equal' x y
 
-mEqual :: Entity -> Entity -> Bool
-mEqual x y = ((materialize x) `mPart` (materialize y)) && ((materialize y) `mPart` (materialize x))
-
 instance Eq Mass where
     (==) = mEqual_
 
@@ -74,11 +71,8 @@ instance Eq Plural where
 pEqual :: Plural -> Plural -> Bool
 pEqual (Plural' xs) (Plural' ys) = xs `equal'` ys
 
-equal' :: (Eq a) => [a] -> [a] -> Bool
-equal' xs ys = (lenXS == lenYS) && (lenXS == lenFiltered)
-    where lenXS = length xs
-          lenYS = length ys
-          lenFiltered = length (filter (\x -> x `elem` ys) xs) 
+equal' :: (Eq a, Ord a) => [a] -> [a] -> Bool
+equal' xs ys =  (sort xs) == (sort ys)
 
 x /=* y = not (equal' x y)
 x ==* y = equal' x y
@@ -92,6 +86,7 @@ entEqual (Ms' x) (Ms' y) = x `mEqual_` y
 
 instance Eq Entity where
     (==) = entEqual
+
 
 list2OnePlacePredM :: [Mass] -> OnePlacePred
 list2OnePlacePredM xs = \m -> elem m (map Ms' xs)
@@ -387,7 +382,7 @@ sword :: OnePlacePred
 sword = list2OnePlacePred' swordList
 
 metal :: OnePlacePred
-metal = list2OnePlacePred' metalList
+metal = (list2OnePlacePred' metalList) `or'` (list2OnePlacePredM goldMList)
 
 gold :: OnePlacePred
 gold = (list2OnePlacePred' goldList) `or'` (list2OnePlacePredM goldMList)
@@ -459,7 +454,7 @@ coven _ = False
 
 -- Two-Place Predicates
 
-elem' :: [Atom] -> [[Atom]] -> Bool
+elem' :: (Eq a, Ord a) => [a] -> [[a]] -> Bool
 elem' xs xss = any (equal' xs) xss
 
 -- Communitative (order doesn't matter)
@@ -508,7 +503,7 @@ chase (Ms' x) _  = False
 list2ThreePlacePred :: [[Atom]] -> [Atom] -> [Atom] -> [Atom] -> Bool
 list2ThreePlacePred xs = \x -> (\y -> (\z -> findThree x y z xs))
     where findThree :: [Atom] -> [Atom] -> [Atom] -> [[Atom]] -> Bool
-          findThree [x] [y] [z] threes = elem' [x, y, z] threes
+          findThree [x] [y] [z] threes = elem [x, y, z] threes
           findThree _ _ _ _ = False
 
 elem3m :: [Entity] -> [[Entity]] -> Bool
@@ -524,10 +519,10 @@ give :: ThreePlacePred
 give (Pl' (Plural' x)) (Pl' (Plural' y)) (Pl' (Plural' z)) =  give' x y z
     where give' = list2ThreePlacePred giveList
 
-give (Ms' x) _ _ = False
-give _ (Ms' y) _ = False
-give x y (Ms' z) = giveM x y (Ms' z)
+give x@(Pl' x') y@(Pl' y') z@(Ms' z') = giveM x y z
     where giveM = list2ThreePlacePredM giveListM
+
+give _ _ _ = False
 
 gold' :: OnePlacePred
 gold' = list2OnePlacePredM goldMList
