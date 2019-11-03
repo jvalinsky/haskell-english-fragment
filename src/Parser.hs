@@ -50,10 +50,191 @@ cn = do
     noun <- (fmap Sng scn) <|> (fmap Pl pcn) <|> (fmap Ms mcn)
     return noun
 
+{-
+rcn :: ReadP RCN
+rcn = do
+    noun <- cn
+    skipSpaces
+    that <- that
+    skipSpaces
+    verbP <- vp
+    return (RCN1 cn that verbP)
+-}
+
+
+each' :: ReadP DP
+each' = do
+    string "each"
+    skipSpaces
+    dp <- (fmap Each1 scn)
+    return dp
+
+each_adj' :: ReadP DP
+each_adj' = do
+    string "each"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (Each2 ad) scn)
+    return dp
+
+every' :: ReadP DP
+every' = do
+    string "every"
+    skipSpaces
+    dp <- (fmap Every1 scn)
+    return dp
+
+every_adj' :: ReadP DP
+every_adj' = do
+    string "every"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (Every2 ad) scn)
+    return dp
+
+
+all' :: ReadP DP
+all' = do
+    string "all"
+    skipSpaces
+    dp <- (fmap All1 pcn)
+    return dp
+
+all_adj' :: ReadP DP
+all_adj' = do
+    string "all"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (All2 ad) pcn)
+    return dp
+
+no' :: ReadP DP
+no' = do
+    string "no"
+    skipSpaces
+    dp <- (fmap No1 cn)
+    return dp
+
+no_adj' :: ReadP DP
+no_adj' = do
+    string "no"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (No2 ad) cn)
+    return dp
+
+most' :: ReadP DP
+most' = do
+    string "most"
+    skipSpaces
+    dp <- (fmap Most1 pcn)
+    return dp
+
+most_adj' :: ReadP DP
+most_adj' = do
+    string "most"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (Most2 ad) pcn)
+    return dp
+
+
+a' :: ReadP DP
+a' = do
+    string "a"
+    skipSpaces
+    dp <- (fmap A1 scn)
+    return dp
+
+a_adj' :: ReadP DP
+a_adj' = do
+    string "a"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (A2 ad) scn)
+    return dp
+
+some' :: ReadP DP
+some' = do
+    string "some"
+    skipSpaces
+    dp <- (fmap Some1 pcn) <|> (fmap Some4 mcn)
+    return dp
+
+some_adj' :: ReadP DP
+some_adj' = do
+    string "some"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (Some2 ad) pcn)
+    return dp
+
+
+the' :: ReadP DP
+the' = do
+    string "the"
+    skipSpaces
+    dp <- (fmap The1 cn) <|> (fmap The4 mcn)
+    return dp
+
+the_adj' :: ReadP DP
+the_adj' = do
+    string "the"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (The2 ad) cn)
+    return dp
+
+detThe :: ReadP DP
+detThe = the' <|> the_adj'
+
+detSome :: ReadP DP
+detSome = some' <|> some_adj'
+
+detA :: ReadP DP
+detA = a' <|> a_adj'
+
+detEach :: ReadP DP
+detEach = each' <|> each_adj'
+
+detEvery :: ReadP DP
+detEvery = every' <|> every_adj'
+
+detMost :: ReadP DP
+detMost = most' <|> most_adj'
+
+detAll :: ReadP DP
+detAll = all' <|> all_adj'
+
+detNo :: ReadP DP
+detNo = no' <|> no_adj'
+
+dp :: ReadP DP
+dp = choice [detSome, detThe, detA, detEvery, detEach, detAll, detMost, detNo]
+
+
 adj :: ReadP ADJ
 adj = choice enumParsers
 
 that :: ReadP That
 that = string "that" >> return That
 
-test = readP_to_S cn "bottles"
+
+{-
+sent :: ReadP Sent
+sent = do
+    detP <- dp
+    skipSpaces
+    verbP <- vp
+    return (Sent dp vp)
+-}
+
+test = readP_to_S dp "most cold witches"
