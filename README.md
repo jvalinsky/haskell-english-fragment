@@ -1,4 +1,4 @@
-# Mass Terms and Parser Combinators
+# Collectivity, Distributivity, Mass Terms, and Parser Combinators
 ## by Jack Valinsky
 
 
@@ -14,6 +14,16 @@
 - <code> stack build && stack exec plurals-lin268-exe </code>
 - Alternatively one can just load all the files in src/ in the repl using <code> stack ghci </code>
 
+### Modeling Individual Entities and Mass Terms and their Predicates
 
+
+### Syntax
+
+### Semantics
+
+
+### Parsing
+I implemented parsing of a fragment of English using parser combinators with the help of Haskell's 
+Text.ParserCombinators.ReadP library.
 
 
