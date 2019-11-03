@@ -172,11 +172,13 @@ intCCN ccn = case ccn of
     Couple   -> couple
     Coven    -> coven
 ```
-
+Some nouns which are syntactically singular can have a collective interpretation for their semantics. I handle this with a case for such collective nouns
+to be interpretated by my <code>intCCN</code> function. 
 
 
 ### Parsing
 I implemented parsing of a fragment of English using parser combinators with the help of Haskell's 
-Text.ParserCombinators.ReadP library.
+Text.ParserCombinators.ReadP library. Parsers are of <code>ReadP a</code> type and I use the <code>readP_to_S</code>
+function to
 
 
