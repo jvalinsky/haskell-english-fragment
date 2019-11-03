@@ -18,7 +18,7 @@ data Name = Alice   | Bob    | Cyrus  | Ellie | Irene   | SnowWhite |
 
 data CN = Sng SCN | Pl PCN | Ms MCN deriving Show 
 
-data MCN = Gold_ deriving Show
+data MCN = Gold_ deriving (Bounded, Enum, Show, Eq)
 
 data PCN = Plur SCN deriving Show
 
@@ -35,7 +35,7 @@ data SCN = Bottle | Sword  | Man    | Woman   |
 
 data ADJ = Wise  | Foolish | Bad   | Good  | Young | Old   |  Rusty   | New |
            Cold  | Magical | Tall  | Short | Numerous | Female | Male |
-           Metal | Gold    | Clean | Dirty deriving (Show, Eq)
+           Metal | Gold    | Clean | Dirty deriving (Bounded, Enum, Show, Eq)
 
 data VP = VP0 INF | VP1 TV DP | VP2 DV DP DP | VP3 Be ADJ deriving Show
 
