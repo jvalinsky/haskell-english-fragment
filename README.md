@@ -16,7 +16,83 @@
 
 ### Modeling Individual Entities and Mass Terms and their Predicates
 
+In my collective-distributive homework I represented plural entities as lists of atoms. To allow predicates
+to distinguish between mass terms and plural entities I modified my definition of <code>Entity</code>.
 
+```haskell
+data Atom = Alice'   | Bob'    | Cyrus' | Ellie' | Irene' | SnowWhite'  | Sword' | Bottle' |
+             Ollie'  | Quine'  | Ring'  | Harry' | Xena'   deriving (Eq, Show, Bounded, Enum, Ord)
+
+type Tag = Int
+data Mass = Mass' [Tag] deriving Show
+data Plural = Plural' [Atom] deriving Show
+
+data Entity = Pl' Plural | Ms' Mass deriving Show
+  
+atoms :: [Atom]
+atoms = [minBound..maxBound]
+
+domain :: [Entity]
+domain = (map Pl' (map Plural' (powerset atoms))) ++ masses
+
+masses = [materialize_ [Ring'], materialize_ [Sword']]
+
+-- ...
+
+materialize'' :: [Atom] -> Mass
+materialize'' xs =  Mass' (map fromEnum xs)
+
+materialize_ :: [Atom] -> Entity
+materialize_ xs =  Ms' (materialize'' xs)
+```
+
+I use pattern matching in my predicates to check if a value of type <code>Entity</code> is a mass term or a plural entity.
+My definition of the <code>Mass</code> type allows for a clear connection between individuals and portions of matter (I just use
+the number returned by fromEnum for the <code>Tag</code>) but while allowing for portions of matter that do not correspond to 
+any individual (just use a <code>Tag</code> greater than <code>fromEnum maxBound</code>). I do not do anything clever regarding defining
+the mass terms in my domain, I just add a few chosen mass terms to my domain list. This was in interest of time because I had tried
+many possible ideas that did not result in working code. The <code>domain</code> variable is used inside my implementation of the <code>intDET</code>
+for interpretating determiners as shown below in the semantics section. It is used as a starting domain of entities to filter through using
+predicates that the determiners modify (i.e. the nouns).
+
+
+As an illustration of how I handle predicates which differentiate between individuals and masses, here is my code for implementing predicate
+for the verb "give":
+```haskell
+-- Three-Place Predicates
+list2ThreePlacePred :: [[Atom]] -> [Atom] -> [Atom] -> [Atom] -> Bool
+list2ThreePlacePred xs = \x -> (\y -> (\z -> findThree x y z xs))
+    where findThree :: [Atom] -> [Atom] -> [Atom] -> [[Atom]] -> Bool
+          findThree [x] [y] [z] threes = elem [x, y, z] threes
+          findThree _ _ _ _ = False
+
+elem3m :: [Entity] -> [[Entity]] -> Bool
+elem3m [(Pl' x), (Pl' y), (Ms' z)] xss = any (\[(Pl' x'), (Pl' y'), (Ms' z')] -> (x == x' && y == y' && z == z')) xss
+elem3m _ xss = False 
+
+list2ThreePlacePredM :: [[Entity]] -> ThreePlacePred
+list2ThreePlacePredM xs = \x y z -> findThree x y z xs
+    where findThree :: Entity -> Entity -> Entity -> [[Entity]] -> Bool
+          findThree x y z threes = elem3m [x, y, z] threes
+
+give :: ThreePlacePred
+give (Pl' (Plural' x)) (Pl' (Plural' y)) (Pl' (Plural' z)) =  give' x y z
+    where give' = list2ThreePlacePred giveList
+
+give x@(Pl' x') y@(Pl' y') z@(Ms' z') = giveM x y z
+    where giveM = list2ThreePlacePredM giveListM
+
+give _ _ _ = False
+```
+
+Here I am not handling plural entities because of the complexity involved (i.e. combinatoric explosion of possible interpretations), 
+only my 1-place predicates handle plurals. I allow for a mass to be given to an individual extensive use of pattern matching.
+My plural and mass types implement the <code>Eq</code> typeclass to be able to handle different notions of equality for masses and plurals.
+
+
+"Scatter" is an example of collective predicate which only works for the domain of plural objects and not atoms (ex: one person cannot scatter),
+I utilize a <code>groupPred</code> helper function to count the numer of atoms a plural entity is composed of. In this case I define "scatter" to be true
+for any group of atoms greater than two.
 
 ### Syntax
 
@@ -277,6 +353,19 @@ pcn = choice pluralParsers
 
 Just like with my parser for names, I use my <code>helperParsers</code> function to construct a list of parsers to parse all the values for <code>PCN</code>.
 
+Finally I have an eval function as defined below to take a string containing an English sentence, parse it into a <code>Sent</code>, and interpret it.
+
+```haskell
+-- Find full parses and evaluate them using intSent
+-- Empty list means no full parse (ill-formed sentence)
+eval :: String -> [Bool]
+eval str = map (\x -> intSent $ fst x) parses'
+    where parses = readP_to_S sent str
+          parses' = filter fullyParsed parses
+          fullyParsed pair = length (snd pair) == 0
+```
+
+One note is that I filter out any parses with leftover characters because they are mostly likely incorrect parses of the sentence string.
 
 
 ### Possible Future Work
