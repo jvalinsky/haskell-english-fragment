@@ -377,6 +377,10 @@ mass entities to my domain. The tricky issue with mass entities is that they for
 my plural entities can be. Perphaps there is a way to utilize the lazy evaluation of Haskell to get around this issue.
 
 
-
+#### References
+- [ReadP on Hackage](https://hackage.haskell.org/package/base-4.12.0.0/docs/Text-ParserCombinators-ReadP.html)
+- [Two Wrongs' blog post](https://two-wrongs.com/parser-combinators-parsing-for-haskell-beginners.html)
+- Starter code provided by Professor Grimm
+- Link paper
 
 

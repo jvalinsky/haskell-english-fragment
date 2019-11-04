@@ -3,6 +3,7 @@ module Main where
 import EF3semShort
 import EF2synShort
 import Model
+import Parser
 
 sent1 :: Sent
 sent1 = Sent (The1 (Pl (Plur  Witch))) (VP3 Be Magical)
@@ -45,6 +46,11 @@ sent13 = (Sent (The2 Gold (Sng Ring)) (VP3 Be Old))
 
 sent14 :: Sent
 sent14 = (Sent (Empty Ellie) (VP2 Give (Empty Alice) (The4 Gold_)))
+
+resultEval = eval "Ellie gives Alice the gold that is old"
+
+eval1 :: String
+eval1 = (show resultEval)
 
 main :: IO ()
 main = do
@@ -104,3 +110,7 @@ main = do
     putStr "Example for Mass: Ellie gave Alice the gold. \n"
     putStr ("Encoded form: " ++ (show sent14) ++ "\n")
     putStr ("Result: " ++ (show (intSent sent14)) ++ "\n")
+
+    putStr "Example of using eval: Ellie gave Alice the gold that is old \n"
+    putStr "Result: "
+    print eval1
