@@ -17,6 +17,7 @@
 ### Modeling Individual Entities and Mass Terms and their Predicates
 
 
+
 ### Syntax
 
 ```haskell
@@ -173,12 +174,120 @@ intCCN ccn = case ccn of
     Coven    -> coven
 ```
 Some nouns which are syntactically singular can have a collective interpretation for their semantics. I handle this with a case for such collective nouns
-to be interpretated by my <code>intCCN</code> function. 
+to be interpretated by my <code>intCCN</code> function. Collective predicates are defined using a <code>groupPred :: Ordering -> Int -> Entity -> Bool</code>
+function in <code>src/Model.hs</code> which checks how many atoms a plural object has. If a mass entity is given, the result is always <code>False</code>.
 
+```haskell
+groupPred :: Ordering -> Int -> Entity -> Bool
+groupPred ord n = f
+    where f (Pl' (Plural' xs)) = groupPred' xs  
+          f (Ms' y) = False
+          groupPred' = \x -> (length x) `compare` n == ord
+```
 
 ### Parsing
 I implemented parsing of a fragment of English using parser combinators with the help of Haskell's 
 Text.ParserCombinators.ReadP library. Parsers are of <code>ReadP a</code> type and I use the <code>readP_to_S</code>
-function to
+function to output a list of tuples of a parse and an unparsed leftover string given a parser and a string. ReadP is a monad so I make
+heavy use of do notation to write cleaner code for my parsers. 
+
+```haskell
+sent :: ReadP Sent
+sent = do
+    dp1 <- dp
+    skipSpaces
+    vp1 <- vp
+    return (Sent dp1 vp1)
+```
+Parsers can be combined to form more complex parsers and I follow the definitions of my syntax types in <code>src/EF2synShort.hs</code> to guide
+how write my parsers. Note that in the code above, the sentence parser is defined using the determiner phrase parser <code>dp</code> and the verb phrase
+parser <code>vp</code>. I build the final parsed <code>Sent</code> type using the type constructor and <code>return</code>. <code>skipSpaces</code> just
+accepts an arbitrary number of whitespace characters. 
+
+Here is an example of how I defined the parsing of a determiner phrase that has "The":
+
+```haskell
+the' :: ReadP DP
+the' = do
+    string "the"
+    skipSpaces
+    dp <- (fmap The1 cn) <|> (fmap The4 mcn) <|> (fmap The3 rcn)
+    return dp
+
+the_adj' :: ReadP DP
+the_adj' = do
+    string "the"
+    skipSpaces
+    ad <- adj
+    skipSpaces
+    dp <- (fmap (The2 ad) cn)
+    return dp
+
+detThe :: ReadP DP
+detThe = the' <|> the_adj'
+```
+
+I build up the final parser using smaller parsers that handle the different cases of how a determiner phrase using "The" can be constructed.
+The <code><|></code> operator allows for defining alternative parses, both the left and right side of the operator are tried. <code>fmap</code> is
+another handy operator that I use to essentially compose the result of parse with a type constructor. The <code>fmap</code> function lifts the type
+constructor into the <code>ReadP</code> monad context so that it can be composed with the result of a parser function. I use these two operators heavily
+as can be seen by my definition of <code>the'</code> to handle the different cases of constructing a determiner phrase using "The".
+
+```haskell
+helperParsers :: (a -> String) -> [a] -> [ReadP a]
+helperParsers f xs = map (\x -> (string $ f x) >> return x) xs
+
+-- takes advantage of [minBound..maxBound] to enumerate all
+-- values of a Bounded, Enum type
+enumParsers :: (Bounded a, Enum a, Show a) => [ReadP a]
+enumParsers =  helperParsers lowerShow [minBound..maxBound]
+    where lowerShow = (\x -> filter (not . (`elem` "_")) (map toLower (show x)))
+
+-- this is for types with represented as capitalized strings, i.e. Names
+enumParsers' :: (Bounded a, Enum a, Show a) => [ReadP a]
+enumParsers' = helperParsers show [minBound..maxBound]
+
+name :: ReadP Name
+name = choice enumParsers'
+```
+
+I take advantage of many of my syntax types deriving <code>Bounded</code> and <code>Enum</code> to construct helper functions that will enumerate
+all the possible parsers for a given type. <code>choice</code> is a function that works similar to <code><|></code>, it tries to use every parser in the
+list given to it to parse a string. I take advantage of my syntax types deriving <code>Show</code> to help create a string representation of that type.
+For example, I construct a function <code>pluralize</code> to output the string representation of a <code>PCN</code> type:
+
+```haskell
+plurals :: [PCN]
+plurals = (map Plur singulars)
+
+plualize :: PCN -> String
+plualize (Plur x) = case x of
+    Man   -> "Men"
+    Woman -> "Women"
+    Witch -> "Witches"
+    Dwarf -> "Dwarves"
+    _     -> (show x) ++ "s"
+
+pluralParsers :: [ReadP PCN]
+pluralParsers = helperParsers (\x -> map toLower (plualize x)) plurals
+
+pcn :: ReadP PCN
+pcn = choice pluralParsers
+```
+
+Just like with my parser for names, I use my <code>helperParsers</code> function to construct a list of parsers to parse all the values for <code>PCN</code>.
+
+
+
+### Possible Future Work
+There is most likely a lot of refactoring I can do to make shorter, cleaner code. In some places I tried to balance terseness of code with readability, like
+with how I defined my parsers for my determiners. Much of the verbose code was due to the constraint of wanting working code in a (somewhat) 
+reasonable timeframe. My implementation of the domain of individuals as a powerset (i.e. a list of lists) is probably not the most efficient choice and
+for more than about 13 atoms my interpretation functions take an unreasonable amount of time to run. There are also probably more clever ways of adding
+mass entities to my domain. The tricky issue with mass entities is that they form a possibly non-atomic semillatice so they can not be enumerated like
+my plural entities can be. Perphaps there is a way to utilize the lazy evaluation of Haskell to get around this issue.
+
+
+
 
 
